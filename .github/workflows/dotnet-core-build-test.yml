@@ -25,7 +25,7 @@ jobs:
       run: dotnet test --no-restore --verbosity normal --logger:nunit
     - name: Publish Test Results
       uses: MirrorNG/nunit-reporter@v1.0.9
-        if: always()
+      if: always()
         with:
-            path: src/SimcProfileParser.Tests/TestResults/*.xml
-            access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: SimcProfileParser.Tests/TestResults/*.xml
+          access-token: ${{ secrets.GITHUB_TOKEN }}
