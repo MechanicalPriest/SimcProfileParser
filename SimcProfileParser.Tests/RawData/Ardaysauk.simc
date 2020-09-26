@@ -1,0 +1,181 @@
+﻿# Ardaysauk - Holy - 2020-09-16 16:41 - us/Torghast
+# SimC Addon 1.12.5
+# Requires SimulationCraft 820-01 or newer
+
+priest="Ardaysauk"
+level=60
+race=dwarf
+region=us
+server=torghast
+role=attack
+professions=tailoring=1/
+talents=1311111
+spec=holy
+
+head=,id=175864,bonus_id=6795/1487/6646,context=14
+neck=,id=175885,bonus_id=6788/1487/6646,context=14
+shoulder=,id=175873,bonus_id=6781/1487/6646,context=14
+back=,id=178301,enchant_id=6204,bonus_id=6788/1487/6646,context=14
+chest=,id=175852,enchant_id=6217,bonus_id=6795/1487/6646,context=14
+wrist=,id=175880,enchant_id=6220,bonus_id=6788/1487/6646,context=14
+hands=,id=175862,bonus_id=6781/1487/6646,context=14
+waist=,id=175876,bonus_id=6781/1487/6646,context=14
+legs=,id=175868,bonus_id=6795/1487/6646,context=14
+feet=,id=175857,enchant_id=6207,bonus_id=6781/1487/6646,context=14
+finger1=,id=178329,enchant_id=6164,bonus_id=6788/1487/6646,context=14
+finger2=,id=178293,enchant_id=6168,bonus_id=6788/1487/6646,context=14
+trinket1=,id=178298,bonus_id=6781/1487/6646,context=14
+trinket2=,id=175884,bonus_id=6781/1487/6646,context=14
+main_hand=,id=183431,enchant_id=6226,bonus_id=6774/1507/6646,context=14
+
+### Gear from Bags
+#
+# Divine Image (190)
+# head=,id=173245,bonus_id=6716/1487/6973/6647/6648,context=63
+#
+# 7th Legionnaire's Circlet (138)
+# head=,id=163340,bonus_id=6938
+#
+# Grim-Veiled Hood (190)
+# head=,id=173245,bonus_id=6716/1487,context=63
+#
+# Shaleshell Pendant (138)
+# neck=,id=177146,bonus_id=6938
+#
+# Flash Concentration (190)
+# neck=,id=178927,bonus_id=6716/1487/6974/6647/6648,context=63
+#
+# Shadowghast Necklace (190)
+# neck=,id=178927,bonus_id=6716/1487,context=63
+#
+# Grim-Veiled Spaulders (190)
+# shoulder=,id=173247,bonus_id=6716/1487,context=63
+#
+# 7th Legionnaire's Mantle (138)
+# shoulder=,id=163269,bonus_id=6938
+#
+# X'anshi, Return of Archbishop Benedictus (190)
+# back=,id=173242,bonus_id=6716/1487/6984/6647/6648,context=63
+#
+# Sinful Aspirant's Drape (158)
+# back=,id=178265,enchant_id=6202,bonus_id=6793/1455/6616,context=14
+#
+# Grim-Veiled Cape (190)
+# back=,id=173242,bonus_id=6716/1487,context=63
+#
+# 7th Legionnaire's Shroud (138)
+# back=,id=163311,enchant_id=6203,bonus_id=6938
+#
+# Grim-Veiled Robe (190)
+# chest=,id=173241,enchant_id=6230,bonus_id=6716/1487,context=63
+#
+# Measured Contemplation (190)
+# chest=,id=173241,bonus_id=6716/1487/7161/6648/6647,context=63
+#
+# 7th Legionnaire's Garb (138)
+# chest=,id=174025,enchant_id=6216,bonus_id=6938
+#
+# 7th Legionnaire's Cuffs (138)
+# wrist=,id=177094,enchant_id=6219,bonus_id=6938
+#
+# Grim-Veiled Bracers (190)
+# wrist=,id=173249,bonus_id=6716/1487,context=63
+#
+# Selfless Bearer's Gauntlets (150)
+# hands=,id=178156,context=11
+#
+# Grim-Veiled Mittens (190)
+# hands=,id=173244,bonus_id=6716/1487,context=63
+#
+# 7th Legionnaire's Mitts (138)
+# hands=,id=163258,bonus_id=6938
+#
+# 7th Legionnaire's Sash (138)
+# waist=,id=163343,bonus_id=6938
+#
+# Grim-Veiled Belt (190)
+# waist=,id=173248,bonus_id=6716/1487,context=63
+#
+# Cauterizing Shadows (190)
+# waist=,id=173248,bonus_id=6716/1487/6975/6647/6648,context=63
+#
+# 7th Legionnaire's Legwraps (138)
+# legs=,id=177092,bonus_id=6938
+#
+# Grim-Veiled Pants (190)
+# legs=,id=173246,bonus_id=6716/1487,context=63
+#
+# Norgannon's Sagacity (190)
+# feet=,id=173243,bonus_id=6716/1487/7102/6647/6648,context=63
+#
+# Grim-Veiled Sandals (190)
+# feet=,id=173243,bonus_id=6716/1487,context=63
+#
+# 7th Legionnaire's Footcover (138)
+# feet=,id=174026,bonus_id=6938
+#
+# Shadowghast Ring (190)
+# finger1=,id=178926,bonus_id=6716/1487,context=63
+#
+# Harmonious Apparatus (190)
+# finger1=,id=178926,bonus_id=6716/1487/6977/6647/6648,context=63
+#
+# Sinful Aspirant's Ring (158)
+# finger1=,id=175879,bonus_id=6793/1455/6616,context=14
+#
+# Sea Sapphire Band (138)
+# finger1=,id=177145,bonus_id=6938
+#
+# Beaten Copper Loop of the Feverflare (138)
+# finger1=,id=177153,bonus_id=6938/1764
+#
+# Sinful Aspirant's Relentless Brooch (158)
+# trinket1=,id=184053,bonus_id=6793/1455/6616,context=14
+#
+# Oceanographer's Weather Log (138)
+# trinket1=,id=177151,bonus_id=6938/604
+#
+# Sinful Aspirant's Medallion (158)
+# trinket1=,id=184052,bonus_id=6793/1455/6616,context=14
+#
+# Shimmering Rune (138)
+# trinket1=,id=177149,bonus_id=6938/607
+#
+# Sinful Aspirant's Spellmace (158)
+# main_hand=,id=183434,bonus_id=6800/1475/6616,context=14
+#
+# 7th Legionnaire's Spellhammer (138)
+# main_hand=,id=177141,bonus_id=6938
+#
+# Sinful Aspirant's Magestaff (183)
+# main_hand=,id=183431,bonus_id=6775/1500/6646,context=14
+#
+# Sinful Aspirant's Magestaff (171)
+# main_hand=,id=183431,bonus_id=6777/1488/6616,context=14
+#
+# Sinful Aspirant's Magestaff (158)
+# main_hand=,id=183431,bonus_id=6801/1475/6616,context=14
+#
+# Sinful Aspirant's Crescent (158)
+# main_hand=,id=183435,bonus_id=6800/1475/6616,context=14
+#
+# Sinful Aspirant's Gavel (158)
+# main_hand=,id=178481,enchant_id=6229,bonus_id=6800/1475/6616,context=14
+#
+# Sinful Aspirant's Magestaff (177)
+# main_hand=,id=183431,bonus_id=6776/1494/6616,context=14
+#
+# Sinful Aspirant's Magestaff (164)
+# main_hand=,id=183431,bonus_id=6778/1481/6616,context=14
+#
+# 7th Legionnaire's Stave (138)
+# main_hand=,id=177133,bonus_id=6938
+#
+# 7th Legionnaire's Wand (138)
+# main_hand=,id=177135,bonus_id=6938
+#
+# Sinful Aspirant's Weapon - Offhand (158)
+# off_hand=,id=178673,bonus_id=7145/1475/6616,context=14
+#
+# 7th Legionnaire's Censer (138)
+# off_hand=,id=177139,bonus_id=6938
