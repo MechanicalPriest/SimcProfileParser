@@ -2,6 +2,28 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.2</Version>
+    <Authors>Mechanical Priest</Authors>
+    <Company>Mechanical Priest</Company>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/MechanicalPriest/SimcProfileParser</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/MechanicalPriest/SimcProfileParser</PackageProjectUrl>
+    <Copyright>Copyright © Mechanical Priest 2020</Copyright>
+    <Description>A library to parse the simc WoW addon results into usable objects.</Description>
+    <Summary>A library to parse the simc WoW addon results into usable objects.</Summary>
+    <PackageTags>simc warcraft</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Title>Simc Profile Parser</Title>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageIcon>packageIcon.png</PackageIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="packageIcon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>
