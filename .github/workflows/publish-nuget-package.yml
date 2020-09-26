@@ -1,0 +1,30 @@
+name: Publish to nuget
+on:
+  push:
+    branches:
+      - master # Default release branch
+jobs:
+  publish:
+    name: build, pack & publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.301
+
+      # Publish
+      - name: Publish on version change
+        id: publish_nuget
+        uses: rohith/publish-nuget@v2
+        with:
+          # Filepath of the project to be packaged, relative to root of repository
+          PROJECT_FILE_PATH: SimcProfileParser/SimcProfileParser.csproj
+          
+          # NuGet package id, used for version detection & defaults to project name
+          PACKAGE_NAME: SimcProfileParser
+
+          # API key to authenticate with NuGet server
+          NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
