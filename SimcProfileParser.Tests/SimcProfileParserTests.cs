@@ -30,6 +30,7 @@ namespace SimcProfileParser.Tests
         [Test]
         public void Test_That_Fails()
         {
+            Assert.AreEqual(1, 0);
             Assert.Fail("This test has failed intentionally :(");
         }
     }
