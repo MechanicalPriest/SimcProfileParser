@@ -26,12 +26,5 @@ namespace SimcProfileParser.Tests
             // Something to test that internals are exposted to tests
             Assert.AreEqual(_simcParserService.InternalTest(), "An internal method, top secret!");
         }
-
-        [Test]
-        public void Test_That_Fails()
-        {
-            Assert.AreEqual(1, 0);
-            Assert.Fail("This test has failed intentionally :(");
-        }
     }
 }
