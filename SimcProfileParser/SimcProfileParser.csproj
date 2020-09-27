@@ -26,4 +26,8 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
+  </ItemGroup>
 </Project>
