@@ -1,0 +1,62 @@
+﻿# Hierophant - Holy - 2020-09-27 01:41 - us/Torghast
+# SimC Addon 9.0.1-alpha-10
+# Requires SimulationCraft 901-01 or newer
+
+priest="Hierophant"
+level=60
+race=undead
+region=us
+server=torghast
+role=attack
+professions=tailoring=1/jewelcrafting=1
+talents=2122122
+spec=holy
+
+covenant=night_fae
+# soulbind=niya,342270/82:1/73:1/320662/69:1/84:1/320668/322721
+soulbind=dreamweaver,319191/82:1/66:1/319213/69:1/84:1/319216/319217
+# soulbind=korayn,
+# conduits_available=116:1/78:1/82:1/84:1/101:1/69:1/73:1/67:1/66:1
+# renown=40
+
+head=,id=181411,bonus_id=6652/7193/1564/5878/6646
+neck=,id=175885,bonus_id=6788/1487/6646
+shoulder=,id=175873,bonus_id=6781/1487/6646
+back=,id=178301,enchant_id=6204,bonus_id=6788/1487/6646
+chest=,id=181399,bonus_id=6652/1564/5878/6646
+wrist=,id=181426,bonus_id=6652/7193/1564/5878/6646
+hands=,id=175862,bonus_id=6781/1487/6646
+waist=,id=178822,bonus_id=6808/1521/6646
+legs=,id=173246,bonus_id=6716/1487/6984/6647/6649
+feet=,id=175857,bonus_id=6781/1487/6646
+finger1=,id=175879,bonus_id=6788/1487/6646
+finger2=,id=178293,bonus_id=6788/1487/6646
+trinket1=,id=178783,bonus_id=6805/40/1472/4785
+trinket2=,id=177157,bonus_id=6938/603,drop_level=50
+main_hand=,id=183435,bonus_id=6795/1507/6646
+off_hand=,id=178478,bonus_id=7150/1507/6646
+
+### Gear from Bags
+#
+# Harmonious Apparatus (190)
+# shoulder=,id=173247,bonus_id=6716/1487/6977/6649/6647
+#
+# Faewoven Branches (157)
+# back=,id=181301
+#
+# Flash Concentration (190)
+# wrist=,id=173249,bonus_id=6716/1487/6974/6647/6649
+#
+# Sinful Aspirant's Silk Wristwraps (190)
+# wrist=,id=175880,enchant_id=6220,bonus_id=6788/1487/6646
+#
+# Sinful Aspirant's Silk Leggings (190)
+# legs=,id=175868,bonus_id=6795/1487/6646
+#
+# Book-Borrower Identification (100)
+# trinket1=,id=182682,bonus_id=6652
+#
+# Evernote Vesper (144)
+# off_hand=,id=183608,bonus_id=6652
+
+### Weekly Reward Choices

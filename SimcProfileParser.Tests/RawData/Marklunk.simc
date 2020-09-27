@@ -1,0 +1,128 @@
+﻿# Marklunk - Holy - 2020-09-27 16:17 - us/Oribos
+# SimC Addon 9.0.1-alpha-10
+# Requires SimulationCraft 901-01 or newer
+
+priest="Marklunk"
+level=60
+race=night_elf
+region=us
+server=oribos
+role=attack
+professions=alchemy=16/herbalism=66
+talents=3322333
+spec=holy
+
+azerite_essences=21:4/300573/37:3/300575/300576/32:3/300577/312927/19:4/312928
+# azerite_essences_available=4:3/5:4/6:3/12:4/14:3/15:1/16:4/17:3/18:2/19:4/20:4/21:4/22:3/23:2/24:3/27:4/28:3/32:3/35:3/36:4/37:3
+
+covenant=venthyr
+soulbind=nadjia_the_mistblade,331577
+# conduits_available=
+# renown=3
+
+head=,id=175660,bonus_id=6706,drop_level=58
+neck=,id=158075,bonus_id=6316/4932/4933/1559,azerite_level=91
+shoulder=,id=175436,bonus_id=6706,drop_level=59
+back=,id=182561,bonus_id=6911,drop_level=53
+chest=,id=175480,bonus_id=6706,drop_level=60
+tabard=,id=28788
+wrist=,id=175442,bonus_id=6707,drop_level=59
+hands=,id=175425,bonus_id=6707,drop_level=59
+waist=,id=175439,bonus_id=6707,drop_level=58
+legs=,id=175496,bonus_id=6707/6902,drop_level=58
+feet=,id=175485,bonus_id=6706,drop_level=59
+finger1=,id=175710,bonus_id=6706,drop_level=58
+finger2=,id=175714,bonus_id=6707/6901,drop_level=59
+trinket1=,id=175732,bonus_id=6707/6901,drop_level=59
+trinket2=,id=175731,bonus_id=6707,drop_level=59
+main_hand=,id=177641,bonus_id=6706,drop_level=59
+off_hand=,id=177634,bonus_id=6707,drop_level=59
+
+### Gear from Bags
+#
+# Hood of Pained Absolution (138)
+# head=,id=175427,bonus_id=6707,drop_level=59
+#
+# Stormlurker's Cowl (135)
+# head=,id=159244,bonus_id=5448/1543/4786/6511/4775,azerite_powers=114/401/463/83/13
+#
+# Spaulders of Miasmic Mycelia (145)
+# shoulder=,id=174117,bonus_id=4824/1517/4786/6512/4775,azerite_powers=228/582/104/44/13
+#
+# Ashjra'kamas, Shroud of Resolve (155)
+# back=,id=169223,enchant_id=6088,bonus_id=6597/1472
+#
+# Dredwing Shroud (138)
+# back=,id=175765,bonus_id=6707,drop_level=59
+#
+# Cloak of Coordination (29)
+# back=,id=65360
+#
+# Wrap of Unity (20)
+# back=,id=63206
+#
+# Ilka's Hunting Cloak (126)
+# back=,id=175766,bonus_id=6707,drop_level=57
+#
+# Robes of Unreality (135)
+# chest=,id=174119,bonus_id=4824/1517/4786/6510/4775,azerite_powers=228/582/18/83/13
+#
+# Irradiated Undercoat (1)
+# shirt=,id=169878
+#
+# Marquis' Lace Cuffs (138)
+# wrist=,id=179989,bonus_id=6707,drop_level=59
+#
+# Avowed Tormenter's Wristwraps of the Harmonious (129)
+# wrist=,id=177773,bonus_id=6907/1712,drop_level=59
+#
+# Spirit Tender's Cuffs (134)
+# wrist=,id=175675,bonus_id=6707/6901,drop_level=57
+#
+# Mitts of Pained Absolution (132)
+# hands=,id=178067,bonus_id=6707,drop_level=58
+#
+# Leggings of Pained Absolution (138)
+# legs=,id=175431,bonus_id=6707,drop_level=59
+#
+# Sandals of Wise Voodoo (130)
+# feet=,id=159243,gem_id=168641,bonus_id=6536/4802/6578/6579/6537/6515/1543/4786
+#
+# Boot-a-Charge Flyers (146)
+# feet=,id=177656,bonus_id=6706,drop_level=60
+#
+# Gargon Eye Ring (138)
+# finger1=,id=175715,bonus_id=6707,drop_level=59
+#
+# Briarbane Signet (132)
+# finger1=,id=178077,bonus_id=6707,drop_level=58
+#
+# Ascended Defender's Crest (102)
+# trinket1=,id=175718,bonus_id=6707,drop_level=53
+#
+# Psyche Shredder (130)
+# trinket1=,id=174060,gem_id=168641,bonus_id=4824/1808/6513/1517/4786
+#
+# Soulsifter Root (132)
+# trinket1=,id=183849,bonus_id=6707,drop_level=58
+#
+# Peerless Alchemist Stone (125)
+# trinket1=,id=171085,gem_id=168638
+#
+# Sinstealer's Staff (140)
+# main_hand=,id=177640,bonus_id=6706,drop_level=58
+#
+# Ritualist Dagger of the Peerless (131)
+# main_hand=,id=177804,bonus_id=6908/43/1685,drop_level=59
+#
+# Culexwood Spellmace (132)
+# main_hand=,id=180473,bonus_id=6707,drop_level=58
+#
+# Ritualist Dagger of the Harmonious (131)
+# main_hand=,id=177804,bonus_id=6908/1717,drop_level=59
+#
+# Ritualist Dagger of the Feverflare (131)
+# main_hand=,id=177804,bonus_id=6908/42/1699,drop_level=59
+#
+# Banewood Dirk of the Fireflash (131)
+# main_hand=,id=177806,bonus_id=6908/1692,drop_level=59

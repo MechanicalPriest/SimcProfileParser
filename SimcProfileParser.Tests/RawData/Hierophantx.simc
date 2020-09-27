@@ -1,0 +1,49 @@
+﻿# Hierophantx - Holy - 2020-09-27 01:43 - us/Torghast
+# SimC Addon 9.0.1-alpha-10
+# Requires SimulationCraft 901-01 or newer
+
+priest="Hierophantx"
+level=60
+race=undead
+region=us
+server=torghast
+role=attack
+
+talents=1111112
+spec=holy
+
+covenant=kyrian
+soulbind=pelagos,328257/69:1/329777/66:1/328263/82:1/116:1/328266
+# soulbind=forgelite_prime_mikanikos,331610/69:1
+# conduits_available=113:1/75:1/114:1/82:1/76:1/77:1/116:1/78:1/81:1/84:1/107:1/67:1/69:1/85:1/73:1/66:1/71:1/72:1
+# renown=40
+
+head=,id=163427,bonus_id=6938,drop_level=50
+neck=,id=177165,bonus_id=6938,drop_level=50
+shoulder=,id=163425,bonus_id=6938,drop_level=50
+back=,id=163358,bonus_id=6938,drop_level=50
+chest=,id=163429,bonus_id=6938,drop_level=50
+wrist=,id=177098,bonus_id=6938,drop_level=50
+hands=,id=177104,bonus_id=6938,drop_level=50
+waist=,id=163431,bonus_id=6938,drop_level=50
+legs=,id=177096,bonus_id=6938,drop_level=50
+feet=,id=177095,bonus_id=6938,drop_level=50
+finger1=,id=177164,bonus_id=6938,drop_level=50
+finger2=,id=177167,bonus_id=6938/1765,drop_level=50
+trinket1=,id=177155,bonus_id=6938/604,drop_level=50
+trinket2=,id=177157,bonus_id=6938/603,drop_level=50
+main_hand=,id=177119,bonus_id=6938,drop_level=50
+
+### Gear from Bags
+#
+# Selfless Bearer's Gauntlets (150)
+# hands=,id=178156
+#
+# Honorbound Skullcrusher (138)
+# main_hand=,id=177116,bonus_id=6938,drop_level=50
+#
+# Honorbound Wand (138)
+# main_hand=,id=177120,bonus_id=6938,drop_level=50
+#
+# Honorbound Focus (138)
+# off_hand=,id=177123,bonus_id=6938,drop_level=50
