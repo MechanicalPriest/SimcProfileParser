@@ -185,6 +185,20 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public void SPS_Parses_Covenant()
+        {
+            // Arrange
+            var covenant = "night_fae";
+
+            // Act
+
+            // Assert
+            Assert.IsNotNull(ParsedProfile);
+            Assert.IsNotNull(ParsedProfile.Covenant);
+            Assert.AreEqual(covenant, ParsedProfile.Covenant);
+        }
+
+        [Test]
         public void SPS_Parses_Conduits()
         {
             // Arrange

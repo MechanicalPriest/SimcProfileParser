@@ -173,7 +173,7 @@ namespace SimcProfileParser
 
                     case "covenant":
                         _logger?.LogDebug($"Trying to parse covenant ({line.Identifier}) with value: {line.Value}");
-                        // TODO: Parse covenant
+                        profile.Covenant = line.Value.Trim();
                         break;
 
                     case "soulbind":
