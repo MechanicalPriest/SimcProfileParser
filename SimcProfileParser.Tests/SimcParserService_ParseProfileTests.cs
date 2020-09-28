@@ -247,6 +247,20 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public void SPS_Parses_Class()
+        {
+            // Arrange
+            var className = "priest";
+
+            // Act
+
+            // Assert
+            Assert.IsNotNull(ParsedProfile);
+            Assert.IsNotNull(ParsedProfile.Class);
+            Assert.AreEqual(className, ParsedProfile.Class);
+        }
+
+        [Test]
         public void SPS_Parses_Soulbinds()
         {
             // Arrange
@@ -352,7 +366,8 @@ namespace SimcProfileParser.Tests
                 BonusIds = new List<int>()
                 {
                     6788, 1487, 6646
-                }
+                },
+                Equipped = true
             };
 
             // Act
@@ -366,6 +381,5 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(expectedItem, actualItem);
 
         }
-
     }
 }

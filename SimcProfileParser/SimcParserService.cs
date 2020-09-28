@@ -129,6 +129,7 @@ namespace SimcProfileParser
                     case "mage":
                         _logger?.LogDebug($"Setting player name for class ({line.Identifier}) with value: {line.Value}");
                         profile.Name = line.Value.Trim().Trim('"');
+                        profile.Class = line.Identifier.Trim();
                         break;
 
                     case "level":
@@ -449,6 +450,7 @@ namespace SimcProfileParser
             var itemParts = line.Value.Split(',');
 
             itemResult.Slot = line.CleanLine.Split('=').FirstOrDefault();
+            itemResult.Equipped = !(line.RawLine[0] == '#');
 
             foreach (var part in itemParts)
             {
