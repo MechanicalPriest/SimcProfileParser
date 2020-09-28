@@ -13,6 +13,7 @@ namespace SimcProfileParser.Model.Profile
         public IReadOnlyCollection<int> GemIds { get; internal set; }
         public IReadOnlyCollection<int> BonusIds { get; internal set; }
         public int Context { get; internal set; }
+        public int DropLevel { get; internal set; }
         public SimcParsedItem()
         {
             GemIds = new List<int>();

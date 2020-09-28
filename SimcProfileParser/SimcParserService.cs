@@ -440,7 +440,113 @@ namespace SimcProfileParser
 
         private void TryApplyItem(SimcParsedProfile profile, SimcParsedLine line)
         {
-            throw new NotImplementedException();
+            // trinket2=,id=177157,bonus_id=6938/603,drop_level=50
+            // main_hand=,id=178473,enchant_id=6229,bonus_id=6774/1507/6646
+            // hands=,id=175862,enchant_id=6205,bonus_id=6781/1487/6646
+
+            var itemResult = new SimcParsedItem();
+
+            var itemParts = line.Value.Split(',');
+
+            itemResult.Slot = line.CleanLine.Split('=').FirstOrDefault();
+
+            foreach (var part in itemParts)
+            {
+                if (string.IsNullOrEmpty(part.Trim()))
+                    continue;
+
+                // Split the part token down the middle by =
+                var kvp = part.Split('=');
+
+                if (kvp.Length != 2)
+                    continue;
+
+                switch (kvp[0])
+                {
+                    case "id":
+                        if (!int.TryParse(kvp[1], out int itemId))
+                        {
+                            _logger?.LogWarning($"Unable to get itemid ({part}) from string {line.RawLine}");
+                            continue;
+                        }
+                        itemResult.ItemId = itemId;
+                        break;
+
+                    case "enchant_id":
+                        if (!int.TryParse(kvp[1], out int enchantId))
+                        {
+                            _logger?.LogWarning($"Unable to get enchantid ({part}) from string {line.RawLine}");
+                            continue;
+                        }
+                        itemResult.EnchantId = enchantId;
+
+                        break;
+
+                    case "context":
+                        if (!int.TryParse(kvp[1], out int context))
+                        {
+                            _logger?.LogWarning($"Unable to get context ({part}) from string {line.RawLine}");
+                            continue;
+                        }
+                        itemResult.Context = context;
+
+                        break;
+
+                    case "drop_level":
+                        if (!int.TryParse(kvp[1], out int dropLevel))
+                        {
+                            _logger?.LogWarning($"Unable to get drop_level ({part}) from string {line.RawLine}");
+                            continue;
+                        }
+                        itemResult.DropLevel = dropLevel;
+
+                        break;
+
+                    case "bonus_id":
+                        var bonusIds = kvp[1].Split('/');
+                        var bonusIdResult = new List<int>();
+
+                        foreach(var bonus in bonusIds)
+                        {
+                            if (string.IsNullOrEmpty(bonus.Trim()))
+                                continue;
+
+                            if (int.TryParse(bonus, out int bonusId))
+                                bonusIdResult.Add(bonusId);
+                        }
+
+                        itemResult.BonusIds = bonusIdResult;
+
+                        break;
+
+                    case "gem_id":
+                        var gemIds = kvp[1].Split('/');
+                        var gemIdResult = new List<int>();
+
+                        foreach (var gem in gemIds)
+                        {
+                            if (string.IsNullOrEmpty(gem.Trim()))
+                                continue;
+
+                            if (int.TryParse(gem, out int gemId))
+                                gemIdResult.Add(gemId);
+                        }
+
+                        itemResult.GemIds = gemIdResult;
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            // Add the item to the list.
+            var items = new List<SimcParsedItem>(profile.Items)
+            {
+                itemResult
+            };
+            profile.Items = items;
         }
     }
 }

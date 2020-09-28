@@ -338,5 +338,34 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(expectedProfessions, actualProfessions);
         }
 
+
+        [Test]
+        public void SPS_Parses_Items()
+        {
+            // Arrange
+            // back=,id=178301,enchant_id=6204,bonus_id=6788/1487/6646
+            var fourthItem = new SimcParsedItem()
+            {
+                Slot = "back",
+                ItemId = 178301,
+                EnchantId = 6204,
+                BonusIds = new List<int>()
+                {
+                    6788, 1487, 6646
+                }
+            };
+
+            // Act
+            var expectedItem = JsonConvert.SerializeObject(fourthItem);
+            var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[3]);
+
+            // Assert
+            Assert.IsNotNull(ParsedProfile);
+            Assert.IsNotNull(ParsedProfile.Items);
+            Assert.NotZero(ParsedProfile.Items.Count);
+            Assert.AreEqual(expectedItem, actualItem);
+
+        }
+
     }
 }
