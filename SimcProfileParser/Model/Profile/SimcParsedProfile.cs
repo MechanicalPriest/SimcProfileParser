@@ -27,11 +27,11 @@ namespace SimcProfileParser.Model.Profile
         public string Role { get; internal set; }
 
         public string Covenant { get; internal set; }
-        public IReadOnlyCollection<object> Soulbinds { get; internal set; }
+        public IReadOnlyList<SimcParsedSoulbind> Soulbinds { get; internal set; }
         /// <summary>
         /// Available conduits
         /// </summary>
-        public IReadOnlyCollection<object> Conduits { get; internal set; }
+        public IReadOnlyList<SimcParsedConduit> Conduits { get; internal set; }
         /// <summary>
         /// Covenant Renown level
         /// </summary>
@@ -40,20 +40,24 @@ namespace SimcProfileParser.Model.Profile
         /// <summary>
         /// Not yet implemented 
         /// </summary>
-        public IReadOnlyCollection<object> Professions { get; internal set; }
+        public IReadOnlyList<object> Professions { get; internal set; }
 
         public string Region { get; internal set; }
         public string Server { get; internal set; }
 
-        public IReadOnlyCollection<SimcParsedItem> Items { get; internal set; }
+        public IReadOnlyList<SimcParsedItem> Items { get; internal set; }
+
+        public IReadOnlyList<SimcParsedLine> ProfileLines { get; internal set; }
 
         public SimcParsedProfile()
         {
-            Items = new ReadOnlyCollection<SimcParsedItem>(new List<SimcParsedItem>());
-            Professions = new ReadOnlyCollection<object>(new List<object>());
+            Items = new List<SimcParsedItem>();
+            Professions = new List<object>();
 
-            Soulbinds = new ReadOnlyCollection<object>(new List<object>());
-            Conduits = new ReadOnlyCollection<object>(new List<object>());
+            Soulbinds = new List<SimcParsedSoulbind>();
+            Conduits = new List<SimcParsedConduit>();
+
+            ProfileLines = new List<SimcParsedLine>();
         }
     }
 }

@@ -15,8 +15,8 @@ namespace SimcProfileParser.Model.Profile
         public int Context { get; internal set; }
         public SimcParsedItem()
         {
-            GemIds = new ReadOnlyCollection<int>(new List<int>());
-            BonusIds = new ReadOnlyCollection<int>(new List<int>());
+            GemIds = new List<int>();
+            BonusIds = new List<int>();
         }
     }
 }
