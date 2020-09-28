@@ -1,11 +1,14 @@
-﻿using System;
+﻿using SimcProfileParser.Model.Profile;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SimcProfileParser.Interfaces
 {
     interface ISimcParserService
     {
-        string Test();
+        SimcParsedProfile ParseProfileAsync(string profileString);
+        SimcParsedProfile ParseProfileAsync(List<string> profileString);
     }
 }

@@ -1,0 +1,116 @@
+﻿# Gnumrekt - Holy - 2020-09-27 16:22 - us/Torghast
+# SimC Addon 9.0.1-alpha-10
+# Requires SimulationCraft 901-01 or newer
+
+priest="Gnumrekt"
+level=60
+race=dwarf
+region=us
+server=torghast
+role=attack
+
+talents=3322122
+spec=holy
+
+covenant=kyrian
+# soulbind=pelagos,328257/66:1/329786/72:1/328263/87:1/84:1/328266
+soulbind=kleia,334066/87:1/116:1/329781/82:1/66:1/329784/329791
+# soulbind=forgelite_prime_mikanikos,331609/87:1/66:1/331612/69:1/84:1/331725/333950
+# conduits_available=116:1/76:1/75:1/77:1/78:1/82:1/114:1/81:1/84:1/113:1/87:1/107:1/115:1/67:1/69:1/73:1/85:1/66:1/71:1/72:1
+# renown=40
+
+head=,id=175864,bonus_id=6795/1487/6646
+neck=,id=178299,bonus_id=6788/1487/6646
+shoulder=,id=175873,bonus_id=6781/1487/6646
+back=,id=178301,enchant_id=6204,bonus_id=6788/1487/6646
+chest=,id=175852,enchant_id=6217,bonus_id=6795/1487/6646
+wrist=,id=175880,enchant_id=6220,bonus_id=6788/1487/6646
+hands=,id=175862,enchant_id=6205,bonus_id=6781/1487/6646
+waist=,id=178822,bonus_id=7206/6652/7193/1517/6646
+legs=,id=175868,bonus_id=6795/1487/6646
+feet=,id=175857,enchant_id=6207,bonus_id=6781/1487/6646
+finger1=,id=178293,enchant_id=6164,bonus_id=6788/1487/6646
+finger2=,id=178329,enchant_id=6164,bonus_id=6788/1487/6646
+trinket1=,id=178298,bonus_id=6781/1487/6646
+trinket2=,id=175884,bonus_id=6781/1487/6646
+main_hand=,id=183435,enchant_id=6229,bonus_id=6795/1507/6646
+off_hand=,id=178478,bonus_id=7150/1507/6646
+
+### Gear from Bags
+#
+# Grim-Veiled Hood (190)
+# head=,id=173245,bonus_id=6716/1487
+#
+# Harmonious Bearer's Helm (150)
+# head=,id=178179
+#
+# Shadowghast Necklace (190)
+# neck=,id=178927,bonus_id=6716/1487
+#
+# Harmonious Bearer's Shoulders (150)
+# shoulder=,id=178184
+#
+# Twins of the Sun Priestess (190)
+# shoulder=,id=173247,bonus_id=6716/1487/7002/6647/6648
+#
+# Harmonious Wings of the Ascended (150)
+# back=,id=181294
+#
+# Harmonious Bearer's Cloak (150)
+# back=,id=178187
+#
+# Selfless Collector's Greatcloak (150)
+# back=,id=174297
+#
+# Grim-Veiled Cape (190)
+# back=,id=173242,bonus_id=6716/1487
+#
+# Harmonious Bearer's Chestplate (150)
+# chest=,id=178180
+#
+# Measured Contemplation (190)
+# chest=,id=173241,bonus_id=6716/1487/7161/6647/6648
+#
+# Grim-Veiled Bracers (190)
+# wrist=,id=173249,bonus_id=6716/1487
+#
+# Mitts of Flawless Duplication (187)
+# hands=,id=178930,bonus_id=6808/6652/1504/6646
+#
+# Grim-Veiled Mittens (190)
+# hands=,id=173244,bonus_id=6716/1487
+#
+# Harmonious Bearer's Girdle (150)
+# waist=,id=178185
+#
+# Divine Image (190)
+# waist=,id=173248,bonus_id=6716/1487/6973/6647/6648
+#
+# Sinful Aspirant's Silk Cord (190)
+# waist=,id=175876,bonus_id=6781/1487/6646
+#
+# X'anshi, Return of Archbishop Benedictus (190)
+# legs=,id=173246,bonus_id=6716/1487/6984/6647/6648
+#
+# Cauterizing Shadows (190)
+# feet=,id=173243,bonus_id=6716/1487/6975/6647/6648
+#
+# Harmonious Bearer's Warboots (150)
+# feet=,id=178181
+#
+# Beaten Copper Loop of the Feverflare (138)
+# finger1=,id=177153,bonus_id=6938/1764,drop_level=50
+#
+# Harmonious Apparatus (190)
+# finger1=,id=178926,bonus_id=6716/1487/6977/6647/6648
+#
+# Sea Sapphire Band (138)
+# finger1=,id=177145,bonus_id=6938,drop_level=50
+#
+# Shimmering Rune (138)
+# trinket1=,id=177149,bonus_id=6938/607,drop_level=50
+#
+# Oceanographer's Weather Log (138)
+# trinket1=,id=177151,bonus_id=6938/604,drop_level=50
+
+### Weekly Reward Choices
