@@ -25,11 +25,11 @@ namespace SimcProfileParser.Tests
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .Enrich.FromLogContext()
-                .WriteTo.File("logs\\SimcProfileParser.log", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("logs" + Path.DirectorySeparatorChar + "SimcProfileParser.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             // Load a data file
-            var testFile = @"RawData\Hierophant.simc";
+            var testFile = @"RawData" + Path.DirectorySeparatorChar + "Hierophant.simc";
             var testFileContents = await File.ReadAllLinesAsync(testFile);
             var testFileString = new List<string>(testFileContents);
 
