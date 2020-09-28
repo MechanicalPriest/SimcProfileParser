@@ -71,7 +71,7 @@ namespace SimcProfileParser
 
                 var kvp = currentLine.Split('=');
                 var identifier = kvp.FirstOrDefault();
-                var valueString = string.Join("", kvp.Skip(1)); // All but the identifier
+                var valueString = string.Join("=", kvp.Skip(1)); // All but the identifier
 
                 var parsedLine = new SimcParsedLine()
                 {
@@ -116,7 +116,7 @@ namespace SimcProfileParser
                     case "main_hand":
                     case "off_hand":
                         _logger?.LogDebug($"Trying to parse item for slot: ({line.Identifier}) with values: {line.Value}");
-                        // TODO: parse items
+                        TryApplyItem(profile, line);
                         break;
 
                     // TODO: Add the remaining specs
@@ -158,7 +158,7 @@ namespace SimcProfileParser
 
                     case "professions":
                         _logger?.LogDebug($"Trying to parse profession ({line.Identifier}) with value: {line.Value}");
-                        // TODO: Parse profession
+                        TryApplyProfessions(profile, line);
                         break;
 
                     case "talents":
@@ -405,6 +405,42 @@ namespace SimcProfileParser
             {
                 _logger?.LogDebug($"No valid soulbinds found in string: {line.CleanLine}");
             }
+        }
+
+        private void TryApplyProfessions(SimcParsedProfile profile, SimcParsedLine line)
+        {
+            var professions = new List<SimcParsedProfession>();
+
+            // professions=tailoring=1/jewelcrafting=1
+            var professionParts = line.Value.Split('/');
+
+            foreach(var part in professionParts)
+            {
+                if(!string.IsNullOrEmpty(part.Trim()))
+                {
+                    // tailoring=1
+                    var kvp = part.Split('=');
+
+                    var professionName = kvp[0];
+                    if(!int.TryParse(kvp[1], out int professionLevel))
+                    {
+                        _logger?.LogWarning($"Unable to get profession level ({part}) from string {line.RawLine}");
+                    }
+
+                    professions.Add(new SimcParsedProfession()
+                    {
+                        Name = professionName,
+                        Level = professionLevel
+                    });
+                }
+            }
+
+            profile.Professions = professions;
+        }
+
+        private void TryApplyItem(SimcParsedProfile profile, SimcParsedLine line)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -308,5 +308,35 @@ namespace SimcProfileParser.Tests
         }
 
 
+        [Test]
+        public void SPS_Parses_Professions()
+        {
+            // Arrange
+            // professions=tailoring=1/jewelcrafting=1
+            var professions = new List<SimcParsedProfession>()
+            {
+                new SimcParsedProfession()
+                {
+                    Name = "tailoring",
+                    Level = 1
+                },
+                new SimcParsedProfession()
+                {
+                    Name = "jewelcrafting",
+                    Level = 1
+                }
+            };
+
+            // Act
+            var expectedProfessions = JsonConvert.SerializeObject(professions);
+            var actualProfessions = JsonConvert.SerializeObject(ParsedProfile.Professions);
+
+            // Assert
+            Assert.IsNotNull(ParsedProfile);
+            Assert.IsNotNull(ParsedProfile.Professions);
+            Assert.NotZero(ParsedProfile.Professions.Count);
+            Assert.AreEqual(expectedProfessions, actualProfessions);
+        }
+
     }
 }

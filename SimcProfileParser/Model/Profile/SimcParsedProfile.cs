@@ -40,7 +40,7 @@ namespace SimcProfileParser.Model.Profile
         /// <summary>
         /// Not yet implemented 
         /// </summary>
-        public IReadOnlyList<object> Professions { get; internal set; }
+        public IReadOnlyList<SimcParsedProfession> Professions { get; internal set; }
         public IReadOnlyList<int> Talents { get; internal set; }
 
         public string Region { get; internal set; }
@@ -53,7 +53,7 @@ namespace SimcProfileParser.Model.Profile
         public SimcParsedProfile()
         {
             Items = new List<SimcParsedItem>();
-            Professions = new List<object>();
+            Professions = new List<SimcParsedProfession>();
             Talents = new List<int>();
 
             Soulbinds = new List<SimcParsedSoulbind>();
