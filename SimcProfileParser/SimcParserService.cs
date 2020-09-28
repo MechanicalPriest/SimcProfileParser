@@ -163,7 +163,7 @@ namespace SimcProfileParser
 
                     case "talents":
                         _logger?.LogDebug($"Trying to parse talents ({line.Identifier}) with value: {line.Value}");
-                        // TODO: Parse profession
+                        TryApplyTalents(profile, line.Value);
                         break;
 
                     case "spec":
@@ -305,6 +305,24 @@ namespace SimcProfileParser
             {
                 _logger?.LogDebug($"No valid conduits found in string: {valueString}");
             }
+        }
+
+        private void TryApplyTalents(SimcParsedProfile profile, string valueString)
+        {
+            if (valueString.Length > 0)
+            {
+                var talents = new List<int>();
+
+                foreach(var talent in valueString.ToArray())
+                {
+                    if (int.TryParse(talent.ToString(), out int parsedTalent))
+                        talents.Add(parsedTalent);
+                }
+
+                profile.Talents = talents;
+            }
+            else
+                _logger?.LogDebug($"No valid talents found in string: {valueString}");
         }
     }
 }
