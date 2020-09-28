@@ -245,5 +245,68 @@ namespace SimcProfileParser.Tests
             Assert.NotZero(ParsedProfile.Talents.Count);
             Assert.AreEqual(talents, ParsedProfile.Talents);
         }
+
+        [Test]
+        public void SPS_Parses_Soulbinds()
+        {
+            // Arrange
+            // # soulbind=niya,342270/82:1/73:1/320662/69:1/84:1/320668/322721
+            // soulbind = dreamweaver,319191 / 82:1 / 66:1 / 319213 / 69:1 / 84:1 / 319216 / 319217
+            // # soulbind=korayn,
+            var allSoulbinds = new List<SimcParsedSoulbind>()
+            {
+                new SimcParsedSoulbind()
+                {
+                    Name = "niya",
+                    IsActive = false,
+                    SocketedConduits = new List<SimcParsedConduit>()
+                    {
+                        new SimcParsedConduit() { ConduitId = 82, Rank = 1 },
+                        new SimcParsedConduit() { ConduitId = 73, Rank = 1 },
+                        new SimcParsedConduit() { ConduitId = 69, Rank = 1 },
+                        new SimcParsedConduit() { ConduitId = 84, Rank = 1 }
+                    },
+                    SoulbindSpells = new List<int>()
+                    {
+                        342270, 320662, 320668, 322721
+                    }
+                },
+                new SimcParsedSoulbind()
+                {
+                    Name = "dreamweaver",
+                    IsActive = true,
+                    SocketedConduits = new List<SimcParsedConduit>()
+                    {
+                        new SimcParsedConduit() { ConduitId = 82, Rank = 1 },
+                        new SimcParsedConduit() { ConduitId = 66, Rank = 1 },
+                        new SimcParsedConduit() { ConduitId = 69, Rank = 1 },
+                        new SimcParsedConduit() { ConduitId = 84, Rank = 1 }
+                    },
+                    SoulbindSpells = new List<int>()
+                    {
+                        319191, 319213, 319216, 319217
+                    }
+                },
+                new SimcParsedSoulbind()
+                {
+                    Name = "korayn",
+                    IsActive = false,
+                    SocketedConduits = new List<SimcParsedConduit>(),
+                    SoulbindSpells = new List<int>()
+                }
+            };
+
+            // Act
+            var expectedSoulbinds = JsonConvert.SerializeObject(allSoulbinds);
+            var actualSoulbinds = JsonConvert.SerializeObject(ParsedProfile.Soulbinds);
+
+            // Assert
+            Assert.IsNotNull(ParsedProfile);
+            Assert.IsNotNull(ParsedProfile.Soulbinds);
+            Assert.NotZero(ParsedProfile.Soulbinds.Count);
+            Assert.AreEqual(expectedSoulbinds, actualSoulbinds);
+        }
+
+
     }
 }

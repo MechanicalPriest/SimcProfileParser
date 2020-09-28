@@ -178,7 +178,7 @@ namespace SimcProfileParser
 
                     case "soulbind":
                         _logger?.LogDebug($"Trying to parse soulbind ({line.Identifier}) with value: {line.Value}");
-                        // TODO: Parse soulbind
+                        TryApplySoulbind(profile, line);
                         break;
 
                     case "conduits_available":
@@ -212,29 +212,28 @@ namespace SimcProfileParser
         /// <summary>
         /// Check a line for the SimC Addon version string, and set it on result if present
         /// </summary>
-        private void TryApplySimcVersion(SimcParsedProfile result, string profileLine)
+        private void TryApplySimcVersion(SimcParsedProfile result, string valueString)
         {
             var versionPrefix = "SimC Addon ";
 
-            if (profileLine.Length > versionPrefix.Length &&
-                profileLine.Substring(0, versionPrefix.Length) == versionPrefix)
+            if (valueString.Length > versionPrefix.Length &&
+                valueString.Substring(0, versionPrefix.Length) == versionPrefix)
             {
-                var version = profileLine
-                    .Substring(versionPrefix.Length, profileLine.Length - versionPrefix.Length);
+                var version = valueString[versionPrefix.Length..];
 
-                _logger?.LogDebug($"Found SimC version string ({version}) on line: {profileLine}");
+                _logger?.LogDebug($"Found SimC version string ({version}) on line: {valueString}");
 
                 result.SimcAddonVersion = version;
             }
         }
 
-        private void TryApplyProfileDate(SimcParsedProfile result, string profileLine)
+        private void TryApplyProfileDate(SimcParsedProfile result, string valueString)
         {
             // 38 is the minimum length for the character line
             // ??? - SPEC - YYYY-MM-DD HH:NN - US/REA
-            if(profileLine.Length > 38)
+            if(valueString.Length > 38)
             {
-                var parts = profileLine.Split(" - ");
+                var parts = valueString.Split(" - ");
                 // There are 4 parts if it's the correct line
                 if(parts.Length == 4)
                 {
@@ -243,7 +242,7 @@ namespace SimcProfileParser
 
                     DateTime.TryParse(dateTime, out DateTime parsedDateTime);
 
-                    _logger?.LogDebug($"Found SimC collection date string ({parsedDateTime}) on line: {profileLine}");
+                    _logger?.LogDebug($"Found SimC collection date string ({parsedDateTime}) on line: {valueString}");
 
                     result.CollectionDate = parsedDateTime;
                 }
@@ -323,6 +322,89 @@ namespace SimcProfileParser
             }
             else
                 _logger?.LogDebug($"No valid talents found in string: {valueString}");
+        }
+
+        private void TryApplySoulbind(SimcParsedProfile profile, SimcParsedLine line)
+        {
+            // Valid soublind string
+            // # soulbind=niya,342270/82:1/73:1/320662/69:1/84:1/320668/322721
+            if (line.Value.Contains(","))
+            {
+                var result = new SimcParsedSoulbind();
+
+                // Get the soulbind name
+                var soulbindName = line.Value.Split(',').FirstOrDefault();
+                if (soulbindName.Length > 0)
+                    result.Name = soulbindName;
+                else
+                {
+                    _logger?.LogWarning($"Unable to parse soulbind name on line: {line.RawLine}");
+                }
+
+                // Set if it's active
+                result.IsActive = !(line.RawLine[0] == '#');
+
+                // Now split all the pairs and grab the soulbind spells and socketed conduits
+                var soulbindParts = line.Value.Split(',').LastOrDefault().Split('/');
+
+                var soulbindSpells = new List<int>();
+                var socketedConduits = new List<SimcParsedConduit>();
+
+                foreach (var part in soulbindParts)
+                {
+                    if(part.Contains(':'))
+                    {
+                        // It's a socketed conduit 
+                        var kvp = part.Split(':');
+
+                        if (kvp.Length != 2 ||
+                            !int.TryParse(kvp[0], out int conduitId) ||
+                            !int.TryParse(kvp[1], out int conduitRank))
+                        {
+                            _logger?.LogWarning($"Invalid socketed conduit found in part ({part}): {line.CleanLine}");
+                            continue;
+                        }
+
+                        _logger?.LogDebug($"Adding new socketed conduit ({conduitId}) at rank: {conduitRank}");
+
+                        var conduit = new SimcParsedConduit()
+                        {
+                            ConduitId = conduitId,
+                            Rank = conduitRank
+                        };
+
+                        socketedConduits.Add(conduit);
+                    }
+                    else
+                    {
+                        // It's a soulbind spell
+                        if(int.TryParse(part, out int soulbindSpellId))
+                        {
+                            _logger?.LogDebug($"Adding soulbind ({soulbindSpellId}) from: {line.CleanLine}");
+                            soulbindSpells.Add(soulbindSpellId);
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"Unable to parse soulbind spell or conduit from part ({part}) in: {line.CleanLine}");
+                        }
+                    }
+                }
+
+                // Add the soulbind spells and socketed conduits
+                result.SocketedConduits = socketedConduits;
+                result.SoulbindSpells = soulbindSpells;
+
+                // Add the soulbind to the current ones.
+                var soulbinds = new List<SimcParsedSoulbind>(profile.Soulbinds)
+                {
+                    result
+                };
+                profile.Soulbinds = soulbinds;
+            }
+            else
+            {
+                _logger?.LogDebug($"No valid soulbinds found in string: {line.CleanLine}");
+            }
         }
     }
 }
