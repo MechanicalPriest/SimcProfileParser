@@ -1,5 +1,7 @@
 # Simc Profile Parser
-Library to parse items in the simc import format into functional objects.
+![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/MechanicalPriest/SimcProfileParser?branch=master&svg=true)
+
+A library to parse items in the simc import format into functional objects.
 
 ## Support
 For bugs please search [issues](https://github.com/MechanicalPriest/SimcProfileParser/issues) 
