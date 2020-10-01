@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using SimcProfileParser.DataSync;
+using SimcProfileParser.Interfaces.DataSync;
+using SimcProfileParser.Model.DataSync;
 using System;
 using System.Collections.Generic;
 using System.IO;

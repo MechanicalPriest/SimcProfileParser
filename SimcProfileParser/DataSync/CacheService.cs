@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using SimcProfileParser.Interfaces.DataSync;
+using SimcProfileParser.Model.DataSync;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,15 +13,6 @@ using System.Text.Json.Serialization;
 
 namespace SimcProfileParser.DataSync
 {
-    internal interface ICacheService
-    {
-        string BaseFileDirectory { get; }
-        IReadOnlyCollection<CacheFileConfiguration> RegisteredFiles { get; }
-        string GetFileContents(SimcFileType FileType);
-        bool DownloadFileIfChanged(Uri sourceUri, Uri destinationUri, string eTag);
-        bool DownloadFile(Uri sourceUri, Uri destinationUri);
-        void RegisterFileConfiguration(SimcFileType fileType, string localFilename, string remoteFilename);
-    }
 
     internal class CacheService : ICacheService
     {
@@ -143,7 +136,7 @@ namespace SimcProfileParser.DataSync
         #region eTag Cache
 
         private readonly string _etagCacheDataFile = "FileDownloadCache.json";
-        private List<FileETag> ETagCacheData = new List<FileETag>();
+        internal List<FileETag> ETagCacheData = new List<FileETag>();
 
         /// <summary>
         /// Update the cache with an entry
@@ -208,28 +201,5 @@ namespace SimcProfileParser.DataSync
         }
 
         #endregion
-    }
-
-    public class CacheFileConfiguration
-    {
-        internal SimcFileType FileType { get; set; }
-        internal Uri LocalFile { get; set; }
-        internal Uri RemoteFile { get; set; }
-    }
-
-    public class FileETag
-    {
-        public string Filename { get; set; }
-        public string ETag { get; set; }
-    }
-
-    public enum SimcFileType
-    {
-        ScSpellDataInc,
-        ItemDataInc,
-        RandomPropPointsInc,
-        ScaleDataInc,
-        ScEnumsHpp,
-        DataEnumsHh
     }
 }

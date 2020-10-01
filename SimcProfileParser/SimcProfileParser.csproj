@@ -34,5 +34,6 @@
 
   <ItemGroup>
     <Folder Include="Generated\" />
+    <Folder Include="Model\RawData\" />
   </ItemGroup>
 </Project>
