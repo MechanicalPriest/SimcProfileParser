@@ -58,12 +58,12 @@ namespace SimcProfileParser.Tests.DataSync
             // Act
             var filename = "test.txt";
             var eTag = "12345";
-            var fileContents = @"[
-  {
-    ""Filename"": ""test.txt"",
-    ""ETag"": ""12345""
-  }
-]";
+            var fileContents = @"[" + Environment.NewLine +
+                @"  {" + Environment.NewLine +
+                @"    ""Filename"": ""test.txt""," + Environment.NewLine +
+                @"    ""ETag"": ""12345""" + Environment.NewLine +
+                @"  }" + Environment.NewLine +
+                @"]";
 
             cache.UpdateCacheData(filename, eTag);
             var data = File.ReadAllText(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
@@ -110,12 +110,12 @@ namespace SimcProfileParser.Tests.DataSync
             {
                 eTagEntry
             };
-            var fileContents = @"[
-  {
-    ""Filename"": ""test.txt"",
-    ""ETag"": ""12345""
-  }
-]";
+            var fileContents = @"[" + Environment.NewLine +
+                @"  {" + Environment.NewLine +
+                @"    ""Filename"": ""test.txt""," + Environment.NewLine +
+                @"    ""ETag"": ""12345""" + Environment.NewLine +
+                @"  }" + Environment.NewLine +
+                @"]";
 
             cache.SaveCacheData(entries);
             var data = File.ReadAllText(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
