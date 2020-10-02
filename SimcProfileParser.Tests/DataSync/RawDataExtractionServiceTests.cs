@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces.DataSync;
+using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,6 +55,29 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.IsNotNull(data);
             Assert.AreEqual(4, data.Length);
             Assert.AreEqual(1300, data[0].Length);
+        }
+
+        [Test]
+        public void RDE_Generates_ItemData()
+        {
+            // Arrange
+            ICacheService cacheService = new CacheService();
+            IRawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(cacheService);
+
+            var filepath = Path.Combine(cacheService.BaseFileDirectory, "ItemData.json");
+
+            // Act
+            rawDataExtractionService.GenerateItemData();
+            var rawData = File.ReadAllText(filepath);
+
+            var data = JsonConvert.DeserializeObject<List<SimcRawItem>>(rawData);
+
+            // Assert
+            // TODO: Add tests for each field of each item in a new test class? Against known items with valid values
+            FileAssert.Exists(filepath);
+            Assert.IsNotNull(data);
+            Assert.GreaterOrEqual(68475, data.Count);
         }
     }
 }
