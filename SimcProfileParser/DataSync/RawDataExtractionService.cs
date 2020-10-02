@@ -15,6 +15,7 @@ namespace SimcProfileParser.DataSync
         void GenerateCombatRatingMultipliers();
         void GenerateStaminaMultipliers();
         void GenerateItemData();
+        void GenerateRandomPropData();
     }
 
     /// <summary>
@@ -37,6 +38,11 @@ namespace SimcProfileParser.DataSync
                Model.DataSync.SimcFileType.ItemDataInc,
                "ItemData.raw",
                "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc");
+
+            _cacheService.RegisterFileConfiguration(
+               Model.DataSync.SimcFileType.RandomPropPointsInc,
+               "RandomPropPoints.raw",
+               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/rand_prop_points.inc");
         }
 
         void IRawDataExtractionService.GenerateCombatRatingMultipliers()
@@ -238,6 +244,74 @@ namespace SimcProfileParser.DataSync
 
             File.WriteAllText(
                 Path.Combine(_cacheService.BaseFileDirectory, "ItemData.json"),
+                generatedData);
+        }
+
+        void IRawDataExtractionService.GenerateRandomPropData()
+        {
+            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.RandomPropPointsInc);
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var randomProps = new List<SimcRawRandomPropData>();
+
+            foreach(var line in lines)
+            {
+                // Only process lines containing props
+                if (!line.Contains(','))
+                    continue;
+
+                var props = line.Split(',');
+
+                // Skip the line if it doesn't have enough props on it
+                if (props.Length < 10)
+                    continue;
+
+                // Clean it up
+                for (var i = 0; i < props.Length; i++)
+                {
+                    props[i] = props[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                var newProp = new SimcRawRandomPropData();
+
+                // 0 is the ilvl
+                newProp.ItemLevel = Convert.ToUInt32(props[0]);
+
+                // 1 is the damage replace stat
+                newProp.DamageReplaceStat = Convert.ToUInt32(props[1]);
+
+                // 2 is damage secondary
+                newProp.DamageSecondary = Convert.ToUInt32(props[2]);
+
+                // 3, 4, 5, 6, 7 are the Epic property data
+                // 8, 9, 10, 11, 12 are the rare prop data
+                // 13, 14, 15, 16, 17 are the uncommon prop data
+                newProp.Epic = new float[5];
+                newProp.Rare = new float[5];
+                newProp.Uncommon = new float[5];
+
+                for (var i = 0; i < 5; i++)
+                {
+                    float.TryParse(props[i + 3], out float epicValue);
+                    float.TryParse(props[i + 8], out float rareValue);
+                    float.TryParse(props[i + 13], out float uncommonValue);
+
+                    newProp.Epic[i] = epicValue;
+                    newProp.Rare[i] = rareValue;
+                    newProp.Uncommon[i] = uncommonValue;
+                }
+
+                randomProps.Add(newProp);
+            }
+
+            var generatedData = JsonConvert.SerializeObject(randomProps);
+
+            File.WriteAllText(
+                Path.Combine(_cacheService.BaseFileDirectory, "RandomPropData.json"),
                 generatedData);
         }
     }
