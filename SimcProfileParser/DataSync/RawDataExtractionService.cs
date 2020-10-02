@@ -16,6 +16,7 @@ namespace SimcProfileParser.DataSync
         void GenerateStaminaMultipliers();
         void GenerateItemData();
         void GenerateRandomPropData();
+        void GenerateSpellData();
     }
 
     /// <summary>
@@ -43,6 +44,11 @@ namespace SimcProfileParser.DataSync
                Model.DataSync.SimcFileType.RandomPropPointsInc,
                "RandomPropPoints.raw",
                "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/rand_prop_points.inc");
+
+            _cacheService.RegisterFileConfiguration(
+               Model.DataSync.SimcFileType.ScSpellDataInc,
+               "SpellData.raw",
+               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_spell_data.inc");
         }
 
         void IRawDataExtractionService.GenerateCombatRatingMultipliers()
@@ -312,6 +318,183 @@ namespace SimcProfileParser.DataSync
 
             File.WriteAllText(
                 Path.Combine(_cacheService.BaseFileDirectory, "RandomPropData.json"),
+                generatedData);
+        }
+        void IRawDataExtractionService.GenerateSpellData()
+        {
+            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ScSpellDataInc);
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var spells = new List<SimcRawSpell>();
+
+            foreach(var line in lines)
+            {
+                if (!line.Contains('"'))
+                    continue;
+
+                var nameSegment = line.Substring(0, line.LastIndexOf("\""));
+                var dataSegment = line.Substring(line.LastIndexOf("\"") + 1);
+
+                var spell = new SimcRawSpell();
+
+                spell.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
+
+                // Split the remaining data up
+                var data = dataSegment.Split(',');
+                // Clean it up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is blank, 1 is spellId
+                spell.Id = Convert.ToUInt32(data[1]);
+
+                // 2 is spell school
+                spell.School = Convert.ToUInt32(data[2]);
+
+                // 3 is projectile sped
+                spell.ProjectileSpeed = Convert.ToDouble(data[3]);
+
+                // 4 is a hex race mask
+                ulong.TryParse(data[4].Replace("0x", ""),
+                    System.Globalization.NumberStyles.HexNumber, null, out ulong raceMask);
+                spell.RaceMask = raceMask;
+
+                // 5 is a hex class mask
+                uint.TryParse(data[5].Replace("0x", ""),
+                    System.Globalization.NumberStyles.HexNumber, null, out uint classMask);
+                spell.RaceMask = classMask;
+
+                // 6 is scaling type
+                spell.ScalingType = Convert.ToInt32(data[6]);
+
+                // 7 is max scaling level
+                spell.MaxScalingLevel = Convert.ToInt32(data[7]);
+
+                // 8 is spell level
+                spell.SpellLevel = Convert.ToUInt32(data[8]);
+
+                // 9 is max level
+                spell.MaxLevel = Convert.ToUInt32(data[9]);
+
+                // 10 is spell level
+                spell.RequireMaxLevel = Convert.ToUInt32(data[10]);
+
+                // 11 is minimum range
+                spell.MinRange = Convert.ToDouble(data[11]);
+
+                // 12 is minimum range
+                spell.MaxRange = Convert.ToDouble(data[12]);
+
+                // 13 is cooldown
+                spell.Cooldown = Convert.ToUInt32(data[13]);
+
+                // 14 is gcd
+                spell.Gcd = Convert.ToUInt32(data[14]);
+
+                // 15 is category cd
+                spell.CategoryCooldown = Convert.ToUInt32(data[15]);
+
+                // 16 is charges
+                spell.Charges = Convert.ToUInt32(data[16]);
+
+                // 17 is charges cd
+                spell.ChargeCooldown = Convert.ToUInt32(data[17]);
+
+                // 18 is category
+                spell.Category = Convert.ToUInt32(data[18]);
+
+                // 19 is dmg class
+                spell.DamageClass = Convert.ToUInt32(data[19]);
+
+                // 20 is max targets
+                spell.MaxTargets = Convert.ToInt32(data[20]);
+
+                // 21 is Duration
+                spell.Duration = Convert.ToDouble(data[21]);
+
+                // 22 is max stacks
+                spell.MaxStack = Convert.ToUInt32(data[22]);
+
+                // 23 is proc chance
+                spell.ProcChance = Convert.ToUInt32(data[23]);
+
+                // 24 is proc charges
+                spell.ProcCharges = Convert.ToInt32(data[24]);
+
+                // 25 is proc chance
+                spell.ProcFlags = Convert.ToUInt32(data[25]);
+
+                // 26 is icd
+                spell.InternalCooldown = Convert.ToUInt32(data[26]);
+
+                // 27 is rppm
+                spell.Rppm = Convert.ToDouble(data[27]);
+
+                // 28 is eq class
+                spell.EquippedClass = Convert.ToUInt32(data[28]);
+
+                // 29 is eq class
+                spell.EquippedInventoryTypeMask = Convert.ToUInt32(data[29]);
+
+                // 30 is eq class
+                spell.EquippedSubclassMask = Convert.ToUInt32(data[30]);
+
+                // 31 is cast time
+                spell.CastTime = Convert.ToInt32(data[31]);
+
+                // 32 - 46. Next up is something of length NUM_SPELL_FLAGS = 15
+                spell.Attributes = new uint[15];
+                for(var i = 0; i < spell.Attributes.Length; i++)
+                {
+                    spell.Attributes[i] = Convert.ToUInt32(data[i + 32]);
+                }
+
+                // 47 - 50. Next up is something of length NUM_CLASS_FAMILY_FLAGS = 4
+                spell.ClassFlags = new uint[4];
+                for (var i = 0; i < spell.ClassFlags.Length; i++)
+                {
+                    spell.ClassFlags[i] = Convert.ToUInt32(data[i + 47]);
+                }
+
+                // 51 is class flags family
+                spell.ClassFlagsFamily = Convert.ToUInt32(data[51]);
+
+                // 52 is hex class flags family
+                uint.TryParse(data[52].Replace("0x", ""),
+                    System.Globalization.NumberStyles.HexNumber, null, out uint stanceMask);
+                spell.StanceMask = stanceMask;
+
+                // 53 is mechanic
+                spell.Mechanic = Convert.ToUInt32(data[53]);
+
+                // 54 is az power id
+                spell.PowerId = Convert.ToUInt32(data[54]);
+
+                // 55 is mechanic
+                spell.EssenceId = Convert.ToUInt32(data[55]);
+
+                // We don't have a practice use for the counts metadata
+                // 56 is effects count
+
+                // 57 is power count
+
+                // 58 is driver count
+
+                // 59 is lebel count
+
+                spells.Add(spell);
+            }
+
+            var generatedData = JsonConvert.SerializeObject(spells);
+
+            File.WriteAllText(
+                Path.Combine(_cacheService.BaseFileDirectory, "SpellData.json"),
                 generatedData);
         }
     }
