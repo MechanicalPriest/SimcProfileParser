@@ -11,6 +11,7 @@ namespace SimcProfileParser.Model.DataSync
         RandomPropPointsInc,
         ScaleDataInc,
         ScEnumsHpp,
-        DataEnumsHh
+        DataEnumsHh,
+        ItemBonusInc
     }
 }

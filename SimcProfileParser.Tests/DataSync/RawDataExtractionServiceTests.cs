@@ -124,5 +124,27 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.IsNotNull(data);
             Assert.LessOrEqual(16945, data.Count);
         }
+
+        [Test]
+        public void RDE_Generates_ItemBonuses()
+        {
+            // Arrange
+            ICacheService cacheService = new CacheService();
+            IRawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(cacheService);
+
+            var filepath = Path.Combine(cacheService.BaseFileDirectory, "ItemBonusData.json");
+
+            // Act
+            rawDataExtractionService.GenerateItemBonusData();
+            var rawData = File.ReadAllText(filepath);
+
+            var data = JsonConvert.DeserializeObject<List<SimcRawItem>>(rawData);
+
+            // Assert
+            FileAssert.Exists(filepath);
+            Assert.IsNotNull(data);
+            Assert.LessOrEqual(9813, data.Count);
+        }
     }
 }

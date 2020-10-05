@@ -18,6 +18,7 @@ namespace SimcProfileParser.DataSync
         void GenerateItemData();
         void GenerateRandomPropData();
         void GenerateSpellData();
+        void GenerateItemBonusData();
     }
 
     /// <summary>
@@ -50,6 +51,11 @@ namespace SimcProfileParser.DataSync
                Model.DataSync.SimcFileType.ScSpellDataInc,
                "SpellData.raw",
                "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_spell_data.inc");
+
+            _cacheService.RegisterFileConfiguration(
+               Model.DataSync.SimcFileType.ItemBonusInc,
+               "ItemBonusData.raw",
+               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_bonus.inc");
         }
 
         void IRawDataExtractionService.GenerateCombatRatingMultipliers()
@@ -540,6 +546,68 @@ namespace SimcProfileParser.DataSync
 
             File.WriteAllText(
                 Path.Combine(_cacheService.BaseFileDirectory, "SpellData.json"),
+                generatedData);
+        }
+
+        void IRawDataExtractionService.GenerateItemBonusData()
+        {
+            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ItemBonusInc);
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var itemBonuses = new List<SimcRawItemBonus>();
+
+            foreach(var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() < 9)
+                    continue;
+
+                var itemBonus = new SimcRawItemBonus();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is Id
+                itemBonus.Id = Convert.ToUInt32(data[0]);
+
+                // 1 is bonus id
+                itemBonus.BonusId = Convert.ToUInt32(data[1]);
+
+                // 2 is type
+                itemBonus.Type = Convert.ToUInt32(data[2]);
+
+                // 3 is value 1
+                itemBonus.Value1 = Convert.ToInt32(data[3]);
+
+                // 4 is value 2
+                itemBonus.Value2 = Convert.ToInt32(data[4]);
+
+                // 5 is value 3
+                itemBonus.Value3 = Convert.ToInt32(data[5]);
+
+                // 6 is value 4
+                itemBonus.Value4 = Convert.ToInt32(data[6]);
+
+                // 7 is index
+                itemBonus.Index = Convert.ToUInt32(data[7]);
+
+                itemBonuses.Add(itemBonus);
+            }
+
+            var generatedData = JsonConvert.SerializeObject(itemBonuses);
+
+            File.WriteAllText(
+                Path.Combine(_cacheService.BaseFileDirectory, "ItemBonusData.json"),
                 generatedData);
         }
     }
