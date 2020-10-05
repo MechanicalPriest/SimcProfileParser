@@ -64,9 +64,9 @@ namespace SimcProfileParser.DataSync
 
             float[][] values = new float[4][];
             values[0] = ParseRatingGroup(groups[1]);
-            values[1] = ParseRatingGroup(groups[1]);
-            values[2] = ParseRatingGroup(groups[1]);
-            values[3] = ParseRatingGroup(groups[1]);
+            values[1] = ParseRatingGroup(groups[2]);
+            values[2] = ParseRatingGroup(groups[3]);
+            values[3] = ParseRatingGroup(groups[4]);
 
             var generatedData = JsonConvert.SerializeObject(values);
 
@@ -87,9 +87,9 @@ namespace SimcProfileParser.DataSync
 
             float[][] values = new float[4][];
             values[0] = ParseRatingGroup(groups[1]);
-            values[1] = ParseRatingGroup(groups[1]);
-            values[2] = ParseRatingGroup(groups[1]);
-            values[3] = ParseRatingGroup(groups[1]);
+            values[1] = ParseRatingGroup(groups[2]);
+            values[2] = ParseRatingGroup(groups[3]);
+            values[3] = ParseRatingGroup(groups[4]);
 
             var generatedData = JsonConvert.SerializeObject(values);
 
