@@ -19,6 +19,7 @@ namespace SimcProfileParser.DataSync
         void GenerateRandomPropData();
         void GenerateSpellData();
         void GenerateItemBonusData();
+        List<SimcRawItemEffect> GenerateItemEffectData();
     }
 
     /// <summary>
@@ -56,6 +57,11 @@ namespace SimcProfileParser.DataSync
                Model.DataSync.SimcFileType.ItemBonusInc,
                "ItemBonusData.raw",
                "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_bonus.inc");
+
+            _cacheService.RegisterFileConfiguration(
+              Model.DataSync.SimcFileType.ItemEffectInc,
+              "ItemEffect.raw",
+              "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc");
         }
 
         void IRawDataExtractionService.GenerateCombatRatingMultipliers()
@@ -122,6 +128,7 @@ namespace SimcProfileParser.DataSync
         void IRawDataExtractionService.GenerateItemData()
         {
             var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ItemDataInc);
+            var itemEffects = ((IRawDataExtractionService)this).GenerateItemEffectData();
 
             // Split by the last occurance of "". There is only one string in this data model.
             var lines = rawData.Split(
@@ -292,6 +299,12 @@ namespace SimcProfileParser.DataSync
 
                     // 28 is artifact id
                     item.ArtifactId = Convert.ToUInt32(data[28]);
+
+                    // Add the items effects
+                    var specificEffects = itemEffects.Where(i => i.ItemId == item.Id)?.ToList();
+
+                    if (specificEffects != null && specificEffects.Count > 0)
+                        item.ItemEffects.AddRange(specificEffects);
 
                     items.Add(item);
                 }
@@ -609,6 +622,63 @@ namespace SimcProfileParser.DataSync
             File.WriteAllText(
                 Path.Combine(_cacheService.BaseFileDirectory, "ItemBonusData.json"),
                 generatedData);
+        }
+        List<SimcRawItemEffect> IRawDataExtractionService.GenerateItemEffectData()
+        {
+            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ItemEffectInc);
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var itemEffects = new List<SimcRawItemEffect>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() < 9)
+                    continue;
+
+                var itemEffect = new SimcRawItemEffect();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is Id
+                itemEffect.Id = Convert.ToUInt32(data[0]);
+
+                // 1 is spell id
+                itemEffect.SpellId = Convert.ToUInt32(data[1]);
+
+                // 2 is item id
+                itemEffect.ItemId = Convert.ToUInt32(data[2]);
+
+                // 3 is index
+                itemEffect.Index = Convert.ToInt32(data[3]);
+
+                // 4 is type
+                itemEffect.Type = Convert.ToInt32(data[4]);
+
+                // 5 is cooldown group
+                itemEffect.CooldownGroup = Convert.ToInt32(data[5]);
+
+                // 6 is cd duration
+                itemEffect.CooldownDuration = Convert.ToInt32(data[6]);
+
+                // 7 is cd group duration
+                itemEffect.CooldownGroupDuration = Convert.ToInt32(data[7]);
+
+                itemEffects.Add(itemEffect);
+            }
+
+            return itemEffects;
         }
     }
 }
