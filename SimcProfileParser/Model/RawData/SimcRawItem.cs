@@ -33,9 +33,9 @@ namespace SimcProfileParser.Model.RawData
         public double DamageRange { get; set; }
         public double ItemModifier { get; set; }
         /// <summary>
-        /// TODO: Do we need this?
+        /// Index of the ItemMods array the items mods start at
         /// </summary>
-        public string DbcStats { get; set; }
+        public int DbcStats { get; set; }
         public uint DbcStatsCount { get; set; }
         public ulong RaceMask { get; set; }
         public uint ClassMask { get; set; }

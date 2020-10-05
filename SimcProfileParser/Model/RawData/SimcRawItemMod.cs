@@ -16,7 +16,7 @@ namespace SimcProfileParser.Model.RawData
         /// 62	ITEM_MOD_LEECH_RATING
         /// 
         /// </summary>
-        public int ModType { get; set; }
+        public ItemModType ModType { get; set; }
         public int StatAllocation { get; set; }
         public double SocketMultiplier { get; set; }
 

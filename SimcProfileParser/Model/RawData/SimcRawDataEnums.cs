@@ -61,7 +61,7 @@ namespace SimcProfileParser.Model.RawData
     };
 
     // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L456
-    enum ItemModType
+    public enum ItemModType
     {
         ITEM_MOD_NONE = -1,
         ITEM_MOD_MANA = 0,
@@ -212,7 +212,7 @@ namespace SimcProfileParser.Model.RawData
     };
 
     // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L337
-    enum InventoryType
+    public enum InventoryType
     {
         INVTYPE_NON_EQUIP = 0,
         INVTYPE_HEAD = 1,
