@@ -36,39 +36,22 @@ namespace SimcProfileParser.Tests.DataSync
             CacheService cache = new CacheService(null, null);
             var configuration = new CacheFileConfiguration()
             {
-                LocalParsedFile = "ItemData.json",
-                ParsedFileType = SimcParsedFileType.ItemDataNew,
+                LocalParsedFile = "CombatRatingMultipliers.json",
+                ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc" }
+                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_scale_data.inc" }
                 }
             };
+            var filePath = Path.Combine(cache.BaseFileDirectory, "ScaleData.raw");
 
             // Act
-            var data = cache.GetRawFileContents(configuration, "ItemData.raw");
+            var data = cache.GetRawFileContents(configuration, "ScaleData.raw");
 
             // Assert
             DirectoryAssert.Exists(cache.BaseFileDirectory);
-            FileAssert.Exists(Path.Combine(cache.BaseFileDirectory, "ItemData.raw"));
+            FileAssert.Exists(filePath);
             Assert.NotNull(data);
-        }
-
-        [Test]
-        public void CS_Downloads_File_If_Changed()
-        {
-
-        }
-
-        [Test]
-        public void CS_Downloads_File_If_NotExists()
-        {
-
-        }
-
-        [Test]
-        public void CS_Skips_Download_If_File_Not_Changed_And_Exists()
-        {
-
         }
 
         [Test]
@@ -152,14 +135,6 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.IsNotNull(data);
             FileAssert.Exists(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
             Assert.AreEqual(fileContents, data);
-        }
-
-        [OneTimeTearDown]
-        public void TearDownOnce()
-        {
-            ICacheService cache = new CacheService(null, null);
-            if (Directory.Exists(cache.BaseFileDirectory))
-                Directory.Delete(cache.BaseFileDirectory, true);
         }
     }
 }
