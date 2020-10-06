@@ -223,10 +223,10 @@ namespace SimcProfileParser.DataSync
 
                     // 10 is inventory type
                     // TODO: parse this to the enum value ?
-                    item.InventoryType = Convert.ToInt32(data[10]);
+                    item.InventoryType = (InventoryType)Convert.ToInt32(data[10]);
 
                     // 11 is item class
-                    item.ItemClass = Convert.ToInt32(data[11]);
+                    item.ItemClass = (ItemClass)Convert.ToInt32(data[11]);
 
                     // 12 is item subclass
                     item.ItemSubClass = Convert.ToInt32(data[12]);

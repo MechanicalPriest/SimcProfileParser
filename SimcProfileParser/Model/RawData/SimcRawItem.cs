@@ -22,8 +22,8 @@ namespace SimcProfileParser.Model.RawData
         /// <summary>
         /// This links to the InventoryType enum
         /// </summary>
-        public int InventoryType { get; set; }
-        public int ItemClass { get; set; }
+        public InventoryType InventoryType { get; set; }
+        public ItemClass ItemClass { get; set; }
         public int ItemSubClass { get; set; }
         public int BindType { get; set; }
         /// <summary>

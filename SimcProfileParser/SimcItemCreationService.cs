@@ -52,7 +52,10 @@ namespace SimcProfileParser
             var item = new SimcItem
             {
                 Name = rawItemData.Name,
-                ItemId = rawItemData.Id
+                ItemId = rawItemData.Id,
+                ItemClass = rawItemData.ItemClass,
+                ItemSubClass = rawItemData.ItemSubClass,
+                InventoryType = rawItemData.InventoryType
             };
 
             foreach(var socketColour in rawItemData.SocketColour)
@@ -72,6 +75,11 @@ namespace SimcProfileParser
             }
 
             ProcessBonusIds(item, parsedItemData.BonusIds);
+
+            foreach(var mod in item.Mods)
+            {
+                mod.StatRating = GetScaledModValue(item, mod.Type, mod.RawStatAllocation);
+            }
 
             return item;
         }
@@ -145,9 +153,74 @@ namespace SimcProfileParser
             var newMod = new SimcItemMod();
 
             newMod.Type = modType;
-            newMod.RawStatAllocation += statAllocation;
+            newMod.RawStatAllocation = statAllocation;
 
             item.Mods.Add(newMod);
+        }
+
+        internal int GetScaledModValue(SimcItem item, ItemModType modType, int statAllocation)
+        {
+            // based on item_database::scaled_stat
+            var slotType = GetSlotType(item.ItemClass, item.ItemSubClass, item.InventoryType);
+
+            var itemBudget = 0.0d;
+
+            // If the item has a slot and quality we can parse
+            if(slotType != 01 && item.Quality > 0)
+            {
+                var ilvlRandomProps = GetRandomProps(item.ItemLevel);
+                switch (item.Quality)
+                {
+                    case ItemQuality.ITEM_QUALITY_EPIC:
+                    case ItemQuality.ITEM_QUALITY_LEGENDARY:
+                        itemBudget = ilvlRandomProps.Epic[slotType];
+                        break;
+
+                    case ItemQuality.ITEM_QUALITY_RARE:
+                    case ItemQuality.ITEM_QUALITY_MAX: // Heirloom
+                        itemBudget = ilvlRandomProps.Rare[slotType];
+                        break;
+
+                    default: // Everything else
+                        itemBudget = ilvlRandomProps.Uncommon[slotType];
+                        break;
+                }
+            }
+
+            // Scale the stat if we have an allocation & budget
+            if(statAllocation > 0 && itemBudget > 0)
+            {
+                // Not yet implemented
+                var socketPenalty = 0.0d;
+                int rawValue = (int)(statAllocation * itemBudget * 0.0001d - socketPenalty + 0.5d);
+
+                if(GetIsCombatRating(modType))
+                {
+                    // based on item_database::apply_combat_rating_multiplier
+                    var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
+                    if(combatRatingType != CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID)
+                    {
+                        var combatRatingMultiplier = GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
+                        if (combatRatingMultiplier != 0)
+                            rawValue = (int)(rawValue * combatRatingMultiplier);
+                    }
+                }
+                else if (modType == ItemModType.ITEM_MOD_STAMINA)
+                {
+                    // based on item_database::apply_stamina_multiplier
+                    var staminaRatingType = GetCombatRatingMultiplierType(item.InventoryType);
+                    if (staminaRatingType != CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID)
+                    {
+                        var staminaRatingMultiplier = GetStaminaMultiplier(item.ItemLevel, staminaRatingType);
+                        if (staminaRatingMultiplier != 0)
+                            rawValue = (int)(rawValue * staminaRatingMultiplier);
+                    }
+                }
+
+                return rawValue;
+            }
+
+            throw new NotImplementedException("Items and mods that don't scale are not yet implemented");
         }
 
         internal void AddItemSockets(SimcItem item, int numSockets, ItemSocketColor socketColor)
@@ -177,12 +250,144 @@ namespace SimcProfileParser
 
         internal void AddItemLevel(SimcItem item, int newItemLevel)
         {
-            item.ItemLevel = newItemLevel;
+            item.ItemLevel += newItemLevel;
         }
 
         internal void AddItemEffect(SimcItem item, int effectId)
         {
             _logger?.LogError($"No item effect found when adding {effectId} to {item.ItemId}");
+        }
+
+        internal int GetSlotType(ItemClass itemClass, int itemSubClass, InventoryType itemInventoryType)
+        {
+            // Based on item_database::random_suffix_type
+            switch (itemClass)
+            {
+                case ItemClass.ITEM_CLASS_WEAPON:
+                    var subClass = (ItemSubclassWeapon)itemSubClass;
+                    switch (subClass)
+                    {
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_AXE2:
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_MACE2:
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_POLEARM:
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_SWORD2:
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_STAFF:
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_GUN:
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_BOW:
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                        case ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_THROWN:
+                            return 0;
+                        default:
+                            return 3;
+                    }
+                case ItemClass.ITEM_CLASS_ARMOR:
+                    switch (itemInventoryType)
+                    {
+                        case InventoryType.INVTYPE_HEAD:
+                        case InventoryType.INVTYPE_CHEST:
+                        case InventoryType.INVTYPE_LEGS:
+                        case InventoryType.INVTYPE_ROBE:
+                            return 0;
+
+                        case InventoryType.INVTYPE_SHOULDERS:
+                        case InventoryType.INVTYPE_WAIST:
+                        case InventoryType.INVTYPE_FEET:
+                        case InventoryType.INVTYPE_HANDS:
+                        case InventoryType.INVTYPE_TRINKET:
+                            return 1;
+
+                        case InventoryType.INVTYPE_NECK:
+                        case InventoryType.INVTYPE_FINGER:
+                        case InventoryType.INVTYPE_CLOAK:
+                        case InventoryType.INVTYPE_WRISTS:
+                            return 2;
+
+                        case InventoryType.INVTYPE_WEAPONOFFHAND:
+                        case InventoryType.INVTYPE_HOLDABLE:
+                        case InventoryType.INVTYPE_SHIELD:
+                            return 3;
+
+                        default:
+                            return -1;
+                    }
+                default:
+                    return -1;
+            }
+        }
+
+        internal bool GetIsCombatRating(ItemModType modType)
+        {
+            // based on util::is_combat_rating
+            switch (modType)
+            {
+                case ItemModType.ITEM_MOD_MASTERY_RATING:
+                case ItemModType.ITEM_MOD_DODGE_RATING:
+                case ItemModType.ITEM_MOD_PARRY_RATING:
+                case ItemModType.ITEM_MOD_BLOCK_RATING:
+                case ItemModType.ITEM_MOD_HIT_MELEE_RATING:
+                case ItemModType.ITEM_MOD_HIT_RANGED_RATING:
+                case ItemModType.ITEM_MOD_HIT_SPELL_RATING:
+                case ItemModType.ITEM_MOD_CRIT_MELEE_RATING:
+                case ItemModType.ITEM_MOD_CRIT_RANGED_RATING:
+                case ItemModType.ITEM_MOD_CRIT_SPELL_RATING:
+                case ItemModType.ITEM_MOD_CRIT_TAKEN_RANGED_RATING:
+                case ItemModType.ITEM_MOD_CRIT_TAKEN_SPELL_RATING:
+                case ItemModType.ITEM_MOD_HASTE_MELEE_RATING:
+                case ItemModType.ITEM_MOD_HASTE_RANGED_RATING:
+                case ItemModType.ITEM_MOD_HASTE_SPELL_RATING:
+                case ItemModType.ITEM_MOD_HIT_RATING:
+                case ItemModType.ITEM_MOD_CRIT_RATING:
+                case ItemModType.ITEM_MOD_HIT_TAKEN_RATING:
+                case ItemModType.ITEM_MOD_CRIT_TAKEN_RATING:
+                case ItemModType.ITEM_MOD_RESILIENCE_RATING:
+                case ItemModType.ITEM_MOD_HASTE_RATING:
+                case ItemModType.ITEM_MOD_EXPERTISE_RATING:
+                case ItemModType.ITEM_MOD_MULTISTRIKE_RATING:
+                case ItemModType.ITEM_MOD_SPEED_RATING:
+                case ItemModType.ITEM_MOD_LEECH_RATING:
+                case ItemModType.ITEM_MOD_AVOIDANCE_RATING:
+                case ItemModType.ITEM_MOD_VERSATILITY_RATING:
+                case ItemModType.ITEM_MOD_EXTRA_ARMOR:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        internal CombatRatingMultiplayerType GetCombatRatingMultiplierType(InventoryType inventoryType)
+        {
+            switch (inventoryType)
+            {
+                case InventoryType.INVTYPE_NECK:
+                case InventoryType.INVTYPE_FINGER:
+                    return CombatRatingMultiplayerType.CR_MULTIPLIER_JEWLERY;
+                case InventoryType.INVTYPE_TRINKET:
+                    return CombatRatingMultiplayerType.CR_MULTIPLIER_TRINKET;
+                case InventoryType.INVTYPE_WEAPON:
+                case InventoryType.INVTYPE_2HWEAPON:
+                case InventoryType.INVTYPE_WEAPONMAINHAND:
+                case InventoryType.INVTYPE_WEAPONOFFHAND:
+                case InventoryType.INVTYPE_RANGED:
+                case InventoryType.INVTYPE_RANGEDRIGHT:
+                case InventoryType.INVTYPE_THROWN:
+                    return CombatRatingMultiplayerType.CR_MULTIPLIER_WEAPON;
+                case InventoryType.INVTYPE_ROBE:
+                case InventoryType.INVTYPE_HEAD:
+                case InventoryType.INVTYPE_SHOULDERS:
+                case InventoryType.INVTYPE_CHEST:
+                case InventoryType.INVTYPE_CLOAK:
+                case InventoryType.INVTYPE_BODY:
+                case InventoryType.INVTYPE_WRISTS:
+                case InventoryType.INVTYPE_WAIST:
+                case InventoryType.INVTYPE_LEGS:
+                case InventoryType.INVTYPE_FEET:
+                case InventoryType.INVTYPE_SHIELD:
+                case InventoryType.INVTYPE_HOLDABLE:
+                case InventoryType.INVTYPE_HANDS:
+                    return CombatRatingMultiplayerType.CR_MULTIPLIER_ARMOR;
+                default:
+                    return CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID;
+            }
         }
 
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.
@@ -207,6 +412,72 @@ namespace SimcProfileParser
             _logger?.LogDebug($"Loading ItemData.json took {sw.ElapsedMilliseconds}ms ({items.Count} items)");
 
             return rawItem;
+        }
+
+        // TODO This is a hot mess. Need a service to retrieve data from these generated files.
+        internal SimcRawRandomPropData GetRandomProps(int itemLevel)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var rawProps = new SimcRawRandomPropData();
+
+            var propsData = File.ReadAllText(Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "SimcProfileParserData",
+                    "RandomPropData.json")
+                );
+
+            var randomProps = JsonConvert.DeserializeObject<List<SimcRawRandomPropData>>(propsData);
+
+            rawProps = randomProps.Where(p => p.ItemLevel == itemLevel).FirstOrDefault();
+
+            sw.Stop();
+            _logger?.LogDebug($"Loading RandomPropData.json took {sw.ElapsedMilliseconds}ms ({randomProps.Count} items)");
+
+            return rawProps;
+        }
+
+        internal double GetCombatRatingMultiplier(int itemLevel, CombatRatingMultiplayerType combatRatingType)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var crMultiData = File.ReadAllText(Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "SimcProfileParserData",
+                    "CombatRatingMultipliers.json")
+                );
+
+            var randomProps = JsonConvert.DeserializeObject<float[][]>(crMultiData);
+
+            var crMulti = randomProps[(int)combatRatingType][itemLevel - 1];
+
+            sw.Stop();
+            _logger?.LogDebug($"Loading CombatRatingMultipliers.json took {sw.ElapsedMilliseconds}ms");
+
+            return crMulti;
+        }
+
+        private double GetStaminaMultiplier(int itemLevel, CombatRatingMultiplayerType staminaRatingType)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var stamMultiData = File.ReadAllText(Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "SimcProfileParserData",
+                    "StaminaMultipliers.json")
+                );
+
+            var randomProps = JsonConvert.DeserializeObject<float[][]>(stamMultiData);
+
+            var stamMulti = randomProps[(int)staminaRatingType][itemLevel - 1];
+
+            sw.Stop();
+            _logger?.LogDebug($"Loading StaminaMultipliers.json took {sw.ElapsedMilliseconds}ms");
+
+            return stamMulti;
         }
     }
 }

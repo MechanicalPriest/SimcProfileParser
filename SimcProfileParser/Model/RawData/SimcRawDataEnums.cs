@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SimcProfileParser.Model.RawData
 {
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/sc_enums.hpp#L926
+    // from sc_enums
     /// <summary>
     /// (stat_e) A list of all stats and their internal Simc reference numbers
     /// </summary>
@@ -60,7 +60,7 @@ namespace SimcProfileParser.Model.RawData
         STAT_MAX
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L456
+    // from data_enums.hh
     public enum ItemModType
     {
         ITEM_MOD_NONE = -1,
@@ -131,8 +131,8 @@ namespace SimcProfileParser.Model.RawData
         ITEM_MOD_STRENGTH_INTELLECT = 74,
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L261
-    enum ItemClass
+    // from data_enums.hh
+    public enum ItemClass
     {
         ITEM_CLASS_CONSUMABLE = 0,
         ITEM_CLASS_CONTAINER = 1,
@@ -153,7 +153,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_CLASS_GLYPH = 16
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L282
+    // from data_enums.hh
     enum ItemSubclassWeapon
     {
         ITEM_SUBCLASS_WEAPON_AXE = 0,
@@ -180,7 +180,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_SUBCLASS_WEAPON_INVALID = 31
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L308
+    // from data_enums.hh
     enum ItemSubclassArmor
     {
         ITEM_SUBCLASS_ARMOR_MISC = 0,
@@ -197,7 +197,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_SUBCLASS_ARMOR_RELIC = 11
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L324
+    // from data_enums.hh
     enum ItemSubclassConsumable
     {
         ITEM_SUBCLASS_CONSUMABLE = 0,
@@ -211,7 +211,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_SUBCLASS_CONSUMABLE_OTHER = 8
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L337
+    // from data_enums.hh
     public enum InventoryType
     {
         INVTYPE_NON_EQUIP = 0,
@@ -246,7 +246,7 @@ namespace SimcProfileParser.Model.RawData
         INVTYPE_MAX = 29
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L371
+    // from data_enums.hh
     public enum ItemQuality
     {
         ITEM_QUALITY_NONE = -1,
@@ -260,7 +260,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_QUALITY_MAX = 7
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh
+    // from data_enums.hh
     enum ItemBonusType
     {
         ITEM_BONUS_ILEVEL = 1,
@@ -278,7 +278,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_BONUS_MOD_ITEM_STAT = 25, // Modify item stat to type
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh
+    // from data_enums.hh
     public enum ItemSocketColor
     {
         SOCKET_COLOR_NONE = 0,
@@ -312,5 +312,16 @@ namespace SimcProfileParser.Model.RawData
                                             SOCKET_COLOR_FEL | SOCKET_COLOR_ARCANE | SOCKET_COLOR_FROST |
                                             SOCKET_COLOR_FIRE | SOCKET_COLOR_WATER | SOCKET_COLOR_LIFE |
                                             SOCKET_COLOR_WIND | SOCKET_COLOR_HOLY
+    };
+
+    // from data_enums.hh
+    enum CombatRatingMultiplayerType
+    {
+        CR_MULTIPLIER_INVALID = -1,
+        CR_MULTIPLIER_ARMOR,
+        CR_MULTIPLIER_WEAPON,
+        CR_MULTIPLIER_TRINKET,
+        CR_MULTIPLIER_JEWLERY,
+        CR_MULTIPLIER_MAX
     };
 }
