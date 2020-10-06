@@ -219,7 +219,7 @@ namespace SimcProfileParser.DataSync
                     item.RequiredSkillLevel = Convert.ToInt32(data[8]);
 
                     // 9 is quality
-                    item.Quality = Convert.ToInt32(data[9]);
+                    item.Quality = (ItemQuality)Convert.ToInt32(data[9]);
 
                     // 10 is inventory type
                     // TODO: parse this to the enum value ?
@@ -597,7 +597,7 @@ namespace SimcProfileParser.DataSync
                 itemBonus.BonusId = Convert.ToUInt32(data[1]);
 
                 // 2 is type
-                itemBonus.Type = Convert.ToUInt32(data[2]);
+                itemBonus.Type = (ItemBonusType)Convert.ToUInt32(data[2]);
 
                 // 3 is value 1
                 itemBonus.Value1 = Convert.ToInt32(data[3]);

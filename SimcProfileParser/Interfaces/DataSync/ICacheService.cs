@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SimcProfileParser.Interfaces.DataSync
 {
-    internal interface ICacheService
+    public interface ICacheService
     {
         string BaseFileDirectory { get; }
         IReadOnlyCollection<CacheFileConfiguration> RegisteredFiles { get; }

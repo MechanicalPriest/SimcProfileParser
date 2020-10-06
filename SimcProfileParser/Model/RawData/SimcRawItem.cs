@@ -18,7 +18,7 @@ namespace SimcProfileParser.Model.RawData
         /// <summary>
         /// This links to the Quality enum
         /// </summary>
-        public int Quality { get; set; }
+        public ItemQuality Quality { get; set; }
         /// <summary>
         /// This links to the InventoryType enum
         /// </summary>

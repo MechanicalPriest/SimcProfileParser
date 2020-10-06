@@ -9,38 +9,19 @@ namespace SimcProfileParser.Model
     public class SimcItem
     {
         public uint ItemId { get; set; }
-        public uint ItemLevel { get; set; }
+        public int ItemLevel { get; set; }
         public List<SimcItemMod> Mods { get; set; }
+        public List<ItemSocketColor> Sockets { get; set; }
         public int SlotType { get; set; }
-        public int Quality { get; internal set; }
+        public ItemQuality Quality { get; internal set; }
         public InventoryType InventoryType { get; internal set; }
+        public string Name { get; set; }
 
         public SimcItem()
         {
             Mods = new List<SimcItemMod>();
+            Sockets = new List<ItemSocketColor>();
             InventoryType = InventoryType.INVTYPE_NON_EQUIP;
-        }
-
-        /// <summary>
-        /// Create or update the mod for the relevant stat
-        /// </summary>
-        /// <param name="stat"></param>
-        /// <param name="amount"></param>
-        internal void AddModRatingAmount(ItemModType stat, int amount)
-        {
-            var mod = Mods.Where(m => m.Type == stat).FirstOrDefault();
-
-            if (mod == null)
-            {
-                mod = new SimcItemMod
-                {
-                    Type = stat
-                };
-                Mods.Add(mod);
-            }
-
-            mod.StatRating += amount;
-
         }
     }
 }

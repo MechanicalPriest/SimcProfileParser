@@ -11,7 +11,7 @@ namespace SimcProfileParser.Model.RawData
         /// <summary>
         /// TODO this is one of the enums, update it.
         /// </summary>
-        public uint Type { get; set; }
+        public ItemBonusType Type { get; set; }
         public int Value1 { get; set; }
         public int Value2 { get; set; }
         public int Value3 { get; set; }
