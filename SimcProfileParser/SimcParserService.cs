@@ -386,7 +386,7 @@ namespace SimcProfileParser
                         }
                         else
                         {
-                            _logger.LogWarning($"Unable to parse soulbind spell or conduit from part ({part}) in: {line.CleanLine}");
+                            _logger?.LogWarning($"Unable to parse soulbind spell or conduit from part ({part}) in: {line.CleanLine}");
                         }
                     }
                 }
