@@ -3,12 +3,12 @@ using Newtonsoft.Json;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model;
+using SimcProfileParser.Model.DataSync;
 using SimcProfileParser.Model.Profile;
 using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -24,11 +24,6 @@ namespace SimcProfileParser
         {
             _cacheService = cacheService;
             _logger = logger;
-
-            _cacheService.RegisterFileConfiguration(Model.DataSync.SimcFileType.ItemDataInc,
-                "ItemData.raw",
-                "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc"
-                );
         }
 
         internal object CreateItemsFromProfile(SimcParsedProfile parsedProfile)
@@ -47,6 +42,12 @@ namespace SimcProfileParser
         internal SimcItem CreateItem(SimcParsedItem parsedItemData)
         {
             var rawItemData = GetRawItemData(parsedItemData.ItemId);
+
+            if (rawItemData == null)
+            {
+                _logger?.LogError($"Unable to find item {parsedItemData.ItemId}");
+                return null;
+            }
 
             // Setup the item
             var item = new SimcItem
@@ -86,13 +87,7 @@ namespace SimcProfileParser
 
         internal void ProcessBonusIds(SimcItem item, IReadOnlyCollection<int> bonusIds)
         {
-            var bonusData = File.ReadAllText(Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "SimcProfileParserData",
-                    "ItemBonusData.json")
-                );
-
-            var bonuses = JsonConvert.DeserializeObject<List<SimcRawItemBonus>>(bonusData);
+            var bonuses = _cacheService.GetParsedFileContents<List<SimcRawItemBonus>>(Model.DataSync.SimcParsedFileType.ItemBonusData);
 
             // Go through each of the bonus IDs on the item
             foreach (var bonusId in bonusIds)
@@ -150,10 +145,11 @@ namespace SimcProfileParser
 
         internal void AddItemMod(SimcItem item, ItemModType modType, int statAllocation)
         {
-            var newMod = new SimcItemMod();
-
-            newMod.Type = modType;
-            newMod.RawStatAllocation = statAllocation;
+            var newMod = new SimcItemMod
+            {
+                Type = modType,
+                RawStatAllocation = statAllocation
+            };
 
             item.Mods.Add(newMod);
         }
@@ -166,7 +162,7 @@ namespace SimcProfileParser
             var itemBudget = 0.0d;
 
             // If the item has a slot and quality we can parse
-            if(slotType != 01 && item.Quality > 0)
+            if(slotType != -1 && item.Quality > 0)
             {
                 var ilvlRandomProps = GetRandomProps(item.ItemLevel);
                 switch (item.Quality)
@@ -393,23 +389,18 @@ namespace SimcProfileParser
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.
         internal SimcRawItem GetRawItemData(uint itemId)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
             var rawItem = new SimcRawItem();
 
-            var itemData = File.ReadAllText(Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "SimcProfileParserData",
-                    "ItemData.json")
-                );
-
-            var items = JsonConvert.DeserializeObject<List<SimcRawItem>>(itemData);
+            var items = _cacheService.GetParsedFileContents<List<SimcRawItem>>(SimcParsedFileType.ItemDataNew);
 
             rawItem = items.Where(i => i.Id == itemId).FirstOrDefault();
 
-            sw.Stop();
-            _logger?.LogDebug($"Loading ItemData.json took {sw.ElapsedMilliseconds}ms ({items.Count} items)");
+            if(rawItem == null)
+            {
+                // If we can't find it in the new data, try all the older items
+                items = _cacheService.GetParsedFileContents<List<SimcRawItem>>(SimcParsedFileType.ItemDataOld);
+                rawItem = items.Where(i => i.Id == itemId).FirstOrDefault();
+            }
 
             return rawItem;
         }
@@ -417,65 +408,29 @@ namespace SimcProfileParser
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.
         internal SimcRawRandomPropData GetRandomProps(int itemLevel)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
             var rawProps = new SimcRawRandomPropData();
 
-            var propsData = File.ReadAllText(Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "SimcProfileParserData",
-                    "RandomPropData.json")
-                );
-
-            var randomProps = JsonConvert.DeserializeObject<List<SimcRawRandomPropData>>(propsData);
+            var randomProps = _cacheService.GetParsedFileContents<List<SimcRawRandomPropData>>(SimcParsedFileType.RandomPropPoints);
 
             rawProps = randomProps.Where(p => p.ItemLevel == itemLevel).FirstOrDefault();
-
-            sw.Stop();
-            _logger?.LogDebug($"Loading RandomPropData.json took {sw.ElapsedMilliseconds}ms ({randomProps.Count} items)");
 
             return rawProps;
         }
 
         internal double GetCombatRatingMultiplier(int itemLevel, CombatRatingMultiplayerType combatRatingType)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            var crMultipliers = _cacheService.GetParsedFileContents<float[][]>(SimcParsedFileType.CombatRatingMultipliers);
 
-            var crMultiData = File.ReadAllText(Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "SimcProfileParserData",
-                    "CombatRatingMultipliers.json")
-                );
-
-            var randomProps = JsonConvert.DeserializeObject<float[][]>(crMultiData);
-
-            var crMulti = randomProps[(int)combatRatingType][itemLevel - 1];
-
-            sw.Stop();
-            _logger?.LogDebug($"Loading CombatRatingMultipliers.json took {sw.ElapsedMilliseconds}ms");
+            var crMulti = crMultipliers[(int)combatRatingType][itemLevel - 1];
 
             return crMulti;
         }
 
         private double GetStaminaMultiplier(int itemLevel, CombatRatingMultiplayerType staminaRatingType)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+            var stamMultipliers = _cacheService.GetParsedFileContents<float[][]>(SimcParsedFileType.StaminaMultipliers);
 
-            var stamMultiData = File.ReadAllText(Path.Combine(
-                    AppDomain.CurrentDomain.BaseDirectory,
-                    "SimcProfileParserData",
-                    "StaminaMultipliers.json")
-                );
-
-            var randomProps = JsonConvert.DeserializeObject<float[][]>(stamMultiData);
-
-            var stamMulti = randomProps[(int)staminaRatingType][itemLevel - 1];
-
-            sw.Stop();
-            _logger?.LogDebug($"Loading StaminaMultipliers.json took {sw.ElapsedMilliseconds}ms");
+            var stamMulti = stamMultipliers[(int)staminaRatingType][itemLevel - 1];
 
             return stamMulti;
         }

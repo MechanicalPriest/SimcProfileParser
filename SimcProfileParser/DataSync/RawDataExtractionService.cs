@@ -1,25 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic.CompilerServices;
 using SimcProfileParser.Interfaces.DataSync;
-using SimcProfileParser.Model;
+using SimcProfileParser.Model.DataSync;
 using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SimcProfileParser.DataSync
 {
     internal interface IRawDataExtractionService
     {
-        void GenerateCombatRatingMultipliers();
-        void GenerateStaminaMultipliers();
-        void GenerateItemData();
-        void GenerateRandomPropData();
-        void GenerateSpellData();
-        void GenerateItemBonusData();
-        List<SimcRawItemEffect> GenerateItemEffectData();
+        object GenerateData(SimcParsedFileType fileType, Dictionary<string, string> incomingRawData);
     }
 
     /// <summary>
@@ -27,46 +21,37 @@ namespace SimcProfileParser.DataSync
     /// </summary>
     internal class RawDataExtractionService : IRawDataExtractionService
     {
-        private readonly ICacheService _cacheService;
+        private readonly ILogger _logger;
 
-        public RawDataExtractionService(ICacheService cacheService)
+        public RawDataExtractionService(ILogger logger)
         {
-            _cacheService = cacheService;
-
-            _cacheService.RegisterFileConfiguration(
-                Model.DataSync.SimcFileType.ScaleDataInc,
-                "ScaleData.raw",
-                "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_scale_data.inc");
-
-            _cacheService.RegisterFileConfiguration(
-               Model.DataSync.SimcFileType.ItemDataInc,
-               "ItemData.raw",
-               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc");
-
-            _cacheService.RegisterFileConfiguration(
-               Model.DataSync.SimcFileType.RandomPropPointsInc,
-               "RandomPropPoints.raw",
-               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/rand_prop_points.inc");
-
-            _cacheService.RegisterFileConfiguration(
-               Model.DataSync.SimcFileType.ScSpellDataInc,
-               "SpellData.raw",
-               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_spell_data.inc");
-
-            _cacheService.RegisterFileConfiguration(
-               Model.DataSync.SimcFileType.ItemBonusInc,
-               "ItemBonusData.raw",
-               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_bonus.inc");
-
-            _cacheService.RegisterFileConfiguration(
-              Model.DataSync.SimcFileType.ItemEffectInc,
-              "ItemEffect.raw",
-              "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc");
+            _logger = logger;
         }
 
-        void IRawDataExtractionService.GenerateCombatRatingMultipliers()
+        public object GenerateData(SimcParsedFileType fileType, Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ScaleDataInc);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            object result = fileType switch
+            {
+                SimcParsedFileType.CombatRatingMultipliers => GenerateCombatRatingMultipliers(incomingRawData),
+                SimcParsedFileType.StaminaMultipliers => GenerateStaminaMultipliers(incomingRawData),
+                SimcParsedFileType.ItemDataNew => GenerateItemData(incomingRawData, 157759),
+                SimcParsedFileType.ItemDataOld => GenerateItemData(incomingRawData, 0, 157760),
+                SimcParsedFileType.ItemBonusData => GenerateItemBonusData(incomingRawData),
+                SimcParsedFileType.RandomPropPoints => GenerateRandomPropData(incomingRawData),
+                SimcParsedFileType.SpellData => GenerateSpellData(incomingRawData),
+                _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
+            };
+            sw.Stop();
+            _logger?.LogTrace($"Time taken to process {fileType}: {sw.ElapsedMilliseconds}ms");
+
+            return result;
+        }
+
+        internal float[][] GenerateCombatRatingMultipliers(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
 
             Regex regexCR = new Regex(@"__combat_ratings_mult_by_ilvl.+?\{.+?(\{.+?\}),.+?(\{.+?\}),.+?(\{.+?\}),.+?(\{.+?\}).+?\};", RegexOptions.Singleline);
 
@@ -80,16 +65,12 @@ namespace SimcProfileParser.DataSync
             values[2] = ParseRatingGroup(groups[3]);
             values[3] = ParseRatingGroup(groups[4]);
 
-            var generatedData = JsonConvert.SerializeObject(values);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "CombatRatingMultipliers.json"), 
-                generatedData);
+            return values;
         }
 
-        void IRawDataExtractionService.GenerateStaminaMultipliers()
+        internal float[][] GenerateStaminaMultipliers(Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ScaleDataInc);
+            var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
 
             Regex regexCR = new Regex(@"__stamina_mult_by_ilvl.+?\{.+?(\{.+?\}),.+?(\{.+?\}),.+?(\{.+?\}),.+?(\{.+?\}).+?\};", RegexOptions.Singleline);
 
@@ -103,11 +84,7 @@ namespace SimcProfileParser.DataSync
             values[2] = ParseRatingGroup(groups[3]);
             values[3] = ParseRatingGroup(groups[4]);
 
-            var generatedData = JsonConvert.SerializeObject(values);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "StaminaMultipliers.json"),
-                generatedData);
+            return values;
         }
 
         private float[] ParseRatingGroup(Group g)
@@ -125,10 +102,13 @@ namespace SimcProfileParser.DataSync
             return values;
         }
 
-        void IRawDataExtractionService.GenerateItemData()
+        internal List<SimcRawItem> GenerateItemData(Dictionary<string, string> incomingRawData, 
+            int lowerBoundItemId = 0, int upperBoundItemId = int.MaxValue)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ItemDataInc);
-            var itemEffects = ((IRawDataExtractionService)this).GenerateItemEffectData();
+            var rawData = incomingRawData.Where(d => d.Key == "ItemData.raw").FirstOrDefault().Value;
+            var rawEffectData = incomingRawData.Where(d => d.Key == "ItemEffect.raw").FirstOrDefault().Value;
+
+            var itemEffects = GenerateItemEffectData(rawEffectData);
 
             // Split by the last occurance of "". There is only one string in this data model.
             var lines = rawData.Split(
@@ -156,16 +136,17 @@ namespace SimcProfileParser.DataSync
                         data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
                     }
 
-                    var itemMod = new SimcRawItemMod();
+                    var itemMod = new SimcRawItemMod
+                    {
+                        // 0 is the typeId
+                        ModType = (ItemModType)Convert.ToInt32(data[0]),
 
-                    // 0 is the typeId
-                    itemMod.ModType = (ItemModType)Convert.ToInt32(data[0]);
+                        // 1 is the stat allocation
+                        StatAllocation = Convert.ToInt32(data[1]),
 
-                    // 1 is the stat allocation
-                    itemMod.StatAllocation = Convert.ToInt32(data[1]);
-
-                    // 2 is the socket penalty
-                    itemMod.SocketMultiplier = Convert.ToDouble(data[2]);
+                        // 2 is the socket penalty
+                        SocketMultiplier = Convert.ToDouble(data[2])
+                    };
 
                     itemMods.Add(itemMod);
 
@@ -190,6 +171,9 @@ namespace SimcProfileParser.DataSync
 
                     // 0 is blank. 1 is itemId
                     item.Id = Convert.ToUInt32(data[1]);
+
+                    if (item.Id < lowerBoundItemId || item.Id > upperBoundItemId)
+                        continue;
 
                     // 2 is Flags1
                     uint.TryParse(data[2].Replace("0x", ""),
@@ -310,16 +294,12 @@ namespace SimcProfileParser.DataSync
                 }
             }
 
-            var generatedData = JsonConvert.SerializeObject(items);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "ItemData.json"),
-                generatedData);
+            return items;
         }
 
-        void IRawDataExtractionService.GenerateRandomPropData()
+        internal List<SimcRawRandomPropData> GenerateRandomPropData(Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.RandomPropPointsInc);
+            var rawData = incomingRawData.Where(d => d.Key == "RandomPropPoints.raw").FirstOrDefault().Value;
 
             var lines = rawData.Split(
                 new[] { "\r\n", "\r", "\n" },
@@ -328,7 +308,7 @@ namespace SimcProfileParser.DataSync
 
             var randomProps = new List<SimcRawRandomPropData>();
 
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 // Only process lines containing props
                 if (!line.Contains(','))
@@ -346,23 +326,24 @@ namespace SimcProfileParser.DataSync
                     props[i] = props[i].Replace("}", "").Replace("{", "").Trim();
                 }
 
-                var newProp = new SimcRawRandomPropData();
+                var newProp = new SimcRawRandomPropData
+                {
+                    // 0 is the ilvl
+                    ItemLevel = Convert.ToUInt32(props[0]),
 
-                // 0 is the ilvl
-                newProp.ItemLevel = Convert.ToUInt32(props[0]);
+                    // 1 is the damage replace stat
+                    DamageReplaceStat = Convert.ToUInt32(props[1]),
 
-                // 1 is the damage replace stat
-                newProp.DamageReplaceStat = Convert.ToUInt32(props[1]);
+                    // 2 is damage secondary
+                    DamageSecondary = Convert.ToUInt32(props[2]),
 
-                // 2 is damage secondary
-                newProp.DamageSecondary = Convert.ToUInt32(props[2]);
-
-                // 3, 4, 5, 6, 7 are the Epic property data
-                // 8, 9, 10, 11, 12 are the rare prop data
-                // 13, 14, 15, 16, 17 are the uncommon prop data
-                newProp.Epic = new float[5];
-                newProp.Rare = new float[5];
-                newProp.Uncommon = new float[5];
+                    // 3, 4, 5, 6, 7 are the Epic property data
+                    // 8, 9, 10, 11, 12 are the rare prop data
+                    // 13, 14, 15, 16, 17 are the uncommon prop data
+                    Epic = new float[5],
+                    Rare = new float[5],
+                    Uncommon = new float[5]
+                };
 
                 for (var i = 0; i < 5; i++)
                 {
@@ -378,15 +359,11 @@ namespace SimcProfileParser.DataSync
                 randomProps.Add(newProp);
             }
 
-            var generatedData = JsonConvert.SerializeObject(randomProps);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "RandomPropData.json"),
-                generatedData);
+            return randomProps;
         }
-        void IRawDataExtractionService.GenerateSpellData()
+        internal List<SimcRawSpell> GenerateSpellData(Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ScSpellDataInc);
+            var rawData = incomingRawData.Where(d => d.Key == "SpellData.raw").FirstOrDefault().Value;
 
             var lines = rawData.Split(
                 new[] { "\r\n", "\r", "\n" },
@@ -395,7 +372,7 @@ namespace SimcProfileParser.DataSync
 
             var spells = new List<SimcRawSpell>();
 
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 if (!line.Contains('"'))
                     continue;
@@ -405,8 +382,6 @@ namespace SimcProfileParser.DataSync
 
                 var spell = new SimcRawSpell();
 
-                spell.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
-
                 // Split the remaining data up
                 var data = dataSegment.Split(',');
                 // Clean it up
@@ -414,6 +389,8 @@ namespace SimcProfileParser.DataSync
                 {
                     data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
                 }
+
+                spell.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
 
                 // 0 is blank, 1 is spellId
                 spell.Id = Convert.ToUInt32(data[1]);
@@ -514,7 +491,7 @@ namespace SimcProfileParser.DataSync
 
                 // 32 - 46. Next up is something of length NUM_SPELL_FLAGS = 15
                 spell.Attributes = new uint[15];
-                for(var i = 0; i < spell.Attributes.Length; i++)
+                for (var i = 0; i < spell.Attributes.Length; i++)
                 {
                     spell.Attributes[i] = Convert.ToUInt32(data[i + 32]);
                 }
@@ -555,16 +532,12 @@ namespace SimcProfileParser.DataSync
                 spells.Add(spell);
             }
 
-            var generatedData = JsonConvert.SerializeObject(spells);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "SpellData.json"),
-                generatedData);
+            return spells;
         }
 
-        void IRawDataExtractionService.GenerateItemBonusData()
+        internal List<SimcRawItemBonus> GenerateItemBonusData(Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ItemBonusInc);
+            var rawData = incomingRawData.Where(d => d.Key == "ItemBonusData.raw").FirstOrDefault().Value;
 
             var lines = rawData.Split(
                 new[] { "\r\n", "\r", "\n" },
@@ -573,7 +546,7 @@ namespace SimcProfileParser.DataSync
 
             var itemBonuses = new List<SimcRawItemBonus>();
 
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 // Split the data up
                 var data = line.Split(',');
@@ -617,17 +590,11 @@ namespace SimcProfileParser.DataSync
                 itemBonuses.Add(itemBonus);
             }
 
-            var generatedData = JsonConvert.SerializeObject(itemBonuses);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "ItemBonusData.json"),
-                generatedData);
+            return itemBonuses;
         }
-        List<SimcRawItemEffect> IRawDataExtractionService.GenerateItemEffectData()
+        List<SimcRawItemEffect> GenerateItemEffectData(string rawEffectData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ItemEffectInc);
-
-            var lines = rawData.Split(
+            var lines = rawEffectData.Split(
                 new[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None
             );

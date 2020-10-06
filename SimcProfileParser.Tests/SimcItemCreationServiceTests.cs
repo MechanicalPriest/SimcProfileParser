@@ -42,21 +42,16 @@ namespace SimcProfileParser.Tests
             var simcParser = new SimcParserService(_loggerFactory.CreateLogger<SimcParserService>());
             ParsedProfile = simcParser.ParseProfileAsync(testFileString);
 
-            ICacheService cacheService = new CacheService();
-            IRawDataExtractionService rawDataExtractionService =
-                new RawDataExtractionService(cacheService);
-
-            rawDataExtractionService.GenerateCombatRatingMultipliers();
-            rawDataExtractionService.GenerateStaminaMultipliers();
-            rawDataExtractionService.GenerateItemData();
-            rawDataExtractionService.GenerateRandomPropData();
-            rawDataExtractionService.GenerateSpellData();
+            
         }
         [Test]
         public void ICS_Test()
         {
             // Arrange
-            ICacheService cacheService = new CacheService();
+            IRawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(_loggerFactory.CreateLogger<RawDataExtractionService>());
+            ICacheService cacheService = new CacheService(rawDataExtractionService, _loggerFactory.CreateLogger<CacheService>());
+
             var ics = new SimcItemCreationService(cacheService,
                 _loggerFactory.CreateLogger<SimcItemCreationService>());
 
