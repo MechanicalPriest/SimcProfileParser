@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SimcProfileParser.Model.RawData
 {
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/sc_enums.hpp#L926
+    // from sc_enums
     /// <summary>
     /// (stat_e) A list of all stats and their internal Simc reference numbers
     /// </summary>
@@ -60,8 +60,8 @@ namespace SimcProfileParser.Model.RawData
         STAT_MAX
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L456
-    enum ItemModType
+    // from data_enums.hh
+    public enum ItemModType
     {
         ITEM_MOD_NONE = -1,
         ITEM_MOD_MANA = 0,
@@ -131,8 +131,8 @@ namespace SimcProfileParser.Model.RawData
         ITEM_MOD_STRENGTH_INTELLECT = 74,
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L261
-    enum ItemClass
+    // from data_enums.hh
+    public enum ItemClass
     {
         ITEM_CLASS_CONSUMABLE = 0,
         ITEM_CLASS_CONTAINER = 1,
@@ -153,7 +153,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_CLASS_GLYPH = 16
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L282
+    // from data_enums.hh
     enum ItemSubclassWeapon
     {
         ITEM_SUBCLASS_WEAPON_AXE = 0,
@@ -180,7 +180,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_SUBCLASS_WEAPON_INVALID = 31
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L308
+    // from data_enums.hh
     enum ItemSubclassArmor
     {
         ITEM_SUBCLASS_ARMOR_MISC = 0,
@@ -197,7 +197,7 @@ namespace SimcProfileParser.Model.RawData
         ITEM_SUBCLASS_ARMOR_RELIC = 11
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L324
+    // from data_enums.hh
     enum ItemSubclassConsumable
     {
         ITEM_SUBCLASS_CONSUMABLE = 0,
@@ -211,8 +211,8 @@ namespace SimcProfileParser.Model.RawData
         ITEM_SUBCLASS_CONSUMABLE_OTHER = 8
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L337
-    enum InventoryType
+    // from data_enums.hh
+    public enum InventoryType
     {
         INVTYPE_NON_EQUIP = 0,
         INVTYPE_HEAD = 1,
@@ -246,8 +246,8 @@ namespace SimcProfileParser.Model.RawData
         INVTYPE_MAX = 29
     };
 
-    // from https://github.com/simulationcraft/simc/blob/shadowlands/engine/dbc/data_enums.hh#L371
-    enum ItemQuality
+    // from data_enums.hh
+    public enum ItemQuality
     {
         ITEM_QUALITY_NONE = -1,
         ITEM_QUALITY_POOR = 0,
@@ -258,5 +258,70 @@ namespace SimcProfileParser.Model.RawData
         ITEM_QUALITY_LEGENDARY = 5,
         ITEM_QUALITY_ARTIFACT = 6,
         ITEM_QUALITY_MAX = 7
+    };
+
+    // from data_enums.hh
+    enum ItemBonusType
+    {
+        ITEM_BONUS_ILEVEL = 1,
+        ITEM_BONUS_MOD = 2,
+        ITEM_BONUS_QUALITY = 3,
+        ITEM_BONUS_DESC = 4,
+        ITEM_BONUS_SUFFIX = 5,
+        ITEM_BONUS_SOCKET = 6,
+        ITEM_BONUS_REQ_LEVEL = 8,
+        ITEM_BONUS_SCALING = 11, // Scaling based on ScalingStatDistribution.db2
+        ITEM_BONUS_SCALING_2 = 13, // Scaling based on ScalingStatDistribution.db2
+        ITEM_BONUS_SET_ILEVEL = 14,
+        ITEM_BONUS_ADD_RANK = 17, // Add artifact power rank to a specific trait
+        ITEM_BONUS_ADD_ITEM_EFFECT = 23,
+        ITEM_BONUS_MOD_ITEM_STAT = 25, // Modify item stat to type
+    };
+
+    // from data_enums.hh
+    public enum ItemSocketColor
+    {
+        SOCKET_COLOR_NONE = 0,
+        SOCKET_COLOR_META = 1,
+        SOCKET_COLOR_RED = 2,
+        SOCKET_COLOR_YELLOW = 4,
+        SOCKET_COLOR_BLUE = 8,
+        SOCKET_COLOR_ORANGE = SOCKET_COLOR_RED | SOCKET_COLOR_YELLOW,
+        SOCKET_COLOR_PURPLE = SOCKET_COLOR_RED | SOCKET_COLOR_BLUE,
+        SOCKET_COLOR_GREEN = SOCKET_COLOR_BLUE | SOCKET_COLOR_YELLOW,
+        SOCKET_COLOR_HYDRAULIC = 16,
+        SOCKET_COLOR_PRISMATIC = SOCKET_COLOR_RED | SOCKET_COLOR_YELLOW | SOCKET_COLOR_BLUE,
+        SOCKET_COLOR_COGWHEEL = 32,
+        // Legion relic data begins here
+        SOCKET_COLOR_IRON = 64,
+        SOCKET_COLOR_BLOOD = 128,
+        SOCKET_COLOR_SHADOW = 256,
+        SOCKET_COLOR_FEL = 512,
+        SOCKET_COLOR_ARCANE = 1024,
+        SOCKET_COLOR_FROST = 2048,
+        SOCKET_COLOR_FIRE = 4096,
+        SOCKET_COLOR_WATER = 8192,
+        SOCKET_COLOR_LIFE = 16384,
+        SOCKET_COLOR_WIND = 32768,
+        SOCKET_COLOR_HOLY = 65536,
+        SOCKET_COLOR_RED_PUNCHCARD = 131072,
+        SOCKET_COLOR_YELLOW_PUNCHCARD = 262144,
+        SOCKET_COLOR_BLUE_PUNCHCARD = 524288,
+        SOCKET_COLOR_MAX,
+        SOCKET_COLOR_RELIC = SOCKET_COLOR_IRON | SOCKET_COLOR_BLOOD | SOCKET_COLOR_SHADOW |
+                                            SOCKET_COLOR_FEL | SOCKET_COLOR_ARCANE | SOCKET_COLOR_FROST |
+                                            SOCKET_COLOR_FIRE | SOCKET_COLOR_WATER | SOCKET_COLOR_LIFE |
+                                            SOCKET_COLOR_WIND | SOCKET_COLOR_HOLY
+    };
+
+    // from data_enums.hh
+    enum CombatRatingMultiplayerType
+    {
+        CR_MULTIPLIER_INVALID = -1,
+        CR_MULTIPLIER_ARMOR,
+        CR_MULTIPLIER_WEAPON,
+        CR_MULTIPLIER_TRINKET,
+        CR_MULTIPLIER_JEWLERY,
+        CR_MULTIPLIER_MAX
     };
 }

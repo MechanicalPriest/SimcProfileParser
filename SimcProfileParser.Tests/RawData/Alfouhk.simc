@@ -1,0 +1,251 @@
+﻿# Alfouhk - Holy - 2020-10-06 11:54 - us/Torghast
+# SimC Addon 9.0.1-alpha-10
+# Requires SimulationCraft 901-01 or newer
+
+priest="Alfouhk"
+level=60
+race=dwarf
+region=us
+server=torghast
+role=attack
+
+talents=1111111
+spec=holy
+
+covenant=necrolord
+# conduits_available=
+# renown=40
+
+main_hand=,id=178473,bonus_id=6774/1504/6646
+head=,id=163340,bonus_id=6938,drop_level=50
+neck=,id=177146,bonus_id=6938,drop_level=50
+shoulder=,id=163269,bonus_id=6938,drop_level=50
+back=,id=163311,bonus_id=6938,drop_level=50
+chest=,id=174025,bonus_id=6938,drop_level=50
+wrist=,id=177094,bonus_id=6938,drop_level=50
+hands=,id=163258,bonus_id=6938,drop_level=50
+waist=,id=163343,bonus_id=6938,drop_level=50
+legs=,id=177092,bonus_id=6938,drop_level=50
+#feet=,id=174026,bonus_id=6938,drop_level=50
+finger1=,id=177153,bonus_id=6938/1764,drop_level=50
+finger2=,id=177145,bonus_id=6938,drop_level=50
+trinket1=,id=182453,bonus_id=6652/7215,drop_level=50
+trinket2=,id=177149,bonus_id=6938/607,drop_level=50
+
+### Gear from Bags
+#
+# Empyreal Ordnance (226)
+# trinket1=,id=180117,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Cabalist's Hymnal (226)
+# trinket1=,id=184028,bonus_id=6652/7215/1498/6646,drop_level=50
+#
+# Maldraxxian Warhorn (226)
+# trinket1=,id=180827,bonus_id=6707/7215,drop_level=50
+#
+# Macabre Sheet Music (226)
+# trinket1=,id=184024,bonus_id=6652/7215/1498/6646,drop_level=50
+#
+# Tablet of Despair (226)
+# trinket1=,id=181357,bonus_id=6652/7215,drop_level=50
+#
+# Overflowing Ember Mirror (226)
+# trinket1=,id=181359,bonus_id=7215,drop_level=50
+#
+# Brimming Ember Shard (226)
+# trinket1=,id=181360,bonus_id=6652/7215,drop_level=50
+#
+# Wakener's Frond (226)
+# trinket1=,id=181457,bonus_id=6652/7215,drop_level=50
+#
+# Withergrove Shardling (226)
+# trinket1=,id=181459,bonus_id=6652/7215,drop_level=50
+#
+# Flame of Battle (226)
+# trinket1=,id=181501,bonus_id=6652/7215,drop_level=50
+#
+# Rejuvenating Serum (226)
+# trinket1=,id=181502,bonus_id=6652/7215,drop_level=50
+#
+# Vial of Caustic Liquid (226)
+# trinket1=,id=181503,bonus_id=6652/7215,drop_level=50
+#
+# Glimmerdust's Grand Design (226)
+# trinket1=,id=182451,bonus_id=6652/7215,drop_level=50
+#
+# Everchill Brambles (226)
+# trinket1=,id=182452,bonus_id=6652/7215,drop_level=50
+#
+# Oceanographer's Weather Log (138)
+# trinket1=,id=177151,bonus_id=6938/604,drop_level=50
+#
+# Murmurs in the Dark (226)
+# trinket1=,id=182454,bonus_id=6652/7215,drop_level=50
+#
+# Dreamer's Mending (226)
+# trinket1=,id=182455,bonus_id=6652/7215,drop_level=50
+#
+# Book-Borrower Identification (226)
+# trinket1=,id=182682,bonus_id=6652/7215,drop_level=50
+#
+# Soulsifter Root (226)
+# trinket1=,id=183849,bonus_id=6707/7215,drop_level=50
+#
+# Wakener's Frond (226)
+# trinket1=,id=183850,bonus_id=6707/7215,drop_level=50
+#
+# Withergrove Shardling (226)
+# trinket1=,id=183851,bonus_id=6707/7215,drop_level=50
+#
+# Soul Igniter (226)
+# trinket1=,id=184019,bonus_id=6652/7215/1498/6646,drop_level=50
+#
+# Tuft of Smoldering Plumage (226)
+# trinket1=,id=184020,bonus_id=6652/7215/1498/6646,drop_level=50
+#
+# Glyph of Assimilation (226)
+# trinket1=,id=184021,bonus_id=6652/7215/1498/6646,drop_level=50
+#
+# Consumptive Infusion (226)
+# trinket1=,id=184022,bonus_id=6652/7215/1498/6646,drop_level=50
+#
+# Inscrutable Quantum Device (226)
+# trinket1=,id=179350,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Glowing Endmire Stinger (226)
+# trinket1=,id=179927,bonus_id=6652/7215,drop_level=50
+#
+# Lingering Sunmote (226)
+# trinket1=,id=178850,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Sunblood Amethyst (226)
+# trinket1=,id=178826,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Soulletting Ruby (226)
+# trinket1=,id=178809,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Hopebreaker's Badge (226)
+# trinket1=,id=177813,bonus_id=6907/6652/603/7215,drop_level=50
+#
+# Spiritual Alchemy Stone (226)
+# trinket1=,id=175943,bonus_id=7215,drop_level=50
+#
+# Overflowing Ember Mirror (226)
+# trinket1=,id=177657,bonus_id=6706/7215,drop_level=50
+#
+# Spiritual Alchemy Stone (226)
+# trinket1=,id=175942,bonus_id=7215,drop_level=50
+#
+# Brimming Ember Shard (226)
+# trinket1=,id=175733,bonus_id=6706/7215,drop_level=50
+#
+# Stolen Maw Badge (226)
+# trinket1=,id=175731,bonus_id=6707/7215,drop_level=50
+#
+# Soulsifter Root (226)
+# trinket1=,id=175728,bonus_id=6652/7215,drop_level=50
+#
+# Primalist's Kelpling (226)
+# trinket1=,id=175726,bonus_id=6707/7215,drop_level=50
+#
+# Rejuvenating Serum (226)
+# trinket1=,id=175723,bonus_id=6707/7215,drop_level=50
+#
+# Agitha's Void-Tinged Speartip (226)
+# trinket1=,id=175719,bonus_id=6707/7215,drop_level=50
+#
+# Misfiring Centurion Controller (226)
+# trinket1=,id=173349,bonus_id=6706/7215,drop_level=50
+#
+# Darkmoon Deck: Putrescence (226)
+# trinket1=,id=173069,bonus_id=7215,drop_level=50
+#
+# Essence Extractor (226)
+# trinket1=,id=181334,bonus_id=6652/7215,drop_level=50
+#
+# Boon of the Archon (226)
+# trinket1=,id=180119,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Manabound Mirror (226)
+# trinket1=,id=184029,bonus_id=6652/7215/1498/6646,drop_level=50
+#
+# Dreadfire Vessel (226)
+# trinket1=,id=184030,bonus_id=6652/7215/1498/6646,drop_level=50
+#
+# Siphoning Blood-Drinker (226)
+# trinket1=,id=184279,bonus_id=6652/7215,drop_level=50
+#
+# Spiritual Alchemy Stone (226)
+# trinket1=,id=171323,bonus_id=7215,drop_level=50
+#
+# Darkmoon Deck: Repose (226)
+# trinket1=,id=173078,bonus_id=7215,drop_level=50
+#
+# Infinitely Divisible Ooze (226)
+# trinket1=,id=178769,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Ascended Defender's Crest (226)
+# trinket1=,id=175718,bonus_id=6707/7215,drop_level=50
+#
+# Overflowing Anima Prison (226)
+# trinket1=,id=178849,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Vial of Caustic Liquid (226)
+# trinket1=,id=175722,bonus_id=6707/7215,drop_level=50
+#
+# Siphoning Phylactery Shard (226)
+# trinket1=,id=178783,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Newcomer's Gladiatorial Badge (226)
+# trinket1=,id=175725,bonus_id=6707/7215,drop_level=50
+#
+# Unbound Changeling (226)
+# trinket1=,id=178708,bonus_id=6652/6917/7215/1547/6646,drop_level=50
+#
+# Elder's Stormseed (226)
+# trinket1=,id=175727,bonus_id=6707/7215,drop_level=50
+#
+# Satchel of Misbegotten Minions (226)
+# trinket1=,id=178772,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# Rotbriar Sprout (226)
+# trinket1=,id=175729,bonus_id=6652/7215,drop_level=50
+#
+# Spiritual Alchemy Stone (226)
+# trinket1=,id=175941,bonus_id=7215,drop_level=50
+#
+# Tablet of Despair (226)
+# trinket1=,id=175732,bonus_id=6707/7215,drop_level=50
+#
+# Vial of Vampiric Essence (226)
+# trinket1=,id=178810,bonus_id=6652/7215/1547/6646,drop_level=50
+#
+# 7th Legionnaire's Spellhammer (138)
+# main_hand=,id=177141,bonus_id=6938,drop_level=50
+#
+# Sinful Aspirant's Staff (184)
+# main_hand=,id=178473,bonus_id=6775/1498/6646
+#
+# Sinful Aspirant's Staff (171)
+# main_hand=,id=178473,bonus_id=6777/1485/6616
+#
+# 7th Legionnaire's Wand (138)
+# main_hand=,id=177135,bonus_id=6938,drop_level=50
+#
+# Battle Tested Staff (151)
+# main_hand=,id=183090
+#
+# Sinful Aspirant's Staff (158)
+# main_hand=,id=178473,bonus_id=6801/1472/6616
+#
+# Sinful Aspirant's Staff (164)
+# main_hand=,id=178473,bonus_id=6778/1478/6616
+#
+# 7th Legionnaire's Stave (138)
+# main_hand=,id=177133,bonus_id=6938,drop_level=50
+#
+# Sinful Aspirant's Staff (177)
+# main_hand=,id=178473,bonus_id=6776/1491/6616
+#
+# 7th Legionnaire's Censer (138)
+# off_hand=,id=177139,bonus_id=6938,drop_level=50

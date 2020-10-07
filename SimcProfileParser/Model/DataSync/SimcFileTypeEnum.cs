@@ -4,13 +4,14 @@ using System.Text;
 
 namespace SimcProfileParser.Model.DataSync
 {
-    public enum SimcFileType
+    public enum SimcParsedFileType
     {
-        ScSpellDataInc,
-        ItemDataInc,
-        RandomPropPointsInc,
-        ScaleDataInc,
-        ScEnumsHpp,
-        DataEnumsHh
+        ItemDataNew,
+        ItemDataOld,
+        CombatRatingMultipliers,
+        StaminaMultipliers,
+        SpellData,
+        RandomPropPoints,
+        ItemBonusData
     }
 }

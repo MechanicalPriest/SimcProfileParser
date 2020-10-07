@@ -18,12 +18,12 @@ namespace SimcProfileParser.Model.RawData
         /// <summary>
         /// This links to the Quality enum
         /// </summary>
-        public int Quality { get; set; }
+        public ItemQuality Quality { get; set; }
         /// <summary>
         /// This links to the InventoryType enum
         /// </summary>
-        public int InventoryType { get; set; }
-        public int ItemClass { get; set; }
+        public InventoryType InventoryType { get; set; }
+        public ItemClass ItemClass { get; set; }
         public int ItemSubClass { get; set; }
         public int BindType { get; set; }
         /// <summary>
@@ -33,9 +33,9 @@ namespace SimcProfileParser.Model.RawData
         public double DamageRange { get; set; }
         public double ItemModifier { get; set; }
         /// <summary>
-        /// TODO: Do we need this?
+        /// Index of the ItemMods array the items mods start at
         /// </summary>
-        public string DbcStats { get; set; }
+        public int DbcStats { get; set; }
         public uint DbcStatsCount { get; set; }
         public ulong RaceMask { get; set; }
         public uint ClassMask { get; set; }

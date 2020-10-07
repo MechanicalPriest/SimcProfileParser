@@ -21,7 +21,7 @@ namespace SimcProfileParser.Tests.DataSync
         [SetUp]
         public void Init()
         {
-            ICacheService cache = new CacheService();
+            ICacheService cache = new CacheService(null, null);
 
             // Wipe out the directory before testing as a workaround for file access not being abstracted
             if(Directory.Exists(cache.BaseFileDirectory))
@@ -33,19 +33,24 @@ namespace SimcProfileParser.Tests.DataSync
         public void CS_Downloads_File()
         {
             // Arrange
-            ICacheService cache = new CacheService();
-
-            cache.RegisterFileConfiguration(SimcFileType.ItemDataInc,
-                "ItemData.raw",
-                "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc"
-                );
+            CacheService cache = new CacheService(null, null);
+            var configuration = new CacheFileConfiguration()
+            {
+                LocalParsedFile = "CombatRatingMultipliers.json",
+                ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_scale_data.inc" }
+                }
+            };
+            var filePath = Path.Combine(cache.BaseFileDirectory, "ScaleData.raw");
 
             // Act
-            var data = cache.GetFileContents(SimcFileType.ItemDataInc);
+            var data = cache.GetRawFileContents(configuration, "ScaleData.raw");
 
             // Assert
             DirectoryAssert.Exists(cache.BaseFileDirectory);
-            FileAssert.Exists(Path.Combine(cache.BaseFileDirectory, "ItemData.raw"));
+            FileAssert.Exists(filePath);
             Assert.NotNull(data);
         }
 
@@ -53,19 +58,20 @@ namespace SimcProfileParser.Tests.DataSync
         public void CS_Cache_Updates()
         {
             // Arrange
-            CacheService cache = new CacheService();
-
-            // Act
+            CacheService cache = new CacheService(null, null);
             var filename = "test.txt";
             var eTag = "12345";
             var fileContents = @"[" + Environment.NewLine +
                 @"  {" + Environment.NewLine +
                 @"    ""Filename"": ""test.txt""," + Environment.NewLine +
-                @"    ""ETag"": ""12345""" + Environment.NewLine +
+                @"    ""ETag"": ""12345""," + Environment.NewLine +
+                @"    ""LastModified"": ""0001-01-01T00:00:00.0000001""" + Environment.NewLine +
                 @"  }" + Environment.NewLine +
                 @"]";
+            var lastModified = new DateTime(1);
 
-            cache.UpdateCacheData(filename, eTag);
+            // Act
+            cache.UpdateCacheData(filename, eTag, lastModified);
             var data = File.ReadAllText(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
 
             // Assert
@@ -77,12 +83,13 @@ namespace SimcProfileParser.Tests.DataSync
         public void CS_Cache_Reads()
         {
             // Arrange
-            CacheService cache = new CacheService();
-
-            // Act
+            CacheService cache = new CacheService(null, null);
             var filename = "test.txt";
             var eTag = "12345";
-            cache.UpdateCacheData(filename, eTag);
+            var lastModified = new DateTime(1);
+
+            // Act
+            cache.UpdateCacheData(filename, eTag, lastModified);
             var cacheData = cache.GetCacheData();
 
             // Assert
@@ -90,13 +97,14 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.NotZero(cacheData.Count);
             Assert.AreEqual(filename, cacheData.FirstOrDefault().Filename);
             Assert.AreEqual(eTag, cacheData.FirstOrDefault().ETag);
+            Assert.AreEqual(lastModified, cacheData.FirstOrDefault().LastModified);
         }
 
         [Test]
         public void CS_Cache_Saves()
         {
             // Arrange
-            CacheService cache = new CacheService();
+            CacheService cache = new CacheService(null, null);
 
             // Act
             var filename = "test.txt";
@@ -104,7 +112,8 @@ namespace SimcProfileParser.Tests.DataSync
             var eTagEntry = new FileETag()
             {
                 Filename = filename,
-                ETag = eTag
+                ETag = eTag,
+                LastModified = new DateTime(1)
             };
             var entries = new List<FileETag>()
             {
@@ -113,7 +122,8 @@ namespace SimcProfileParser.Tests.DataSync
             var fileContents = @"[" + Environment.NewLine +
                 @"  {" + Environment.NewLine +
                 @"    ""Filename"": ""test.txt""," + Environment.NewLine +
-                @"    ""ETag"": ""12345""" + Environment.NewLine +
+                @"    ""ETag"": ""12345""," + Environment.NewLine +
+                @"    ""LastModified"": ""0001-01-01T00:00:00.0000001""" + Environment.NewLine +
                 @"  }" + Environment.NewLine +
                 @"]";
 
@@ -125,14 +135,6 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.IsNotNull(data);
             FileAssert.Exists(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
             Assert.AreEqual(fileContents, data);
-        }
-
-        [OneTimeTearDown]
-        public void TearDownOnce()
-        {
-            ICacheService cache = new CacheService();
-            if (Directory.Exists(cache.BaseFileDirectory))
-                Directory.Delete(cache.BaseFileDirectory, true);
         }
     }
 }

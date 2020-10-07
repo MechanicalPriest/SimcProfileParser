@@ -386,7 +386,7 @@ namespace SimcProfileParser
                         }
                         else
                         {
-                            _logger.LogWarning($"Unable to parse soulbind spell or conduit from part ({part}) in: {line.CleanLine}");
+                            _logger?.LogWarning($"Unable to parse soulbind spell or conduit from part ({part}) in: {line.CleanLine}");
                         }
                     }
                 }
@@ -466,7 +466,7 @@ namespace SimcProfileParser
                 switch (kvp[0])
                 {
                     case "id":
-                        if (!int.TryParse(kvp[1], out int itemId))
+                        if (!uint.TryParse(kvp[1], out uint itemId))
                         {
                             _logger?.LogWarning($"Unable to get itemid ({part}) from string {line.RawLine}");
                             continue;

@@ -1,22 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic.CompilerServices;
 using SimcProfileParser.Interfaces.DataSync;
+using SimcProfileParser.Model.DataSync;
 using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SimcProfileParser.DataSync
 {
     internal interface IRawDataExtractionService
     {
-        void GenerateCombatRatingMultipliers();
-        void GenerateStaminaMultipliers();
-        void GenerateItemData();
-        void GenerateRandomPropData();
-        void GenerateSpellData();
+        object GenerateData(SimcParsedFileType fileType, Dictionary<string, string> incomingRawData);
     }
 
     /// <summary>
@@ -24,36 +21,37 @@ namespace SimcProfileParser.DataSync
     /// </summary>
     internal class RawDataExtractionService : IRawDataExtractionService
     {
-        private readonly ICacheService _cacheService;
+        private readonly ILogger _logger;
 
-        public RawDataExtractionService(ICacheService cacheService)
+        public RawDataExtractionService(ILogger logger)
         {
-            _cacheService = cacheService;
-
-            _cacheService.RegisterFileConfiguration(
-                Model.DataSync.SimcFileType.ScaleDataInc,
-                "ScaleData.raw",
-                "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_scale_data.inc");
-
-            _cacheService.RegisterFileConfiguration(
-               Model.DataSync.SimcFileType.ItemDataInc,
-               "ItemData.raw",
-               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc");
-
-            _cacheService.RegisterFileConfiguration(
-               Model.DataSync.SimcFileType.RandomPropPointsInc,
-               "RandomPropPoints.raw",
-               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/rand_prop_points.inc");
-
-            _cacheService.RegisterFileConfiguration(
-               Model.DataSync.SimcFileType.ScSpellDataInc,
-               "SpellData.raw",
-               "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_spell_data.inc");
+            _logger = logger;
         }
 
-        void IRawDataExtractionService.GenerateCombatRatingMultipliers()
+        public object GenerateData(SimcParsedFileType fileType, Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ScaleDataInc);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            object result = fileType switch
+            {
+                SimcParsedFileType.CombatRatingMultipliers => GenerateCombatRatingMultipliers(incomingRawData),
+                SimcParsedFileType.StaminaMultipliers => GenerateStaminaMultipliers(incomingRawData),
+                SimcParsedFileType.ItemDataNew => GenerateItemData(incomingRawData, 157759),
+                SimcParsedFileType.ItemDataOld => GenerateItemData(incomingRawData, 0, 157760),
+                SimcParsedFileType.ItemBonusData => GenerateItemBonusData(incomingRawData),
+                SimcParsedFileType.RandomPropPoints => GenerateRandomPropData(incomingRawData),
+                SimcParsedFileType.SpellData => GenerateSpellData(incomingRawData),
+                _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
+            };
+            sw.Stop();
+            _logger?.LogTrace($"Time taken to process {fileType}: {sw.ElapsedMilliseconds}ms");
+
+            return result;
+        }
+
+        internal float[][] GenerateCombatRatingMultipliers(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
 
             Regex regexCR = new Regex(@"__combat_ratings_mult_by_ilvl.+?\{.+?(\{.+?\}),.+?(\{.+?\}),.+?(\{.+?\}),.+?(\{.+?\}).+?\};", RegexOptions.Singleline);
 
@@ -63,20 +61,16 @@ namespace SimcProfileParser.DataSync
 
             float[][] values = new float[4][];
             values[0] = ParseRatingGroup(groups[1]);
-            values[1] = ParseRatingGroup(groups[1]);
-            values[2] = ParseRatingGroup(groups[1]);
-            values[3] = ParseRatingGroup(groups[1]);
+            values[1] = ParseRatingGroup(groups[2]);
+            values[2] = ParseRatingGroup(groups[3]);
+            values[3] = ParseRatingGroup(groups[4]);
 
-            var generatedData = JsonConvert.SerializeObject(values);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "CombatRatingMultipliers.json"), 
-                generatedData);
+            return values;
         }
 
-        void IRawDataExtractionService.GenerateStaminaMultipliers()
+        internal float[][] GenerateStaminaMultipliers(Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ScaleDataInc);
+            var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
 
             Regex regexCR = new Regex(@"__stamina_mult_by_ilvl.+?\{.+?(\{.+?\}),.+?(\{.+?\}),.+?(\{.+?\}),.+?(\{.+?\}).+?\};", RegexOptions.Singleline);
 
@@ -86,15 +80,11 @@ namespace SimcProfileParser.DataSync
 
             float[][] values = new float[4][];
             values[0] = ParseRatingGroup(groups[1]);
-            values[1] = ParseRatingGroup(groups[1]);
-            values[2] = ParseRatingGroup(groups[1]);
-            values[3] = ParseRatingGroup(groups[1]);
+            values[1] = ParseRatingGroup(groups[2]);
+            values[2] = ParseRatingGroup(groups[3]);
+            values[3] = ParseRatingGroup(groups[4]);
 
-            var generatedData = JsonConvert.SerializeObject(values);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "StaminaMultipliers.json"),
-                generatedData);
+            return values;
         }
 
         private float[] ParseRatingGroup(Group g)
@@ -112,9 +102,13 @@ namespace SimcProfileParser.DataSync
             return values;
         }
 
-        void IRawDataExtractionService.GenerateItemData()
+        internal List<SimcRawItem> GenerateItemData(Dictionary<string, string> incomingRawData, 
+            int lowerBoundItemId = 0, int upperBoundItemId = int.MaxValue)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ItemDataInc);
+            var rawData = incomingRawData.Where(d => d.Key == "ItemData.raw").FirstOrDefault().Value;
+            var rawEffectData = incomingRawData.Where(d => d.Key == "ItemEffect.raw").FirstOrDefault().Value;
+
+            var itemEffects = GenerateItemEffectData(rawEffectData);
 
             // Split by the last occurance of "". There is only one string in this data model.
             var lines = rawData.Split(
@@ -123,139 +117,189 @@ namespace SimcProfileParser.DataSync
             );
 
             var items = new List<SimcRawItem>();
+            var itemMods = new List<SimcRawItemMod>();
 
             foreach (var line in lines)
             {
-                // Skip any lines without a text field
+                // Lines without a text field are very likely item mod data
                 if (!line.Contains('"'))
-                    continue;
-
-                var item = new SimcRawItem();
-
-                var nameSegment = line.Substring(0, line.LastIndexOf("\""));
-                var dataSegment = line.Substring(line.LastIndexOf("\"") + 1);
-
-                item.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
-
-                // Split the remaining data up
-                var data = dataSegment.Split(',');
-                // Clean it up
-                for(var i = 0; i < data.Length; i++)
                 {
-                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                    // First check if its an item mod data line
+                    if (line.Split(',').Count() < 4)
+                        continue;
+
+                    // Split the data up
+                    var data = line.Split(',');
+                    // Clean it up
+                    for (var i = 0; i < data.Length; i++)
+                    {
+                        data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                    }
+
+                    var itemMod = new SimcRawItemMod
+                    {
+                        // 0 is the typeId
+                        ModType = (ItemModType)Convert.ToInt32(data[0]),
+
+                        // 1 is the stat allocation
+                        StatAllocation = Convert.ToInt32(data[1]),
+
+                        // 2 is the socket penalty
+                        SocketMultiplier = Convert.ToDouble(data[2])
+                    };
+
+                    itemMods.Add(itemMod);
+
                 }
-
-                // 0 is blank. 1 is itemId
-                item.Id = Convert.ToUInt32(data[1]);
-
-                // 2 is Flags1
-                uint.TryParse(data[2].Replace("0x", ""), 
-                    System.Globalization.NumberStyles.HexNumber, null, out uint flags1);
-                item.Flags1 = flags1;
-
-                // 3 is Flags2
-                uint.TryParse(data[3].Replace("0x", ""),
-                    System.Globalization.NumberStyles.HexNumber, null, out uint flags2);
-                item.Flags2 = flags2;
-
-                // 4 is TypeFlags
-                uint.TryParse(data[4].Replace("0x", ""),
-                    System.Globalization.NumberStyles.HexNumber, null, out uint typeFlags);
-                item.TypeFlags = typeFlags;
-
-                // 5 is base ilvl
-                item.ItemLevel = Convert.ToInt32(data[5]);
-
-                // 6 is required level
-                item.RequiredLevel = Convert.ToInt32(data[6]);
-
-                // 7 is required skill
-                item.RequiredSkill = Convert.ToInt32(data[7]);
-
-                // 8 is required skill level
-                item.RequiredSkillLevel = Convert.ToInt32(data[8]);
-
-                // 9 is quality
-                item.Quality = Convert.ToInt32(data[9]);
-
-                // 10 is inventory type
-                // TODO: parse this to the enum value ?
-                item.InventoryType = Convert.ToInt32(data[10]);
-
-                // 11 is item class
-                item.ItemClass = Convert.ToInt32(data[11]);
-
-                // 12 is item subclass
-                item.ItemSubClass = Convert.ToInt32(data[12]);
-
-                // 13 is bind type
-                item.BindType = Convert.ToInt32(data[13]);
-
-                // 14 is delay
-                float.TryParse(data[14], out float delay);
-                item.Delay = delay;
-
-                // 15 is damage range
-                float.TryParse(data[15], out float dmgRange);
-                item.DamageRange = dmgRange;
-
-                // 16 is item modifier
-                float.TryParse(data[16], out float itemMod);
-                item.ItemModifier = itemMod;
-
-                // 17 is item stats
-                // TODO: item stats
-                item.DbcStats = data[17];
-
-                // 18 is dbc stats count
-                item.DbcStatsCount = Convert.ToUInt32(data[18]);
-
-                // 19 is class mask
-                uint.TryParse(data[19].Replace("0x", ""),
-                    System.Globalization.NumberStyles.HexNumber, null, out uint classMask);
-                item.ClassMask = classMask;
-
-                // 20 is race mask
-                ulong.TryParse(data[20].Replace("0x", ""),
-                    System.Globalization.NumberStyles.HexNumber, null, out ulong raceMask);
-                item.RaceMask = raceMask;
-
-                // 21, 22 and 23 are the 3 socket colours
-                item.SocketColour = new int[3]
+                else
                 {
+
+                    var item = new SimcRawItem();
+
+                    var nameSegment = line.Substring(0, line.LastIndexOf("\""));
+                    var dataSegment = line.Substring(line.LastIndexOf("\"") + 1);
+
+                    item.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
+
+                    // Split the remaining data up
+                    var data = dataSegment.Split(',');
+                    // Clean it up
+                    for (var i = 0; i < data.Length; i++)
+                    {
+                        data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                    }
+
+                    // 0 is blank. 1 is itemId
+                    item.Id = Convert.ToUInt32(data[1]);
+
+                    if (item.Id < lowerBoundItemId || item.Id > upperBoundItemId)
+                        continue;
+
+                    // 2 is Flags1
+                    uint.TryParse(data[2].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber, null, out uint flags1);
+                    item.Flags1 = flags1;
+
+                    // 3 is Flags2
+                    uint.TryParse(data[3].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber, null, out uint flags2);
+                    item.Flags2 = flags2;
+
+                    // 4 is TypeFlags
+                    uint.TryParse(data[4].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber, null, out uint typeFlags);
+                    item.TypeFlags = typeFlags;
+
+                    // 5 is base ilvl
+                    item.ItemLevel = Convert.ToInt32(data[5]);
+
+                    // 6 is required level
+                    item.RequiredLevel = Convert.ToInt32(data[6]);
+
+                    // 7 is required skill
+                    item.RequiredSkill = Convert.ToInt32(data[7]);
+
+                    // 8 is required skill level
+                    item.RequiredSkillLevel = Convert.ToInt32(data[8]);
+
+                    // 9 is quality
+                    item.Quality = (ItemQuality)Convert.ToInt32(data[9]);
+
+                    // 10 is inventory type
+                    // TODO: parse this to the enum value ?
+                    item.InventoryType = (InventoryType)Convert.ToInt32(data[10]);
+
+                    // 11 is item class
+                    item.ItemClass = (ItemClass)Convert.ToInt32(data[11]);
+
+                    // 12 is item subclass
+                    item.ItemSubClass = Convert.ToInt32(data[12]);
+
+                    // 13 is bind type
+                    item.BindType = Convert.ToInt32(data[13]);
+
+                    // 14 is delay
+                    float.TryParse(data[14], out float delay);
+                    item.Delay = delay;
+
+                    // 15 is damage range
+                    float.TryParse(data[15], out float dmgRange);
+                    item.DamageRange = dmgRange;
+
+                    // 16 is item modifier
+                    float.TryParse(data[16], out float itemMod);
+                    item.ItemModifier = itemMod;
+
+                    // 17 is item stats in the form: '0' or '&__item_stats_data[0]'
+                    if (data[17] == "0")
+                        item.DbcStats = 0;
+                    else
+                    {
+                        item.DbcStats = Convert.ToInt32(
+                            data[17].Replace("&__item_stats_data[", "").Trim(']'));
+                    }
+
+                    // 18 is dbc stats count
+                    item.DbcStatsCount = Convert.ToUInt32(data[18]);
+
+                    // So the DBC stats are the itemMods collection index, and stats count is how many
+                    if (item.DbcStatsCount > 0)
+                    {
+                        for (var i = 0; i < item.DbcStatsCount; i++)
+                        {
+                            item.ItemMods.Add(itemMods[item.DbcStats + i]);
+                        }
+                    }
+
+                    // 19 is class mask
+                    uint.TryParse(data[19].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber, null, out uint classMask);
+                    item.ClassMask = classMask;
+
+                    // 20 is race mask
+                    ulong.TryParse(data[20].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber, null, out ulong raceMask);
+                    item.RaceMask = raceMask;
+
+                    // 21, 22 and 23 are the 3 socket colours
+                    item.SocketColour = new int[3]
+                    {
                     Convert.ToInt32(data[21]),
                     Convert.ToInt32(data[22]),
                     Convert.ToInt32(data[23])
-                };
+                    };
 
-                // 24 is gem properties
-                item.GemProperties = Convert.ToInt32(data[24]);
+                    // 24 is gem properties
+                    item.GemProperties = Convert.ToInt32(data[24]);
 
-                // 25 is socket bonus id
-                item.SocketBonusId = Convert.ToInt32(data[25]);
+                    // 25 is socket bonus id
+                    item.SocketBonusId = Convert.ToInt32(data[25]);
 
-                // 26 is set bonus id
-                item.SetId = Convert.ToInt32(data[26]);
+                    // 26 is set bonus id
+                    item.SetId = Convert.ToInt32(data[26]);
 
-                // 27 is curve id
-                item.CurveId = Convert.ToInt32(data[27]);
+                    // 27 is curve id
+                    item.CurveId = Convert.ToInt32(data[27]);
 
-                // 28 is artifact id
-                item.ArtifactId = Convert.ToUInt32(data[28]);
+                    // 28 is artifact id
+                    item.ArtifactId = Convert.ToUInt32(data[28]);
 
-                items.Add(item);
+                    // Add the items effects
+                    var specificEffects = itemEffects.Where(i => i.ItemId == item.Id)?.ToList();
+
+                    if (specificEffects != null && specificEffects.Count > 0)
+                        item.ItemEffects.AddRange(specificEffects);
+
+                    items.Add(item);
+                }
             }
 
-            var generatedData = JsonConvert.SerializeObject(items);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "ItemData.json"),
-                generatedData);
+            return items;
         }
 
-        void IRawDataExtractionService.GenerateRandomPropData()
+        internal List<SimcRawRandomPropData> GenerateRandomPropData(Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.RandomPropPointsInc);
+            var rawData = incomingRawData.Where(d => d.Key == "RandomPropPoints.raw").FirstOrDefault().Value;
 
             var lines = rawData.Split(
                 new[] { "\r\n", "\r", "\n" },
@@ -264,7 +308,7 @@ namespace SimcProfileParser.DataSync
 
             var randomProps = new List<SimcRawRandomPropData>();
 
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 // Only process lines containing props
                 if (!line.Contains(','))
@@ -282,23 +326,24 @@ namespace SimcProfileParser.DataSync
                     props[i] = props[i].Replace("}", "").Replace("{", "").Trim();
                 }
 
-                var newProp = new SimcRawRandomPropData();
+                var newProp = new SimcRawRandomPropData
+                {
+                    // 0 is the ilvl
+                    ItemLevel = Convert.ToUInt32(props[0]),
 
-                // 0 is the ilvl
-                newProp.ItemLevel = Convert.ToUInt32(props[0]);
+                    // 1 is the damage replace stat
+                    DamageReplaceStat = Convert.ToUInt32(props[1]),
 
-                // 1 is the damage replace stat
-                newProp.DamageReplaceStat = Convert.ToUInt32(props[1]);
+                    // 2 is damage secondary
+                    DamageSecondary = Convert.ToUInt32(props[2]),
 
-                // 2 is damage secondary
-                newProp.DamageSecondary = Convert.ToUInt32(props[2]);
-
-                // 3, 4, 5, 6, 7 are the Epic property data
-                // 8, 9, 10, 11, 12 are the rare prop data
-                // 13, 14, 15, 16, 17 are the uncommon prop data
-                newProp.Epic = new float[5];
-                newProp.Rare = new float[5];
-                newProp.Uncommon = new float[5];
+                    // 3, 4, 5, 6, 7 are the Epic property data
+                    // 8, 9, 10, 11, 12 are the rare prop data
+                    // 13, 14, 15, 16, 17 are the uncommon prop data
+                    Epic = new float[5],
+                    Rare = new float[5],
+                    Uncommon = new float[5]
+                };
 
                 for (var i = 0; i < 5; i++)
                 {
@@ -314,15 +359,11 @@ namespace SimcProfileParser.DataSync
                 randomProps.Add(newProp);
             }
 
-            var generatedData = JsonConvert.SerializeObject(randomProps);
-
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "RandomPropData.json"),
-                generatedData);
+            return randomProps;
         }
-        void IRawDataExtractionService.GenerateSpellData()
+        internal List<SimcRawSpell> GenerateSpellData(Dictionary<string, string> incomingRawData)
         {
-            var rawData = _cacheService.GetFileContents(Model.DataSync.SimcFileType.ScSpellDataInc);
+            var rawData = incomingRawData.Where(d => d.Key == "SpellData.raw").FirstOrDefault().Value;
 
             var lines = rawData.Split(
                 new[] { "\r\n", "\r", "\n" },
@@ -331,7 +372,7 @@ namespace SimcProfileParser.DataSync
 
             var spells = new List<SimcRawSpell>();
 
-            foreach(var line in lines)
+            foreach (var line in lines)
             {
                 if (!line.Contains('"'))
                     continue;
@@ -341,8 +382,6 @@ namespace SimcProfileParser.DataSync
 
                 var spell = new SimcRawSpell();
 
-                spell.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
-
                 // Split the remaining data up
                 var data = dataSegment.Split(',');
                 // Clean it up
@@ -350,6 +389,8 @@ namespace SimcProfileParser.DataSync
                 {
                     data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
                 }
+
+                spell.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
 
                 // 0 is blank, 1 is spellId
                 spell.Id = Convert.ToUInt32(data[1]);
@@ -450,7 +491,7 @@ namespace SimcProfileParser.DataSync
 
                 // 32 - 46. Next up is something of length NUM_SPELL_FLAGS = 15
                 spell.Attributes = new uint[15];
-                for(var i = 0; i < spell.Attributes.Length; i++)
+                for (var i = 0; i < spell.Attributes.Length; i++)
                 {
                     spell.Attributes[i] = Convert.ToUInt32(data[i + 32]);
                 }
@@ -491,11 +532,120 @@ namespace SimcProfileParser.DataSync
                 spells.Add(spell);
             }
 
-            var generatedData = JsonConvert.SerializeObject(spells);
+            return spells;
+        }
 
-            File.WriteAllText(
-                Path.Combine(_cacheService.BaseFileDirectory, "SpellData.json"),
-                generatedData);
+        internal List<SimcRawItemBonus> GenerateItemBonusData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ItemBonusData.raw").FirstOrDefault().Value;
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var itemBonuses = new List<SimcRawItemBonus>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() < 9)
+                    continue;
+
+                var itemBonus = new SimcRawItemBonus();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is Id
+                itemBonus.Id = Convert.ToUInt32(data[0]);
+
+                // 1 is bonus id
+                itemBonus.BonusId = Convert.ToUInt32(data[1]);
+
+                // 2 is type
+                itemBonus.Type = (ItemBonusType)Convert.ToUInt32(data[2]);
+
+                // 3 is value 1
+                itemBonus.Value1 = Convert.ToInt32(data[3]);
+
+                // 4 is value 2
+                itemBonus.Value2 = Convert.ToInt32(data[4]);
+
+                // 5 is value 3
+                itemBonus.Value3 = Convert.ToInt32(data[5]);
+
+                // 6 is value 4
+                itemBonus.Value4 = Convert.ToInt32(data[6]);
+
+                // 7 is index
+                itemBonus.Index = Convert.ToUInt32(data[7]);
+
+                itemBonuses.Add(itemBonus);
+            }
+
+            return itemBonuses;
+        }
+        List<SimcRawItemEffect> GenerateItemEffectData(string rawEffectData)
+        {
+            var lines = rawEffectData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var itemEffects = new List<SimcRawItemEffect>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() < 9)
+                    continue;
+
+                var itemEffect = new SimcRawItemEffect();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is Id
+                itemEffect.Id = Convert.ToUInt32(data[0]);
+
+                // 1 is spell id
+                itemEffect.SpellId = Convert.ToUInt32(data[1]);
+
+                // 2 is item id
+                itemEffect.ItemId = Convert.ToUInt32(data[2]);
+
+                // 3 is index
+                itemEffect.Index = Convert.ToInt32(data[3]);
+
+                // 4 is type
+                itemEffect.Type = Convert.ToInt32(data[4]);
+
+                // 5 is cooldown group
+                itemEffect.CooldownGroup = Convert.ToInt32(data[5]);
+
+                // 6 is cd duration
+                itemEffect.CooldownDuration = Convert.ToInt32(data[6]);
+
+                // 7 is cd group duration
+                itemEffect.CooldownGroupDuration = Convert.ToInt32(data[7]);
+
+                itemEffects.Add(itemEffect);
+            }
+
+            return itemEffects;
         }
     }
 }
