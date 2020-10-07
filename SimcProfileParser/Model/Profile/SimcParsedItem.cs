@@ -8,7 +8,7 @@ namespace SimcProfileParser.Model.Profile
     public class SimcParsedItem
     {
         public string Slot { get; internal set; }
-        public int ItemId { get; internal set; }
+        public uint ItemId { get; internal set; }
         public int EnchantId { get; internal set; }
         public IReadOnlyCollection<int> GemIds { get; internal set; }
         public IReadOnlyCollection<int> BonusIds { get; internal set; }
