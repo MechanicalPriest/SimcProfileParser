@@ -111,6 +111,36 @@ namespace SimcProfileParser.DataSync
                     { "ItemBonusData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_bonus.inc" }
                 }
             });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "GemData.json",
+                ParsedFileType = SimcParsedFileType.GemData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "GemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/gem_data.inc" }
+                }
+            });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "ItemEnchantData.json",
+                ParsedFileType = SimcParsedFileType.ItemEnchantData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ItemEnchantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/spell_item_enchantment.inc" }
+                }
+            });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "SpellScalingMultipliers.json",
+                ParsedFileType = SimcParsedFileType.SpellScaleMultipliers,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_spell_data.inc" }
+                }
+            });
         }
 
         /// <summary>

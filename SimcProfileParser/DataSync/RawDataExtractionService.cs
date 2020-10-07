@@ -41,6 +41,9 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.ItemBonusData => GenerateItemBonusData(incomingRawData),
                 SimcParsedFileType.RandomPropPoints => GenerateRandomPropData(incomingRawData),
                 SimcParsedFileType.SpellData => GenerateSpellData(incomingRawData),
+                SimcParsedFileType.GemData => GenerateGemData(incomingRawData),
+                SimcParsedFileType.ItemEnchantData => GenerateItemEnchantData(incomingRawData),
+                SimcParsedFileType.SpellScaleMultipliers => GenerateSpellScalingMultipliers(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -646,6 +649,164 @@ namespace SimcProfileParser.DataSync
             }
 
             return itemEffects;
+        }
+
+        internal List<SimcRawGemProperty> GenerateGemData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "GemData.raw").FirstOrDefault().Value;
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var gems = new List<SimcRawGemProperty>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() < 4)
+                    continue;
+
+                var gem = new SimcRawGemProperty();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is Id
+                gem.Id = Convert.ToUInt32(data[0]);
+
+                // 1 is enchant id
+                gem.EnchantId = Convert.ToUInt32(data[1]);
+
+                // 2 is color
+                gem.Colour = uint.Parse(data[2].Replace("0x", ""), System.Globalization.NumberStyles.HexNumber);
+
+                gems.Add(gem);
+            }
+
+            return gems;
+        }
+        internal List<SimcRawItemEnchantment> GenerateItemEnchantData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ItemEnchantData.raw").FirstOrDefault().Value;
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var enchants = new List<SimcRawItemEnchantment>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() < 20)
+                    continue;
+
+                var enchant = new SimcRawItemEnchantment();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is Id
+                enchant.Id = Convert.ToUInt32(data[0]);
+
+                // 1 is gem id
+                enchant.GemId = Convert.ToUInt32(data[1]);
+
+                // 2 is color
+                enchant.ScalingId = Convert.ToInt32(data[2]);
+
+                // 3 is min scaling lvl
+                enchant.MinScalingLevel = Convert.ToUInt32(data[3]);
+
+                // 4 is max scaling lvl
+                enchant.MaxScalingLevel = Convert.ToUInt32(data[4]);
+
+                // 5 is max scaling lvl
+                enchant.RequiredSkill = Convert.ToUInt32(data[5]);
+
+                // 6 is max scaling lvl
+                enchant.RequiredSkillLevel = Convert.ToUInt32(data[6]);
+
+                // 7 8 9 are enchant types (item_enchant)
+                // 10 11 12 are enchant amounts
+                // 13 14 15 are props (item_mod_type)
+                // 16 17 18 are saling coefficients
+                for (var i = 0; i < 3; i++)
+                {
+                    var subEffect = new SimcRawItemSubEnchantment();
+                    subEffect.Type = Convert.ToUInt32(data[7 + i]);
+                    subEffect.Amount = Convert.ToInt32(data[10 + i]);
+                    subEffect.Property = Convert.ToUInt32(data[13 + i]);
+                    subEffect.Coefficient = Convert.ToDouble(data[16 + i]);
+                    enchant.SubEnchantments.Add(subEffect);
+                }
+
+                // 19 is spellid
+                enchant.SpellId = Convert.ToUInt32(data[19]);
+
+                // 20 is the name
+                enchant.Name = data[20].Trim('"').Trim();
+
+                enchants.Add(enchant);
+            }
+
+            return enchants;
+        }
+
+        /// <summary>
+        /// Generate spell scaling multipliers, thanks to Phate408
+        /// </summary>
+        /// <returns></returns>
+        internal double[][] GenerateSpellScalingMultipliers(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
+
+            double[][] spellScalingTable = new double[20][];
+            for (int i = 0; i < 20; i++)
+            {
+                spellScalingTable[i] = new double[60];
+            }
+
+            string key = "__spell_scaling[][60] = {";
+
+            int start = rawData.IndexOf(key) + key.Length;
+            int end = rawData.IndexOf("};", start);
+
+            string firstArray = rawData.Substring(start, end - start);
+
+            Regex innerArrayRX = new Regex(@"\{.+?\},", RegexOptions.Singleline);
+            Regex valuesRX = new Regex(@"(\d+(?:\.\d+)?),");
+
+            int j = 0;
+
+            foreach (Match m in innerArrayRX.Matches(firstArray))
+            {
+                int k = 0;
+                foreach (Match m2 in valuesRX.Matches(m.Value))
+                {
+                    double f = double.Parse(m2.Groups[1].Value);
+                    spellScalingTable[j][k++] = f;
+                }
+                j++;
+            }
+
+
+            return spellScalingTable;
         }
     }
 }

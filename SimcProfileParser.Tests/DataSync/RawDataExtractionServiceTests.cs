@@ -196,5 +196,145 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.AreEqual(14309, firstResult.Value4);
             Assert.AreEqual(0, firstResult.Index);
         }
+
+        [Test]
+        public void RDE_Generates_GemData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "GemData.raw", @"  {   62,  2706, 0x0000000c }, // +$k1 Dodge and +$k2 Stamina" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateGemData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(62, firstResult.Id);
+            Assert.AreEqual(2706, firstResult.EnchantId);
+            Assert.AreEqual(12, firstResult.Colour);
+        }
+
+        [Test]
+        public void RDE_Generates_ItemEnchantData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ItemEnchantData.raw", @" { 5425,      0, -1,   1,  40,   0,   0, {   5,   0,   0 }, {    0,    0,    0 }, {     49,      0,      0 }, {  0.0883,  0.0000,  0.0000 }, 190868, ""+$k1 Mastery""  " }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateItemEnchantData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(5425, firstResult.Id);
+        }
+
+        [Test]
+        public void RDE_Generates_SpellScale_Multi()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ScaleData.raw", @"static constexpr double __spell_scaling[][60] = {
+  {
+    1,	0,	0,	0,	0,	//    5
+  },
+  {
+    2,	0,	0,	0,	0,	//    5
+  },
+  {
+    3,	0,	0,	0,	0,	//    5
+  },
+  {
+    4,	0,	0,	0,	0,	//    5
+  },
+  {
+    0,	5,	0,	0,	0,	//    5
+  },
+  {
+    0,	0,	6,	0,	0,	//    5
+  },
+  {
+    0,	0,	0,	7,	0,	//    5
+  },
+  {
+    0,	0,	0,	0,	8,	//    5
+  },
+  {
+    9,	0,	0,	0,	0,	//    5
+  },
+  {
+    10,	0,	0,	0,	0,	//    5
+  },
+  {
+    11,	0,	0,	0,	0,	//    5
+  },
+  {
+    12,	0,	0,	0,	0,	//    5
+  },
+  {
+    0,	13,	0,	0,	0,	//    5
+  },
+  {
+    1.2,	1.4,	1.6,	1.8,	2,	//    5
+  },
+  {
+    200,	200,	200,	200,	200,	//    5
+  },
+  {
+    1.019694663,	1.019694663,	1.019694663,	1.019694663,	1.019694663,	//    5
+  },
+  {
+    2,	2,	2,	2,	2,	//    5
+  },
+  {
+    3,	3,	3,	3,	3,	//    5
+  },
+  {
+    133.3540457,	146.6894502,	160.0248548,	173.3602594,	186.6956639,	//    5
+  },
+  {
+    0.086378445,	0.100774853,	0.11517126,	0.129567668,	0.143964076,	//    5
+  },
+};" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateSpellScalingMultipliers(incomingRawData);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(20, result.Length);
+            Assert.AreEqual(60, result[0].Length);
+            Assert.AreEqual(1f, result[0][0]);
+            Assert.AreEqual(2f, result[1][0]);
+            Assert.AreEqual(3f, result[2][0]);
+            Assert.AreEqual(4f, result[3][0]);
+            Assert.AreEqual(5f, result[4][1]);
+            Assert.AreEqual(6f, result[5][2]);
+            Assert.AreEqual(7f, result[6][3]);
+            Assert.AreEqual(8f, result[7][4]);
+            Assert.AreEqual(9f, result[8][0]);
+            Assert.AreEqual(0.143964076f, result[19][4]);
+        }
     }
 }

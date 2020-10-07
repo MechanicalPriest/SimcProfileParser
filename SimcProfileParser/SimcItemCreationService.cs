@@ -82,12 +82,56 @@ namespace SimcProfileParser
                 mod.StatRating = GetScaledModValue(item, mod.Type, mod.RawStatAllocation);
             }
 
+            AddGems(item, parsedItemData.GemIds);
+
             return item;
+        }
+
+        internal void AddGems(SimcItem item, IReadOnlyCollection<int> gemIds)
+        {
+            foreach (var gemId in gemIds)
+            {
+                var gem = GetRawItemData((uint)gemId);
+
+                var gemProperty = GetGemProperty(gem.GemProperties);
+
+                var enchantmentProperties = GetItemEnchantment(gemProperty.EnchantId);
+
+                // Here we can either veer off and grab enchant details from the spell id
+                // 1) If there is an enchantmentProperties.spellid
+                // 2) otherwise process it with raw item enchantment data
+
+                if (enchantmentProperties.SpellId > 0)
+                {
+                    throw new NotImplementedException("Enchantments with attached spells not yet implemented.");
+                }
+                else
+                {
+                    // 2) raw item enchantment data
+                    var scaleIndex = GetClassId((PlayerScaling)enchantmentProperties.ScalingId);
+
+                    // Because the array is zero indexed, take one off the player level
+                    // enchant breakdown from item_database::item_enchantment_effect_stats
+                    // from dbc_t::spell_scaling
+                    // TODO: Pull the players level through to here
+                    var scaledValue = GetSpellScalingMultiplier(scaleIndex, 60);
+
+                    //// Grab the stat this gem increases
+                    var stat = (ItemModType)enchantmentProperties.SubEnchantments[0].Property;
+
+                    //// Now add it to the item
+                    // Create a new SimcItemGem with the stat, rating etc.
+                    var newGem = new SimcItemGem();
+                    newGem.StatRating = (int)scaledValue;
+                    newGem.Type = stat;
+                    item.Gems.Add(newGem);
+                }
+            }
         }
 
         internal void ProcessBonusIds(SimcItem item, IReadOnlyCollection<int> bonusIds)
         {
-            var bonuses = _cacheService.GetParsedFileContents<List<SimcRawItemBonus>>(Model.DataSync.SimcParsedFileType.ItemBonusData);
+            var bonuses = _cacheService.GetParsedFileContents<List<SimcRawItemBonus>>(SimcParsedFileType.ItemBonusData);
 
             // Go through each of the bonus IDs on the item
             foreach (var bonusId in bonusIds)
@@ -386,6 +430,108 @@ namespace SimcProfileParser
             }
         }
 
+        internal PlayerScaling GetScaleClass(int scaleType)
+        {
+            // from spell_data.hpp:scaling_class
+            switch (scaleType)
+            {
+                case -8:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE8;
+                case -7:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE7;
+                case -6:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE6;
+                case -5:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE5;
+                case -4:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE4;
+                case -3:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE3;
+                case -2:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE2;
+                case -1:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE;
+                case 1:
+                    return PlayerScaling.WARRIOR;
+                case 2:
+                    return PlayerScaling.PALADIN;
+                case 3:
+                    return PlayerScaling.HUNTER;
+                case 4:
+                    return PlayerScaling.ROGUE;
+                case 5:
+                    return PlayerScaling.PRIEST;
+                case 6:
+                    return PlayerScaling.DEATH_KNIGHT;
+                case 7:
+                    return PlayerScaling.SHAMAN;
+                case 8:
+                    return PlayerScaling.MAGE;
+                case 9:
+                    return PlayerScaling.WARLOCK;
+                case 10:
+                    return PlayerScaling.MONK;
+                case 11:
+                    return PlayerScaling.DRUID;
+                case 12:
+                    return PlayerScaling.DEMON_HUNTER;
+                default:
+                    break;
+            }
+
+            return PlayerScaling.PLAYER_NONE;
+        }
+
+        internal int GetClassId(PlayerScaling scaleType)
+        {
+            // from util::class_id
+            switch (scaleType)
+            {
+                case PlayerScaling.WARRIOR:
+                    return 1;
+                case PlayerScaling.PALADIN:
+                    return 2;
+                case PlayerScaling.HUNTER:
+                    return 3;
+                case PlayerScaling.ROGUE:
+                    return 4;
+                case PlayerScaling.PRIEST:
+                    return 5;
+                case PlayerScaling.DEATH_KNIGHT:
+                    return 6;
+                case PlayerScaling.SHAMAN:
+                    return 7;
+                case PlayerScaling.MAGE:
+                    return 8;
+                case PlayerScaling.WARLOCK:
+                    return 9;
+                case PlayerScaling.MONK:
+                    return 10;
+                case PlayerScaling.DRUID:
+                    return 11;
+                case PlayerScaling.DEMON_HUNTER:
+                    return 12;
+                case PlayerScaling.PLAYER_SPECIAL_SCALE:
+                    return 13;
+                case PlayerScaling.PLAYER_SPECIAL_SCALE2:
+                    return 14;
+                case PlayerScaling.PLAYER_SPECIAL_SCALE3:
+                    return 15;
+                case PlayerScaling.PLAYER_SPECIAL_SCALE4:
+                    return 16;
+                case PlayerScaling.PLAYER_SPECIAL_SCALE5:
+                    return 17;
+                case PlayerScaling.PLAYER_SPECIAL_SCALE6:
+                    return 18;
+                case PlayerScaling.PLAYER_SPECIAL_SCALE7:
+                    return 13;
+                case PlayerScaling.PLAYER_SPECIAL_SCALE8:
+                    return 19;
+                default:
+                    return 0;
+            }
+        }
+
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.
         internal SimcRawItem GetRawItemData(uint itemId)
         {
@@ -426,13 +572,40 @@ namespace SimcProfileParser
             return crMulti;
         }
 
-        private double GetStaminaMultiplier(int itemLevel, CombatRatingMultiplayerType staminaRatingType)
+        internal double GetStaminaMultiplier(int itemLevel, CombatRatingMultiplayerType staminaRatingType)
         {
             var stamMultipliers = _cacheService.GetParsedFileContents<float[][]>(SimcParsedFileType.StaminaMultipliers);
 
             var stamMulti = stamMultipliers[(int)staminaRatingType][itemLevel - 1];
 
             return stamMulti;
+        }
+
+        internal SimcRawGemProperty GetGemProperty(int gemId)
+        {
+            var gemPropertyData = _cacheService.GetParsedFileContents<List<SimcRawGemProperty>>(SimcParsedFileType.GemData);
+
+            var gemProperty = gemPropertyData.Where(g => g.Id == gemId).FirstOrDefault();
+
+            return gemProperty;
+        }
+
+        internal SimcRawItemEnchantment GetItemEnchantment(uint enchantId)
+        {
+            var itemEnchantData = _cacheService.GetParsedFileContents<List<SimcRawItemEnchantment>>(SimcParsedFileType.ItemEnchantData);
+
+            var enchantmentProperties = itemEnchantData.Where(e => e.Id == enchantId).FirstOrDefault();
+
+            return enchantmentProperties;
+        }
+
+        internal double GetSpellScalingMultiplier(int scaleIndex, int playerLevel)
+        {
+            var spellScaleData = _cacheService.GetParsedFileContents<double[][]>(SimcParsedFileType.SpellScaleMultipliers);
+
+            var result = spellScaleData[scaleIndex][playerLevel - 1];
+
+            return result;
         }
     }
 }

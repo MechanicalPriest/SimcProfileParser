@@ -4,12 +4,12 @@ namespace SimcProfileParser.Model
 {
     public class SimcItemMod
     {
-        public ItemModType Type { get; set; }
-        public int RawStatAllocation { get; set; }
+        public ItemModType Type { get; internal set; }
+        public int RawStatAllocation { get; internal set; }
         /// <summary>
         /// Calculated actual value of the stat on this item
         /// </summary>
-        public int StatRating { get; set; }
+        public int StatRating { get; internal set; }
 
         public SimcItemMod()
         {

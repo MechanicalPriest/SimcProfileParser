@@ -12,6 +12,9 @@ namespace SimcProfileParser.Model.DataSync
         StaminaMultipliers,
         SpellData,
         RandomPropPoints,
-        ItemBonusData
+        ItemBonusData,
+        GemData,
+        ItemEnchantData,
+        SpellScaleMultipliers
     }
 }
