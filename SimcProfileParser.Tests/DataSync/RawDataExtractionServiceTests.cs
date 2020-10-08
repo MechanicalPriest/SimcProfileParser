@@ -325,16 +325,16 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.IsNotNull(result);
             Assert.AreEqual(20, result.Length);
             Assert.AreEqual(60, result[0].Length);
-            Assert.AreEqual(1f, result[0][0]);
-            Assert.AreEqual(2f, result[1][0]);
-            Assert.AreEqual(3f, result[2][0]);
-            Assert.AreEqual(4f, result[3][0]);
-            Assert.AreEqual(5f, result[4][1]);
-            Assert.AreEqual(6f, result[5][2]);
-            Assert.AreEqual(7f, result[6][3]);
-            Assert.AreEqual(8f, result[7][4]);
-            Assert.AreEqual(9f, result[8][0]);
-            Assert.AreEqual(0.143964076f, result[19][4]);
+            Assert.AreEqual(1d, result[0][0]);
+            Assert.AreEqual(2d, result[1][0]);
+            Assert.AreEqual(3d, result[2][0]);
+            Assert.AreEqual(4d, result[3][0]);
+            Assert.AreEqual(5d, result[4][1]);
+            Assert.AreEqual(6d, result[5][2]);
+            Assert.AreEqual(7d, result[6][3]);
+            Assert.AreEqual(8d, result[7][4]);
+            Assert.AreEqual(9d, result[8][0]);
+            Assert.AreEqual(0.143964076d, result[19][4]);
         }
     }
 }
