@@ -16,6 +16,7 @@ namespace SimcProfileParser.Model
 
         public List<SimcItemMod> Mods { get; internal set; }
         public List<ItemSocketColor> Sockets { get; internal set; }
+        public List<SimcItemGem> Gems { get; set; }
 
         public InventoryType InventoryType { get; internal set; }
         public ItemClass ItemClass { get; internal set; }
@@ -25,6 +26,7 @@ namespace SimcProfileParser.Model
         public SimcItem()
         {
             Mods = new List<SimcItemMod>();
+            Gems = new List<SimcItemGem>();
             Sockets = new List<ItemSocketColor>();
             InventoryType = InventoryType.INVTYPE_NON_EQUIP;
             ItemClass = ItemClass.ITEM_CLASS_MISC; // Not a great default but at least its not used
