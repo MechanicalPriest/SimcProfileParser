@@ -22,7 +22,7 @@ neck=,id=177146,bonus_id=6938,drop_level=50
 shoulder=,id=163269,bonus_id=6938,drop_level=50
 back=,id=163311,bonus_id=6938,drop_level=50
 chest=,id=174025,bonus_id=6938,drop_level=50
-wrist=,id=177094,bonus_id=6938,drop_level=50
+wrist=,id=181680,enchant_id=6222,gem_id=173128,bonus_id=6652/6935/1475/5894/6646
 hands=,id=163258,bonus_id=6938,drop_level=50
 waist=,id=163343,bonus_id=6938,drop_level=50
 legs=,id=177092,bonus_id=6938,drop_level=50

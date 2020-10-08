@@ -324,4 +324,59 @@ namespace SimcProfileParser.Model.RawData
         CR_MULTIPLIER_JEWLERY,
         CR_MULTIPLIER_MAX
     };
+
+    // from sc_enums.hpp
+    enum PlayerScaling
+    {
+        PLAYER_SPECIAL_SCALE8 = -8,
+        PLAYER_SPECIAL_SCALE7 = -7,
+        PLAYER_SPECIAL_SCALE6 = -6,
+        PLAYER_SPECIAL_SCALE5 = -5,
+        PLAYER_SPECIAL_SCALE4 = -4,
+        PLAYER_SPECIAL_SCALE3 = -3,
+        PLAYER_SPECIAL_SCALE2 = -2,
+        PLAYER_SPECIAL_SCALE = -1,
+        PLAYER_NONE = 0,
+        DEATH_KNIGHT,
+        DEMON_HUNTER,
+        DRUID,
+        HUNTER,
+        MAGE,
+        MONK,
+        PALADIN,
+        PRIEST,
+        ROGUE,
+        SHAMAN,
+        WARLOCK,
+        WARRIOR,
+        PLAYER_PET,
+        PLAYER_GUARDIAN,
+        HEALING_ENEMY,
+        ENEMY,
+        ENEMY_ADD,
+        ENEMY_ADD_BOSS,
+        TANK_DUMMY,
+        PLAYER_MAX
+    };
+
+    public static class Lookups
+    {
+        public static float[] SpellScalingLookup = new float[13]
+        {
+            0, // None
+            0, // Warr
+            0, // Pal
+            0, // Hunter
+            0, // 
+            0, 
+            0, 
+            0, 
+            0, 
+            0, 
+            0, 
+            0, 
+            0
+        };
+    }
+
 }
