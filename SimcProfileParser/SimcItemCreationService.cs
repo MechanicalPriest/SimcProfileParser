@@ -84,7 +84,40 @@ namespace SimcProfileParser
 
             AddGems(item, parsedItemData.GemIds);
 
+            AddSpellEffects(item, rawItemData.ItemEffects);
+
             return item;
+        }
+
+        private void AddSpellEffects(SimcItem item, List<SimcRawItemEffect> itemEffects)
+        {
+            // From double spelleffect_data_t::average( const item_t* item )
+            // Get the item budget from item_database::item_budget
+            // For this we need the item with appropriate item level
+            // and we need the spells maximum scaling level
+            // Then we use the GetScaledModValue() method
+
+            // Now we update get the budget multiplier using the spells scaling class
+
+            // If the scaling is -7, apply combat rating multiplier to it
+            // This is done using GetCombatRatingMultiplier() and setting the budget to it
+
+            // If the scaling is -8, get the props for the items ilvl
+            // set the buget to tbe the props damage replace stat value ... ???
+
+            // If the scaling is PLAYER_NONE but the spells flags contains 
+            // the spell_attribute::SX_SCALE_ILEVEL value (354U)
+            // Then get random props again and use the damage_secondary property... ???
+
+            // Otherwise just use the original budget.
+
+            // Finally multiply the coefficient of the spell effect against the budget.
+
+            // Note: there is a similar process inside this method:
+            // double spelleffect_data_t::average( const player_t* p, unsigned level ) const
+            // That is done to get scale values for non-item effects based instead on player level
+            // This is for things like racial abilities and uses a simpler formula
+            // It does use the spell scaling array values, which we already have.
         }
 
         internal void AddGems(SimcItem item, IReadOnlyCollection<int> gemIds)

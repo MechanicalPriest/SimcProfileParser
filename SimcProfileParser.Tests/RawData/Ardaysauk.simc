@@ -18,6 +18,7 @@ soulbind=pelagos,328257/116:1
 # conduits_available=75:1/77:1/78:1/81:1/84:1/87:1/114:1/113:1/76:1/115:1/82:1/107:1/116:1/67:1/69:1/85:1/73:1/72:1/66:1/71:1
 # renown=40
 
+trinket1=,id=175733,bonus_id=6706/7215,drop_level=50
 head=,id=175864,bonus_id=6795/1487/6646
 neck=,id=175885,bonus_id=6788/1487/6646
 shoulder=,id=175873,bonus_id=6781/1487/6646
