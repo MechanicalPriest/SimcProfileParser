@@ -633,13 +633,16 @@ namespace SimcProfileParser.DataSync
 
                     // 59 is label count
 
-                    // Add the spell effects
-                    foreach(var effect in effects.Where(e => e.SpellId == spell.Id))
-                    {
-                        spell.Effects.Add(effect);
-                    }
-
                     spells.Add(spell);
+                }
+            }
+
+            // Add the spell effects to spells
+            foreach(var spell in spells)
+            {
+                foreach (var effect in effects.Where(e => e.SpellId == spell.Id))
+                {
+                    spell.Effects.Add(effect);
                 }
             }
 

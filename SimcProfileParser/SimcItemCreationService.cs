@@ -91,6 +91,7 @@ namespace SimcProfileParser
 
         private void AddSpellEffects(SimcItem item, List<SimcRawItemEffect> itemEffects)
         {
+            
             // From double spelleffect_data_t::average( const item_t* item )
             // Get the item budget from item_database::item_budget
             // For this we need the item with appropriate item level
@@ -118,6 +119,86 @@ namespace SimcProfileParser
             // That is done to get scale values for non-item effects based instead on player level
             // This is for things like racial abilities and uses a simpler formula
             // It does use the spell scaling array values, which we already have.
+
+            foreach (var effect in itemEffects)
+            {
+                // TODO: Factor in the level scaling caps from item_database::item_budget
+                var spell = GetSpellData(effect.SpellId);
+
+                var budget = GetItemBudget(item, spell.MaxScalingLevel);
+
+                var spellScalingClass = GetScaleClass(spell.ScalingType);
+
+                if(spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
+                {
+                    var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
+                    var multi = GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
+                    budget *= multi;
+                }
+                else if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE8)
+                {
+                    var props = GetRandomProps(item.ItemLevel);
+                    budget = props.DamageReplaceStat;
+                }
+                else if (spellScalingClass == PlayerScaling.PLAYER_NONE)
+                {
+                    // This is from spelleffect_data_t::average's call to _spell->flags( spell_attribute::SX_SCALE_ILEVEL )
+                    throw new NotImplementedException("ilvl scaling from spell flags not yet implemented.");
+                }
+
+                var effectSpell = new SimcSpell()
+                {
+                    SpellId = spell.Id,
+                    Name = spell.Name,
+                    School = spell.School,
+                    ScalingType = spell.ScalingType,
+                    MinRange = spell.MinRange,
+                    MaxRange = spell.MaxRange,
+                    Cooldown = spell.Cooldown,
+                    Gcd = spell.Gcd,
+                    Category = spell.Category,
+                    CategoryCooldown = spell.CategoryCooldown,
+                    Charges = spell.Charges,
+                    ChargeCooldown = spell.ChargeCooldown,
+                    MaxTargets = spell.MaxTargets,
+                    Duration = spell.Duration,
+                    MaxStacks = spell.MaxStack,
+                    ProcChance = spell.ProcChance,
+                    InternalCooldown = spell.InternalCooldown,
+                    Rppm = spell.Rppm,
+                    CastTime = spell.CastTime,
+                    ItemScaleBudget = budget,
+                };
+
+                foreach(var spellEffect in spell.Effects)
+                {
+                    effectSpell.Effects.Add(new SimcSpellEffect()
+                    {
+                        Id = spellEffect.Id,
+                        EffectIndex = spellEffect.EffectIndex,
+                        EffectType = spellEffect.EffectType,
+                        EffectSubType = spellEffect.EffectSubType,
+                        Coefficient = spellEffect.Coefficient,
+                        SpCoefficient = spellEffect.SpCoefficient,
+                        Delta = spellEffect.Delta,
+                        Amplitude = spellEffect.Amplitude,
+                        Radius = spellEffect.Radius,
+                        RadiusMax = spellEffect.RadiusMax,
+                        BaseValue = spellEffect.BaseValue,
+                    });
+                }
+
+                var newEffect = new SimcItemEffect
+                {
+                    EffectId = effect.Id,
+                    CooldownDuration = effect.CooldownDuration,
+                    CooldownGroup = effect.CooldownGroup,
+                    CooldownGroupDuration = effect.CooldownGroupDuration,
+                    Spell = effectSpell
+                };
+
+                item.Effects.Add(newEffect);
+            }
         }
 
         internal void AddGems(SimcItem item, IReadOnlyCollection<int> gemIds)
@@ -229,6 +310,40 @@ namespace SimcProfileParser
             };
 
             item.Mods.Add(newMod);
+        }
+
+        internal double GetItemBudget(SimcItem item, int maxItemlevel)
+        {
+            // from item_database::item_budget
+            // Weirdly, ITEM_QUALITY_MAX (Heirloom) appears with the pic tier
+            // and also for some reason pulling the first budget value, not compensating
+            // for the item type using GetSlotType() ?
+            double budget;
+            var scale_ilvl = item.ItemLevel;
+
+            if (maxItemlevel > 0)
+                scale_ilvl = Math.Min(scale_ilvl, maxItemlevel);
+
+            var ilvlRandomProps = GetRandomProps(scale_ilvl);
+
+            switch (item.Quality)
+            {
+                case ItemQuality.ITEM_QUALITY_EPIC:
+                case ItemQuality.ITEM_QUALITY_LEGENDARY:
+                case ItemQuality.ITEM_QUALITY_MAX: 
+                    budget = ilvlRandomProps.Epic[0];
+                    break;
+
+                case ItemQuality.ITEM_QUALITY_RARE:
+                    budget = ilvlRandomProps.Rare[0];
+                    break;
+
+                default: // Everything else
+                    budget = ilvlRandomProps.Uncommon[0];
+                    break;
+            }
+
+            return budget;
         }
 
         internal int GetScaledModValue(SimcItem item, ItemModType modType, int statAllocation)
@@ -637,6 +752,15 @@ namespace SimcProfileParser
             var spellScaleData = _cacheService.GetParsedFileContents<double[][]>(SimcParsedFileType.SpellScaleMultipliers);
 
             var result = spellScaleData[scaleIndex][playerLevel - 1];
+
+            return result;
+        }
+
+        internal SimcRawSpell GetSpellData(uint spellId)
+        {
+            var spellData = _cacheService.GetParsedFileContents<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
+
+            var result = spellData.Where(s => s.Id == spellId).FirstOrDefault();
 
             return result;
         }
