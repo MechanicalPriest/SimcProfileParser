@@ -143,7 +143,7 @@ namespace SimcProfileParser
                 else if (spellScalingClass == PlayerScaling.PLAYER_NONE)
                 {
                     // This is from spelleffect_data_t::average's call to _spell->flags( spell_attribute::SX_SCALE_ILEVEL )
-                    throw new NotImplementedException("ilvl scaling from spell flags not yet implemented.");
+                    _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Item: {item.ItemId} Effect: {effect.Id} Spell: {spell.Id}");
                 }
 
                 var effectSpell = new SimcSpell()
