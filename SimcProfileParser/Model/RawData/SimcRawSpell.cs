@@ -70,5 +70,11 @@ namespace SimcProfileParser.Model.RawData
         /// Essence ID
         /// </summary>
         public uint EssenceId { get; set; }
+        public List<SimcRawSpellEffect> Effects { get; set; }
+
+        public SimcRawSpell()
+        {
+            Effects = new List<SimcRawSpellEffect>();
+        }
     }
 }

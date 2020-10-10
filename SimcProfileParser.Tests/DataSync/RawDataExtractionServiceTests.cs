@@ -148,7 +148,10 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "SpellData.raw", @"  { ""The Hunt"" , 345396, 1, 0.000000, 0x0000000000000000, 0x00000800, 0, 0, " +
+                { "SpellData.raw", "  { 871236, 345396,  0,   6, 395, 0.000000, 0.000000, 0.000000, 0.000000, " +
+                "0.000000, 0, 0.000000, 0.000000,      5.0000, 22058, 0, { 0, 0, 0, 0 }, 0, 1.000000, 0.000000, 0.000000,  0,   " +
+                "0, 1, 0, 0.000000, 1.000000, 0, 0 },\r\n" +
+                @"{ ""The Hunt"" , 345396, 1, 0.000000, 0x0000000000000000, 0x00000800, 0, 0, " +
                 "0, 0, 0, 0.000000, 50.000000,       0, 0, 0, 0, 0,    0, 1, 0, 1500, 0, 0, 0, 0, 0, 0.000000, 0, 0, " +
                 "0, 0, { 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 262144, 0 }, 107, 0x00000000,  0, " + 
                 "  0,  0, 0, 0, 0, 0, 1, 0, 1, 0 }, /* 871236 */" }
@@ -165,6 +168,9 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.IsNotNull(firstResult);
             Assert.AreEqual("The Hunt", firstResult.Name);
             Assert.AreEqual(345396, firstResult.Id);
+            Assert.IsNotNull(firstResult.Effects);
+            Assert.NotZero(firstResult.Effects.Count);
+            Assert.AreEqual(871236, firstResult.Effects[0].Id);
         }
 
         [Test]
