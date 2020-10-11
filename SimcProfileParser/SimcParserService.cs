@@ -18,23 +18,6 @@ namespace SimcProfileParser
             _logger = logger;
         }
 
-        public SimcParsedProfile ParseProfileAsync(string profileString)
-        {
-            if (string.IsNullOrEmpty(profileString))
-            {
-                _logger?.LogWarning("Incoming profileString is empty.");
-                throw new ArgumentNullException(nameof(profileString));
-            }
-
-            _logger?.LogInformation($"Splitting a string with {profileString.Length} character(s)");
-
-            var lines = profileString.Split("\r\n").ToList();
-
-            _logger?.LogInformation($"Created {lines.Count} lines to be processed");
-
-            return ParseProfileAsync(lines);
-        }
-
         public SimcParsedProfile ParseProfileAsync(List<string> profileLines)
         {
             _logger?.LogInformation($"Parsing a profileString with {profileLines.Count} lines.");

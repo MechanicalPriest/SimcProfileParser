@@ -53,11 +53,6 @@ ISimcProfileParser spp = new SimcProfileParser();
 var profile = await spp.GenerateProfileAsync(File.ReadAllText("import.simc"));
 
 Console.WriteLine($"Profile object created for player {profile.Name}.");
-
-// Without async
-var profile2 = spp.GenerateProfileAsync(File.ReadAllText("import.simc"));
-
-Console.WriteLine($"Profile object created for player {profile2.Name}.");
 ```
 
 You can also generate a profile object from individual lines of an import file:
