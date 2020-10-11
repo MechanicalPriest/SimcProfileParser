@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using SimcProfileParser.DataSync;
+using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model;
 using SimcProfileParser.Model.DataSync;
@@ -14,32 +16,19 @@ using System.Text;
 
 namespace SimcProfileParser
 {
-    public class SimcItemCreationService
+    internal class SimcItemCreationService : ISimcItemCreationService
     {
         private readonly ICacheService _cacheService;
-        private readonly ILogger _logger;
+        private readonly ILogger<SimcItemCreationService> _logger;
 
-        public SimcItemCreationService(ICacheService cacheService,
-            ILogger logger = null)
+        internal SimcItemCreationService(ICacheService cacheService,
+            ILogger<SimcItemCreationService> logger)
         {
             _cacheService = cacheService;
             _logger = logger;
         }
 
-        internal object CreateItemsFromProfile(SimcParsedProfile parsedProfile)
-        {
-            var items = new List<SimcItem>();
-
-            foreach(var parsedItemData in parsedProfile.Items)
-            {
-                var item = CreateItem(parsedItemData);
-                items.Add(item);
-            }
-
-            return items;
-        }
-
-        internal SimcItem CreateItem(SimcParsedItem parsedItemData)
+        SimcItem ISimcItemCreationService.CreateItem(SimcParsedItem parsedItemData)
         {
             var rawItemData = GetRawItemData(parsedItemData.ItemId);
 

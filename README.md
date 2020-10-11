@@ -6,10 +6,22 @@ A library to parse items in the simc import format into functional objects.
 ## Usage
 ### Initialising
 
+#### Instance Creation
+A new instance can be manually created. 
+
+```csharp
+ISimcProfileParser spp = new SimcProfileParser();
+```
+
+To provide logging to the new instance and its children, supply an `ILoggerFactory`:
+```csharp
+ISimcProfileParser spp = new SimcProfileParser(myLoggerFactory);
+```
+
 #### Using Dependency Injection
 
-To implement this using Dependency Injection simply register it alongside your other services configuration 
-using the `AddSimcProfileParser()` extension method:
+To implement this using Dependency Injection register it alongside your other services configuration 
+using the `AddSimcProfileParser()` extension method when configuring your DI services:
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -30,15 +42,6 @@ class MyClass
     }
 }
 ```
-
-#### Manual Instance Creation
-A new instance can be manually created. 
-
-**Note**: logging will not function in a manually created instance as it is provided through DI.
-```csharp
-ISimcProfileParser spp = new SimcProfileParser();
-```
-
 ### Examples
 
 TODO: Show some examples of how to use the library to parse strings and manually create options/objects.

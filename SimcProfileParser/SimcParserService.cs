@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Profile;
 using System;
@@ -14,7 +15,7 @@ namespace SimcProfileParser
     {
         private readonly ILogger<SimcParserService> _logger;
 
-        public SimcParserService(ILogger<SimcParserService> logger = null)
+        public SimcParserService(ILogger<SimcParserService> logger)
         {
             _logger = logger;
         }

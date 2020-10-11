@@ -11,19 +11,14 @@ using System.Text.RegularExpressions;
 
 namespace SimcProfileParser.DataSync
 {
-    internal interface IRawDataExtractionService
-    {
-        object GenerateData(SimcParsedFileType fileType, Dictionary<string, string> incomingRawData);
-    }
-
     /// <summary>
     /// The purpose of thie class is to process a raw file into 
     /// </summary>
     internal class RawDataExtractionService : IRawDataExtractionService
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<RawDataExtractionService> _logger;
 
-        public RawDataExtractionService(ILogger logger)
+        public RawDataExtractionService(ILogger<RawDataExtractionService> logger)
         {
             _logger = logger;
         }

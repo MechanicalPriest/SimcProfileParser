@@ -2,7 +2,9 @@
 using NUnit.Framework;
 using Serilog;
 using SimcProfileParser.DataSync;
+using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
+using SimcProfileParser.Model;
 using SimcProfileParser.Model.Profile;
 using System;
 using System.Collections.Generic;
@@ -52,14 +54,20 @@ namespace SimcProfileParser.Tests
                 new RawDataExtractionService(_loggerFactory.CreateLogger<RawDataExtractionService>());
             ICacheService cacheService = new CacheService(rawDataExtractionService, _loggerFactory.CreateLogger<CacheService>());
 
-            var ics = new SimcItemCreationService(cacheService,
+            ISimcItemCreationService ics = new SimcItemCreationService(cacheService,
                 _loggerFactory.CreateLogger<SimcItemCreationService>());
 
             // Act
-            var result = ics.CreateItemsFromProfile(ParsedProfile);
+            var items = new List<SimcItem>();
+            foreach (var parsedItemData in ParsedProfile.Items)
+            {
+                var item = ics.CreateItem(parsedItemData);
+                items.Add(item);
+            }
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.IsNotNull(items);
+            Assert.NotZero(items.Count);
         }
     }
 }

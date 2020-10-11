@@ -23,12 +23,12 @@ namespace SimcProfileParser.DataSync
         protected IList<CacheFileConfiguration> _registeredFiles;
         protected IDictionary<SimcParsedFileType, object> _cachedFileData;
         protected readonly IRawDataExtractionService _rawDataExtractionService;
-        protected readonly ILogger _logger;
+        protected readonly ILogger<CacheService> _logger;
 
         public IReadOnlyCollection<CacheFileConfiguration> RegisteredFiles => new ReadOnlyCollection<CacheFileConfiguration>(_registeredFiles);
 
         public CacheService(IRawDataExtractionService rawDataExtractionService,
-            ILogger logger)
+            ILogger<CacheService> logger)
         {
             _registeredFiles = new List<CacheFileConfiguration>();
             _cachedFileData = new Dictionary<SimcParsedFileType, object>();

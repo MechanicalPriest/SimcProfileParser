@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 using Serilog;
 using SimcProfileParser.Interfaces;
@@ -103,7 +104,7 @@ namespace SimcProfileParser.Tests
         public void SPS_Processes_Without_Logger_Set()
         {
             // Arrange
-            ISimcParserService sps = new SimcParserService();
+            ISimcParserService sps = new SimcParserService(NullLogger<SimcParserService>.Instance);
 
             // Act
             void NoLoggerSet()
