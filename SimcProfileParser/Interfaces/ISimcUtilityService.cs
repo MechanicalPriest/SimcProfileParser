@@ -13,7 +13,7 @@ namespace SimcProfileParser.Interfaces
         CombatRatingMultiplayerType GetCombatRatingMultiplierType(InventoryType inventoryType);
         SimcRawGemProperty GetGemProperty(int gemId);
         bool GetIsCombatRating(ItemModType modType);
-        double GetItemBudget(SimcItem item, int maxItemlevel);
+        double GetItemBudget(int itemLevel, ItemQuality itemQuality, int maxItemlevel);
         SimcRawItemEnchantment GetItemEnchantment(uint enchantId);
         SimcRawRandomPropData GetRandomProps(int itemLevel);
         SimcRawItem GetRawItemData(uint itemId);

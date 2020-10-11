@@ -236,21 +236,21 @@ namespace SimcProfileParser
             };
         }
 
-        public double GetItemBudget(SimcItem item, int maxItemlevel)
+        public double GetItemBudget(int itemLevel, ItemQuality itemQuality, int maxItemlevel)
         {
             // from item_database::item_budget
             // Weirdly, ITEM_QUALITY_MAX (Heirloom) appears with the pic tier
             // and also for some reason pulling the first budget value, not compensating
             // for the item type using GetSlotType() ?
             double budget;
-            var scale_ilvl = item.ItemLevel;
+            var scale_ilvl = itemLevel;
 
             if (maxItemlevel > 0)
                 scale_ilvl = Math.Min(scale_ilvl, maxItemlevel);
 
             var ilvlRandomProps = GetRandomProps(scale_ilvl);
 
-            switch (item.Quality)
+            switch (itemQuality)
             {
                 case ItemQuality.ITEM_QUALITY_EPIC:
                 case ItemQuality.ITEM_QUALITY_LEGENDARY:

@@ -3,6 +3,7 @@ using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
+using System;
 
 namespace SimcProfileParser
 {
@@ -22,6 +23,42 @@ namespace SimcProfileParser
         }
 
         public SimcSpell GenerateItemSpell(SimcItem item, uint spellId)
+        {
+            var spell = BuildItemSpell(spellId, item.ItemLevel, item.Quality, item.InventoryType);
+
+            return spell;
+        }
+
+        public SimcSpell GenerateItemSpell(SimcSpellOptions spellOptions)
+        {
+            if (!spellOptions.ItemQuality.HasValue)
+                throw new ArgumentNullException(nameof(spellOptions.ItemQuality),
+                    "SpellOptions must include Item Quality to generate an item spell.");
+
+            if (!spellOptions.ItemInventoryType.HasValue)
+                throw new ArgumentNullException(nameof(spellOptions.ItemInventoryType),
+                    "SpellOptions must include Item Inventory Type to generate an item spell.");
+
+            var spell = BuildItemSpell(spellOptions.SpellId, spellOptions.ItemLevel,
+                spellOptions.ItemQuality.Value, spellOptions.ItemInventoryType.Value);
+
+            return spell;
+        }
+
+        public SimcSpell GeneratePlayerSpell(uint playerLevel, uint spellId)
+        {
+            var spellData = _simcUtilityService.GetRawSpellData(spellId);
+
+            return null;
+        }
+
+        public SimcSpell GeneratePlayerSpell(SimcSpellOptions spellOptions)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        internal SimcSpell BuildItemSpell(uint spellId, int itemLevel, 
+            ItemQuality itemQuality, InventoryType inventoryType)
         {
             // From double spelleffect_data_t::average( const item_t* item )
             // Get the item budget from item_database::item_budget
@@ -47,25 +84,25 @@ namespace SimcProfileParser
 
             var spellData = _simcUtilityService.GetRawSpellData(spellId);
 
-            var budget = _simcUtilityService.GetItemBudget(item, spellData.MaxScalingLevel);
+            var budget = _simcUtilityService.GetItemBudget(itemLevel, itemQuality, spellData.MaxScalingLevel);
 
             var spellScalingClass = _simcUtilityService.GetScaleClass(spellData.ScalingType);
 
             if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
             {
-                var combatRatingType = _simcUtilityService.GetCombatRatingMultiplierType(item.InventoryType);
-                var multi = _simcUtilityService.GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
+                var combatRatingType = _simcUtilityService.GetCombatRatingMultiplierType(inventoryType);
+                var multi = _simcUtilityService.GetCombatRatingMultiplier(itemLevel, combatRatingType);
                 budget *= multi;
             }
             else if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE8)
             {
-                var props = _simcUtilityService.GetRandomProps(item.ItemLevel);
+                var props = _simcUtilityService.GetRandomProps(itemLevel);
                 budget = props.DamageReplaceStat;
             }
             else if (spellScalingClass == PlayerScaling.PLAYER_NONE)
             {
                 // This is from spelleffect_data_t::average's call to _spell->flags( spell_attribute::SX_SCALE_ILEVEL )
-                _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Item: {item.ItemId} Spell: {spellData.Id}");
+                _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Spell: {spellData.Id}");
             }
 
             var itemSpell = new SimcSpell()
@@ -111,13 +148,6 @@ namespace SimcProfileParser
             }
 
             return itemSpell;
-        }
-
-        public SimcSpell GeneratePlayerSpell(uint playerLevel, uint spellId)
-        {
-            var spellData = _simcUtilityService.GetRawSpellData(spellId);
-
-            return null;
         }
     }
 }
