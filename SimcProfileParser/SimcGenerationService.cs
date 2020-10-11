@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model;
+using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 using System;
 using System.Collections.Generic;
@@ -105,12 +106,12 @@ namespace SimcProfileParser
             return await GenerateProfileAsync(lines);
         }
 
-        public async Task<SimcItem> GenerateItemAsync(SimcItemOptions options)
+        public Task<SimcItem> GenerateItemAsync(SimcItemOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options)
+        public Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options)
         {
             throw new NotImplementedException();
         }

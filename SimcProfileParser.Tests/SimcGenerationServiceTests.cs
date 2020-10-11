@@ -9,7 +9,7 @@ namespace SimcProfileParser.Tests
     class SimcGenerationServiceTests
     {
         [Test]
-        public async Task SGS_Throws_Empty_ProfileString()
+        public void SGS_Throws_Empty_ProfileString()
         {
             // Arrange
             var sgs = new SimcGenerationService();
@@ -19,11 +19,10 @@ namespace SimcProfileParser.Tests
 
             // Assert
             Assert.ThrowsAsync<ArgumentNullException>(async () => await sgs.GenerateProfileAsync(inputData));
-            return;
         }
 
         [Test]
-        public async Task SGS_Throws_Null_StringList()
+        public void SGS_Throws_Null_StringList()
         {
             // Arrange
             var sgs = new SimcGenerationService();
@@ -33,7 +32,6 @@ namespace SimcProfileParser.Tests
 
             // Assert
             Assert.ThrowsAsync<ArgumentNullException>(async () => await sgs.GenerateProfileAsync(inputData));
-            return;
         }
     }
 }

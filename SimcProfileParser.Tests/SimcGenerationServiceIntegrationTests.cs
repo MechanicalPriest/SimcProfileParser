@@ -29,7 +29,6 @@ namespace SimcProfileParser.Tests
 
             // Act
             var profile = await _sgs.GenerateProfileAsync(_profileString);
-            profile = null;
 
             // Assert
             Assert.IsNotNull(profile, "Profile not null");

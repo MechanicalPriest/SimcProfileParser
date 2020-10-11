@@ -1,7 +1,7 @@
 ﻿using SimcProfileParser.Model.RawData;
 using System.Collections.Generic;
 
-namespace SimcProfileParser.Model
+namespace SimcProfileParser.Model.Generated
 {
     public class SimcItem
     {

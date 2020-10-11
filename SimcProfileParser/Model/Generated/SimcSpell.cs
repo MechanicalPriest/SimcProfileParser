@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SimcProfileParser.Model
+namespace SimcProfileParser.Model.Generated
 {
     public class SimcSpell
     {

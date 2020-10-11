@@ -5,6 +5,7 @@ using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model;
+using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 using System;
 using System.Collections.Generic;

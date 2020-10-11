@@ -1,6 +1,6 @@
 ﻿using SimcProfileParser.Model.RawData;
 
-namespace SimcProfileParser.Model
+namespace SimcProfileParser.Model.Generated
 {
     public class SimcItemMod
     {

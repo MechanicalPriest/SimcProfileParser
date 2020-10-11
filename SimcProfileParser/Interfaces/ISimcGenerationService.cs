@@ -1,4 +1,5 @@
 ﻿using SimcProfileParser.Model;
+using SimcProfileParser.Model.Generated;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

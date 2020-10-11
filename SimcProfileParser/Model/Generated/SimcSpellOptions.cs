@@ -1,4 +1,4 @@
-﻿namespace SimcProfileParser.Model
+﻿namespace SimcProfileParser.Model.Generated
 {
     public class SimcSpellOptions
     {

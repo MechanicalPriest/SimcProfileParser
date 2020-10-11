@@ -1,4 +1,5 @@
 ﻿using SimcProfileParser.Model;
+using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 
 namespace SimcProfileParser.Interfaces
