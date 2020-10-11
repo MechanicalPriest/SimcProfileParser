@@ -33,11 +33,45 @@ namespace SimcProfileParser
 
         SimcItem ISimcItemCreationService.CreateItem(SimcParsedItem parsedItemData)
         {
-            var rawItemData = _simcUtilityService.GetRawItemData(parsedItemData.ItemId);
+            var item = BuildItem(parsedItemData.ItemId);
+
+            UpdateItem(item,
+                parsedItemData.BonusIds.ToList(),
+                parsedItemData.GemIds.ToList());
+
+            return item;
+        }
+
+        SimcItem ISimcItemCreationService.CreateItem(SimcItemOptions itemOptions)
+        {
+            var item = BuildItem(itemOptions.ItemId);
+
+            UpdateItem(item,
+                itemOptions.BonusIds,
+                itemOptions.GemIds);
+
+            // Set the item level if provided
+            if(itemOptions.ItemLevel > 0)
+                AddItemLevel(item, itemOptions.ItemLevel - item.ItemLevel);
+
+            // Set the quality if provided
+            if(itemOptions.Quality != ItemQuality.ITEM_QUALITY_NONE)
+                SetItemQuality(item, itemOptions.Quality);
+
+            return item;
+        }
+
+        /// <summary>
+        /// Setup a basic item
+        /// </summary>
+        /// <param name="itemId">The ID of the item</param>
+        internal SimcItem BuildItem(uint itemId)
+        {
+            var rawItemData = _simcUtilityService.GetRawItemData(itemId);
 
             if (rawItemData == null)
             {
-                _logger?.LogError($"Unable to find item {parsedItemData.ItemId}");
+                _logger?.LogError($"Unable to find item {itemId}");
                 return null;
             }
 
@@ -59,6 +93,20 @@ namespace SimcProfileParser
             AddItemLevel(item, rawItemData.ItemLevel);
             SetItemQuality(item, rawItemData.Quality);
 
+            return item;
+        }
+
+        /// <summary>
+        /// Update the item with all the options
+        /// </summary>
+        /// <param name="item">Base item to update</param>
+        /// <param name="bonusIds">Bonus IDs to apply</param>
+        /// <param name="gemIds">Gem IDs to apply</param>
+        internal void UpdateItem(SimcItem item, 
+            IList<int> bonusIds, IList<int> gemIds)
+        {
+            var rawItemData = _simcUtilityService.GetRawItemData(item.ItemId);
+
             // Now add the base mods
             foreach (var mod in rawItemData.ItemMods)
             {
@@ -67,18 +115,16 @@ namespace SimcProfileParser
                 AddItemMod(item, mod.ModType, mod.StatAllocation);
             }
 
-            ProcessBonusIds(item, parsedItemData.BonusIds);
+            ProcessBonusIds(item, bonusIds);
 
             foreach (var mod in item.Mods)
             {
                 mod.StatRating = _simcUtilityService.GetScaledModValue(item, mod.Type, mod.RawStatAllocation);
             }
 
-            AddGems(item, parsedItemData.GemIds);
+            AddGems(item, gemIds);
 
             AddSpellEffects(item, rawItemData.ItemEffects);
-
-            return item;
         }
 
         private void AddSpellEffects(SimcItem item, List<SimcRawItemEffect> itemEffects)
@@ -106,7 +152,7 @@ namespace SimcProfileParser
             }
         }
 
-        internal void AddGems(SimcItem item, IReadOnlyCollection<int> gemIds)
+        internal void AddGems(SimcItem item, IList<int> gemIds)
         {
             foreach (var gemId in gemIds)
             {
@@ -150,7 +196,7 @@ namespace SimcProfileParser
             }
         }
 
-        internal void ProcessBonusIds(SimcItem item, IReadOnlyCollection<int> bonusIds)
+        internal void ProcessBonusIds(SimcItem item, IList<int> bonusIds)
         {
             var bonuses = _cacheService.GetParsedFileContents<List<SimcRawItemBonus>>(SimcParsedFileType.ItemBonusData);
 

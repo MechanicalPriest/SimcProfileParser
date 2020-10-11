@@ -7,5 +7,6 @@ namespace SimcProfileParser.Interfaces
     public interface ISimcItemCreationService
     {
         SimcItem CreateItem(SimcParsedItem parsedItemData);
+        SimcItem CreateItem(SimcItemOptions itemOptions);
     }
 }
