@@ -44,7 +44,40 @@ class MyClass
 ```
 ### Examples
 
-TODO: Show some examples of how to use the library to parse strings and manually create options/objects.
+Generating a profile object from a simc import file named `import.simc`:
+
+```csharp
+ISimcProfileParser spp = new SimcProfileParser();
+
+// Using async
+var profile = await spp.GenerateProfileAsync(File.ReadAllText("import.simc"));
+
+Console.WriteLine($"Profile object created for player {profile.Name}.");
+
+// Without async
+var profile2 = spp.GenerateProfileAsync(File.ReadAllText("import.simc"));
+
+Console.WriteLine($"Profile object created for player {profile2.Name}.");
+```
+
+You can also generate a profile object from individual lines of an import file:
+
+```csharp
+ISimcProfileParser spp = new SimcProfileParser();
+
+var lines = new List<string>()
+{
+    "level=60",
+    "main_hand=,id=178473,bonus_id=6774/1504/6646"
+};
+
+var profile = await spp.GenerateProfileAsync(lines);
+
+Console.WriteLine($"Profile object created for a level {profile.Level}");
+Console.WriteLine($"They are weilding {profile.Items.FirstOrDefault().Name}.");
+```
+
+TODO: Show some more examples of how to use the library to parse strings and manually create options/objects.
 
 ## Support
 For bugs please search [issues](https://github.com/MechanicalPriest/SimcProfileParser/issues) 
