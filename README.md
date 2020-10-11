@@ -1,7 +1,13 @@
 # Simc Profile Parser
 ![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/MechanicalPriest/SimcProfileParser?branch=master&svg=true)
+![Publish to nuget](https://github.com/MechanicalPriest/SimcProfileParser/workflows/Publish%20to%20nuget/badge.svg?branch=master)
+![Build & Run Tests (.NET Core)](https://github.com/MechanicalPriest/SimcProfileParser/workflows/Build%20&%20Run%20Tests%20(.NET%20Core)/badge.svg?branch=master)
 
 A library to parse items in the simc import format into functional objects.
+
+**PLEASE NOTE**: This library is still a work in progress and is being created to support another project. 
+Please raise an issue if something isn't working as you would expect or throws a `NotYetImplemented` 
+exception and it may be prioritised. 
 
 ## Usage
 ### Initialising
@@ -78,4 +84,5 @@ TODO: Show some more examples of how to use the library to parse strings and man
 For bugs please search [issues](https://github.com/MechanicalPriest/SimcProfileParser/issues) 
 then create a [new issue](https://github.com/MechanicalPriest/SimcProfileParser/issues) if needed.
 
-For help using this library, please check the [wiki](https://github.com/MechanicalPriest/SimcProfileParser/wiki) or visit [discord](https://discord.gg/6Fwq4UX).
+For help using this library, please check the [wiki](https://github.com/MechanicalPriest/SimcProfileParser/wiki) or 
+visit [discord](https://discord.gg/6Fwq4UX).
