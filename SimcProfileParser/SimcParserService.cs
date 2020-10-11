@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 
 namespace SimcProfileParser
 {
@@ -14,26 +13,9 @@ namespace SimcProfileParser
     {
         private readonly ILogger<SimcParserService> _logger;
 
-        public SimcParserService(ILogger<SimcParserService> logger = null)
+        public SimcParserService(ILogger<SimcParserService> logger)
         {
             _logger = logger;
-        }
-
-        public SimcParsedProfile ParseProfileAsync(string profileString)
-        {
-            if (string.IsNullOrEmpty(profileString))
-            {
-                _logger?.LogWarning("Incoming profileString is empty.");
-                throw new ArgumentNullException(nameof(profileString));
-            }
-
-            _logger?.LogInformation($"Splitting a string with {profileString.Length} character(s)");
-
-            var lines = profileString.Split("\r\n").ToList();
-
-            _logger?.LogInformation($"Created {lines.Count} lines to be processed");
-
-            return ParseProfileAsync(lines);
         }
 
         public SimcParsedProfile ParseProfileAsync(List<string> profileLines)
@@ -232,11 +214,11 @@ namespace SimcProfileParser
         {
             // 38 is the minimum length for the character line
             // ??? - SPEC - YYYY-MM-DD HH:NN - US/REA
-            if(valueString.Length > 38)
+            if (valueString.Length > 38)
             {
                 var parts = valueString.Split(" - ");
                 // There are 4 parts if it's the correct line
-                if(parts.Length == 4)
+                if (parts.Length == 4)
                 {
                     // and we want the third
                     var dateTime = parts[2].Trim();
@@ -262,11 +244,11 @@ namespace SimcProfileParser
 
         private void TryApplyConduitData(SimcParsedProfile profile, string valueString)
         {
-            if(profile.Conduits.Count > 0)
+            if (profile.Conduits.Count > 0)
             {
                 _logger?.LogWarning($"Overriding existing conduits. " +
                     $"There should only be one conduits_available provided per profile.");
-            }    
+            }
 
             // Valid conduit string
             // conduits_available=116:1/78:1/82:1/84:1/101:1/69:1/73:1/67:1/66:1
@@ -276,7 +258,7 @@ namespace SimcProfileParser
 
                 var conduitParts = valueString.Split('/');
 
-                foreach(var part in conduitParts)
+                foreach (var part in conduitParts)
                 {
                     var kvp = part.Split(':');
 
@@ -313,7 +295,7 @@ namespace SimcProfileParser
             {
                 var talents = new List<int>();
 
-                foreach(var talent in valueString.ToArray())
+                foreach (var talent in valueString.ToArray())
                 {
                     if (int.TryParse(talent.ToString(), out int parsedTalent))
                         talents.Add(parsedTalent);
@@ -353,7 +335,7 @@ namespace SimcProfileParser
 
                 foreach (var part in soulbindParts)
                 {
-                    if(part.Contains(':'))
+                    if (part.Contains(':'))
                     {
                         // It's a socketed conduit 
                         var kvp = part.Split(':');
@@ -379,7 +361,7 @@ namespace SimcProfileParser
                     else
                     {
                         // It's a soulbind spell
-                        if(int.TryParse(part, out int soulbindSpellId))
+                        if (int.TryParse(part, out int soulbindSpellId))
                         {
                             _logger?.LogDebug($"Adding soulbind ({soulbindSpellId}) from: {line.CleanLine}");
                             soulbindSpells.Add(soulbindSpellId);
@@ -415,15 +397,15 @@ namespace SimcProfileParser
             // professions=tailoring=1/jewelcrafting=1
             var professionParts = line.Value.Split('/');
 
-            foreach(var part in professionParts)
+            foreach (var part in professionParts)
             {
-                if(!string.IsNullOrEmpty(part.Trim()))
+                if (!string.IsNullOrEmpty(part.Trim()))
                 {
                     // tailoring=1
                     var kvp = part.Split('=');
 
                     var professionName = kvp[0];
-                    if(!int.TryParse(kvp[1], out int professionLevel))
+                    if (!int.TryParse(kvp[1], out int professionLevel))
                     {
                         _logger?.LogWarning($"Unable to get profession level ({part}) from string {line.RawLine}");
                     }
@@ -508,7 +490,7 @@ namespace SimcProfileParser
                         var bonusIds = kvp[1].Split('/');
                         var bonusIdResult = new List<int>();
 
-                        foreach(var bonus in bonusIds)
+                        foreach (var bonus in bonusIds)
                         {
                             if (string.IsNullOrEmpty(bonus.Trim()))
                                 continue;

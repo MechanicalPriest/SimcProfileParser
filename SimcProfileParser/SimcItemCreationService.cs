@@ -1,45 +1,31 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SimcProfileParser.DataSync;
+using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model;
 using SimcProfileParser.Model.DataSync;
+using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace SimcProfileParser
 {
-    public class SimcItemCreationService
+    internal class SimcItemCreationService : ISimcItemCreationService
     {
         private readonly ICacheService _cacheService;
-        private readonly ILogger _logger;
+        private readonly ILogger<SimcItemCreationService> _logger;
 
-        public SimcItemCreationService(ICacheService cacheService,
-            ILogger logger = null)
+        internal SimcItemCreationService(ICacheService cacheService,
+            ILogger<SimcItemCreationService> logger)
         {
             _cacheService = cacheService;
             _logger = logger;
         }
 
-        internal object CreateItemsFromProfile(SimcParsedProfile parsedProfile)
-        {
-            var items = new List<SimcItem>();
-
-            foreach(var parsedItemData in parsedProfile.Items)
-            {
-                var item = CreateItem(parsedItemData);
-                items.Add(item);
-            }
-
-            return items;
-        }
-
-        internal SimcItem CreateItem(SimcParsedItem parsedItemData)
+        SimcItem ISimcItemCreationService.CreateItem(SimcParsedItem parsedItemData)
         {
             var rawItemData = GetRawItemData(parsedItemData.ItemId);
 
@@ -59,7 +45,7 @@ namespace SimcProfileParser
                 InventoryType = rawItemData.InventoryType
             };
 
-            foreach(var socketColour in rawItemData.SocketColour)
+            foreach (var socketColour in rawItemData.SocketColour)
             {
                 item.Sockets.Add((ItemSocketColor)socketColour);
             }
@@ -77,7 +63,7 @@ namespace SimcProfileParser
 
             ProcessBonusIds(item, parsedItemData.BonusIds);
 
-            foreach(var mod in item.Mods)
+            foreach (var mod in item.Mods)
             {
                 mod.StatRating = GetScaledModValue(item, mod.Type, mod.RawStatAllocation);
             }
@@ -91,7 +77,7 @@ namespace SimcProfileParser
 
         private void AddSpellEffects(SimcItem item, List<SimcRawItemEffect> itemEffects)
         {
-            
+
             // From double spelleffect_data_t::average( const item_t* item )
             // Get the item budget from item_database::item_budget
             // For this we need the item with appropriate item level
@@ -129,7 +115,7 @@ namespace SimcProfileParser
 
                 var spellScalingClass = GetScaleClass(spell.ScalingType);
 
-                if(spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
+                if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
                 {
                     var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
                     var multi = GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
@@ -170,7 +156,7 @@ namespace SimcProfileParser
                     ItemScaleBudget = budget,
                 };
 
-                foreach(var spellEffect in spell.Effects)
+                foreach (var spellEffect in spell.Effects)
                 {
                     effectSpell.Effects.Add(new SimcSpellEffect()
                     {
@@ -235,9 +221,11 @@ namespace SimcProfileParser
 
                     //// Now add it to the item
                     // Create a new SimcItemGem with the stat, rating etc.
-                    var newGem = new SimcItemGem();
-                    newGem.StatRating = (int)scaledValue;
-                    newGem.Type = stat;
+                    var newGem = new SimcItemGem
+                    {
+                        StatRating = (int)scaledValue,
+                        Type = stat
+                    };
                     item.Gems.Add(newGem);
                 }
             }
@@ -330,7 +318,7 @@ namespace SimcProfileParser
             {
                 case ItemQuality.ITEM_QUALITY_EPIC:
                 case ItemQuality.ITEM_QUALITY_LEGENDARY:
-                case ItemQuality.ITEM_QUALITY_MAX: 
+                case ItemQuality.ITEM_QUALITY_MAX:
                     budget = ilvlRandomProps.Epic[0];
                     break;
 
@@ -354,7 +342,7 @@ namespace SimcProfileParser
             var itemBudget = 0.0d;
 
             // If the item has a slot and quality we can parse
-            if(slotType != -1 && item.Quality > 0)
+            if (slotType != -1 && item.Quality > 0)
             {
                 var ilvlRandomProps = GetRandomProps(item.ItemLevel);
                 switch (item.Quality)
@@ -376,17 +364,17 @@ namespace SimcProfileParser
             }
 
             // Scale the stat if we have an allocation & budget
-            if(statAllocation > 0 && itemBudget > 0)
+            if (statAllocation > 0 && itemBudget > 0)
             {
                 // Not yet implemented
                 var socketPenalty = 0.0d;
                 int rawValue = (int)(statAllocation * itemBudget * 0.0001d - socketPenalty + 0.5d);
 
-                if(GetIsCombatRating(modType))
+                if (GetIsCombatRating(modType))
                 {
                     // based on item_database::apply_combat_rating_multiplier
                     var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
-                    if(combatRatingType != CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID)
+                    if (combatRatingType != CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID)
                     {
                         var combatRatingMultiplier = GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
                         if (combatRatingMultiplier != 0)
@@ -633,51 +621,30 @@ namespace SimcProfileParser
         internal int GetClassId(PlayerScaling scaleType)
         {
             // from util::class_id
-            switch (scaleType)
+            return scaleType switch
             {
-                case PlayerScaling.WARRIOR:
-                    return 1;
-                case PlayerScaling.PALADIN:
-                    return 2;
-                case PlayerScaling.HUNTER:
-                    return 3;
-                case PlayerScaling.ROGUE:
-                    return 4;
-                case PlayerScaling.PRIEST:
-                    return 5;
-                case PlayerScaling.DEATH_KNIGHT:
-                    return 6;
-                case PlayerScaling.SHAMAN:
-                    return 7;
-                case PlayerScaling.MAGE:
-                    return 8;
-                case PlayerScaling.WARLOCK:
-                    return 9;
-                case PlayerScaling.MONK:
-                    return 10;
-                case PlayerScaling.DRUID:
-                    return 11;
-                case PlayerScaling.DEMON_HUNTER:
-                    return 12;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE:
-                    return 13;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE2:
-                    return 14;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE3:
-                    return 15;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE4:
-                    return 16;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE5:
-                    return 17;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE6:
-                    return 18;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE7:
-                    return 13;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE8:
-                    return 19;
-                default:
-                    return 0;
-            }
+                PlayerScaling.WARRIOR => 1,
+                PlayerScaling.PALADIN => 2,
+                PlayerScaling.HUNTER => 3,
+                PlayerScaling.ROGUE => 4,
+                PlayerScaling.PRIEST => 5,
+                PlayerScaling.DEATH_KNIGHT => 6,
+                PlayerScaling.SHAMAN => 7,
+                PlayerScaling.MAGE => 8,
+                PlayerScaling.WARLOCK => 9,
+                PlayerScaling.MONK => 10,
+                PlayerScaling.DRUID => 11,
+                PlayerScaling.DEMON_HUNTER => 12,
+                PlayerScaling.PLAYER_SPECIAL_SCALE => 13,
+                PlayerScaling.PLAYER_SPECIAL_SCALE2 => 14,
+                PlayerScaling.PLAYER_SPECIAL_SCALE3 => 15,
+                PlayerScaling.PLAYER_SPECIAL_SCALE4 => 16,
+                PlayerScaling.PLAYER_SPECIAL_SCALE5 => 17,
+                PlayerScaling.PLAYER_SPECIAL_SCALE6 => 18,
+                PlayerScaling.PLAYER_SPECIAL_SCALE7 => 13,
+                PlayerScaling.PLAYER_SPECIAL_SCALE8 => 19,
+                _ => 0,
+            };
         }
 
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.
@@ -689,7 +656,7 @@ namespace SimcProfileParser
 
             rawItem = items.Where(i => i.Id == itemId).FirstOrDefault();
 
-            if(rawItem == null)
+            if (rawItem == null)
             {
                 // If we can't find it in the new data, try all the older items
                 items = _cacheService.GetParsedFileContents<List<SimcRawItem>>(SimcParsedFileType.ItemDataOld);

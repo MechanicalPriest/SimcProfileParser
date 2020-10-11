@@ -24,8 +24,13 @@ namespace SimcProfileParser.Tests.DataSync
             ICacheService cache = new CacheService(null, null);
 
             // Wipe out the directory before testing as a workaround for file access not being abstracted
-            if(Directory.Exists(cache.BaseFileDirectory))
-                Directory.Delete(cache.BaseFileDirectory, true);
+            if (Directory.Exists(cache.BaseFileDirectory))
+            {
+                foreach (var file in Directory.GetFiles(cache.BaseFileDirectory))
+                {
+                    File.Delete(file);
+                }
+            }
         }
 
         [Test]

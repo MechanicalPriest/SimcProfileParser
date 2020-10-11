@@ -1,9 +1,6 @@
-﻿using SimcProfileParser.Model.RawData;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace SimcProfileParser.Model
+namespace SimcProfileParser.Model.Generated
 {
     public class SimcSpell
     {

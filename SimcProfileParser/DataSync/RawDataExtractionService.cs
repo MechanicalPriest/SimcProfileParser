@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic.CompilerServices;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.DataSync;
 using SimcProfileParser.Model.RawData;
@@ -11,19 +10,14 @@ using System.Text.RegularExpressions;
 
 namespace SimcProfileParser.DataSync
 {
-    internal interface IRawDataExtractionService
-    {
-        object GenerateData(SimcParsedFileType fileType, Dictionary<string, string> incomingRawData);
-    }
-
     /// <summary>
     /// The purpose of thie class is to process a raw file into 
     /// </summary>
     internal class RawDataExtractionService : IRawDataExtractionService
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<RawDataExtractionService> _logger;
 
-        public RawDataExtractionService(ILogger logger)
+        public RawDataExtractionService(ILogger<RawDataExtractionService> logger)
         {
             _logger = logger;
         }
@@ -105,7 +99,7 @@ namespace SimcProfileParser.DataSync
             return values;
         }
 
-        internal List<SimcRawItem> GenerateItemData(Dictionary<string, string> incomingRawData, 
+        internal List<SimcRawItem> GenerateItemData(Dictionary<string, string> incomingRawData,
             int lowerBoundItemId = 0, int upperBoundItemId = int.MaxValue)
         {
             var rawData = incomingRawData.Where(d => d.Key == "ItemData.raw").FirstOrDefault().Value;
@@ -381,6 +375,8 @@ namespace SimcProfileParser.DataSync
                 // First try and do an effect - they have 33 total fields.
                 if (line.Split(',').Count() == 33)
                 {
+                    var effect = new SimcRawSpellEffect();
+
                     // Split the data up
                     var data = line.Split(',');
                     // Clean it up
@@ -388,8 +384,6 @@ namespace SimcProfileParser.DataSync
                     {
                         data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
                     }
-
-                    var effect = new SimcRawSpellEffect();
 
                     // 0 is Id
                     effect.Id = Convert.ToUInt32(data[0]);
@@ -638,7 +632,7 @@ namespace SimcProfileParser.DataSync
             }
 
             // Add the spell effects to spells
-            foreach(var spell in spells)
+            foreach (var spell in spells)
             {
                 foreach (var effect in effects.Where(e => e.SpellId == spell.Id))
                 {
@@ -859,11 +853,13 @@ namespace SimcProfileParser.DataSync
                 // 16 17 18 are saling coefficients
                 for (var i = 0; i < 3; i++)
                 {
-                    var subEffect = new SimcRawItemSubEnchantment();
-                    subEffect.Type = Convert.ToUInt32(data[7 + i]);
-                    subEffect.Amount = Convert.ToInt32(data[10 + i]);
-                    subEffect.Property = Convert.ToUInt32(data[13 + i]);
-                    subEffect.Coefficient = Convert.ToDouble(data[16 + i]);
+                    var subEffect = new SimcRawItemSubEnchantment
+                    {
+                        Type = Convert.ToUInt32(data[7 + i]),
+                        Amount = Convert.ToInt32(data[10 + i]),
+                        Property = Convert.ToUInt32(data[13 + i]),
+                        Coefficient = Convert.ToDouble(data[16 + i])
+                    };
                     enchant.SubEnchantments.Add(subEffect);
                 }
 
@@ -898,7 +894,7 @@ namespace SimcProfileParser.DataSync
             int start = rawData.IndexOf(key) + key.Length;
             int end = rawData.IndexOf("};", start);
 
-            string firstArray = rawData.Substring(start, end - start);
+            string firstArray = rawData[start..end];
 
             Regex innerArrayRX = new Regex(@"\{.+?\},", RegexOptions.Singleline);
             Regex valuesRX = new Regex(@"(\d+(?:\.\d+)?),");
