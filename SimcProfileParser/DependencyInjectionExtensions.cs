@@ -3,9 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SimcProfileParser
 {

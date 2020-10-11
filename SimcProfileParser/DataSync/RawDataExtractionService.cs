@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic.CompilerServices;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.DataSync;
 using SimcProfileParser.Model.RawData;
@@ -100,7 +99,7 @@ namespace SimcProfileParser.DataSync
             return values;
         }
 
-        internal List<SimcRawItem> GenerateItemData(Dictionary<string, string> incomingRawData, 
+        internal List<SimcRawItem> GenerateItemData(Dictionary<string, string> incomingRawData,
             int lowerBoundItemId = 0, int upperBoundItemId = int.MaxValue)
         {
             var rawData = incomingRawData.Where(d => d.Key == "ItemData.raw").FirstOrDefault().Value;
@@ -633,7 +632,7 @@ namespace SimcProfileParser.DataSync
             }
 
             // Add the spell effects to spells
-            foreach(var spell in spells)
+            foreach (var spell in spells)
             {
                 foreach (var effect in effects.Where(e => e.SpellId == spell.Id))
                 {

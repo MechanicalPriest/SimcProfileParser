@@ -5,7 +5,6 @@ using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SimcProfileParser
 {
@@ -50,7 +49,7 @@ namespace SimcProfileParser
         public SimcProfileParserService()
             : this(NullLoggerFactory.Instance)
         {
-            
+
         }
 
         public SimcProfile GenerateProfileAsync(List<string> profileString)

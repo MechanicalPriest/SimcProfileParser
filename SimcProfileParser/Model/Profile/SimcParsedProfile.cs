@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
 
 namespace SimcProfileParser.Model.Profile
 {
@@ -14,7 +12,7 @@ namespace SimcProfileParser.Model.Profile
         /// Comment present showing the simc addon version. e.g. SimC Addon 1.XX.Y
         /// </summary>
         public string SimcAddonVersion { get; internal set; }
-        
+
         /// <summary>
         /// Comment present showing the date and time the profile was collected.
         /// </summary>

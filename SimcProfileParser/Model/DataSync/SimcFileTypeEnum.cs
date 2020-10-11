@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SimcProfileParser.Model.DataSync
+﻿namespace SimcProfileParser.Model.DataSync
 {
     public enum SimcParsedFileType
     {

@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
-using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model;
@@ -10,9 +8,7 @@ using SimcProfileParser.Model.Profile;
 using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace SimcProfileParser
 {
@@ -48,7 +44,7 @@ namespace SimcProfileParser
                 InventoryType = rawItemData.InventoryType
             };
 
-            foreach(var socketColour in rawItemData.SocketColour)
+            foreach (var socketColour in rawItemData.SocketColour)
             {
                 item.Sockets.Add((ItemSocketColor)socketColour);
             }
@@ -66,7 +62,7 @@ namespace SimcProfileParser
 
             ProcessBonusIds(item, parsedItemData.BonusIds);
 
-            foreach(var mod in item.Mods)
+            foreach (var mod in item.Mods)
             {
                 mod.StatRating = GetScaledModValue(item, mod.Type, mod.RawStatAllocation);
             }
@@ -80,7 +76,7 @@ namespace SimcProfileParser
 
         private void AddSpellEffects(SimcItem item, List<SimcRawItemEffect> itemEffects)
         {
-            
+
             // From double spelleffect_data_t::average( const item_t* item )
             // Get the item budget from item_database::item_budget
             // For this we need the item with appropriate item level
@@ -118,7 +114,7 @@ namespace SimcProfileParser
 
                 var spellScalingClass = GetScaleClass(spell.ScalingType);
 
-                if(spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
+                if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
                 {
                     var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
                     var multi = GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
@@ -159,7 +155,7 @@ namespace SimcProfileParser
                     ItemScaleBudget = budget,
                 };
 
-                foreach(var spellEffect in spell.Effects)
+                foreach (var spellEffect in spell.Effects)
                 {
                     effectSpell.Effects.Add(new SimcSpellEffect()
                     {
@@ -319,7 +315,7 @@ namespace SimcProfileParser
             {
                 case ItemQuality.ITEM_QUALITY_EPIC:
                 case ItemQuality.ITEM_QUALITY_LEGENDARY:
-                case ItemQuality.ITEM_QUALITY_MAX: 
+                case ItemQuality.ITEM_QUALITY_MAX:
                     budget = ilvlRandomProps.Epic[0];
                     break;
 
@@ -343,7 +339,7 @@ namespace SimcProfileParser
             var itemBudget = 0.0d;
 
             // If the item has a slot and quality we can parse
-            if(slotType != -1 && item.Quality > 0)
+            if (slotType != -1 && item.Quality > 0)
             {
                 var ilvlRandomProps = GetRandomProps(item.ItemLevel);
                 switch (item.Quality)
@@ -365,17 +361,17 @@ namespace SimcProfileParser
             }
 
             // Scale the stat if we have an allocation & budget
-            if(statAllocation > 0 && itemBudget > 0)
+            if (statAllocation > 0 && itemBudget > 0)
             {
                 // Not yet implemented
                 var socketPenalty = 0.0d;
                 int rawValue = (int)(statAllocation * itemBudget * 0.0001d - socketPenalty + 0.5d);
 
-                if(GetIsCombatRating(modType))
+                if (GetIsCombatRating(modType))
                 {
                     // based on item_database::apply_combat_rating_multiplier
                     var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
-                    if(combatRatingType != CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID)
+                    if (combatRatingType != CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID)
                     {
                         var combatRatingMultiplier = GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
                         if (combatRatingMultiplier != 0)
@@ -678,7 +674,7 @@ namespace SimcProfileParser
 
             rawItem = items.Where(i => i.Id == itemId).FirstOrDefault();
 
-            if(rawItem == null)
+            if (rawItem == null)
             {
                 // If we can't find it in the new data, try all the older items
                 items = _cacheService.GetParsedFileContents<List<SimcRawItem>>(SimcParsedFileType.ItemDataOld);

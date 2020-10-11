@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SimcProfileParser.Model.RawData
+﻿namespace SimcProfileParser.Model.RawData
 {
     // from sc_enums
     /// <summary>
@@ -368,13 +364,13 @@ namespace SimcProfileParser.Model.RawData
             0, // Pal
             0, // Hunter
             0, // 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             0
         };
     }

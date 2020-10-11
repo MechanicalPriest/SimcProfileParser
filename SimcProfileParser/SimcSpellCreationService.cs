@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
 

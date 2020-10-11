@@ -1,8 +1,5 @@
 ﻿using SimcProfileParser.Model;
-using SimcProfileParser.Model.Profile;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SimcProfileParser.Interfaces
 {

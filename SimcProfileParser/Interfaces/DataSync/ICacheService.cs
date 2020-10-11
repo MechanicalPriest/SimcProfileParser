@@ -1,8 +1,5 @@
 ﻿using SimcProfileParser.Model.DataSync;
-using SimcProfileParser.Model.RawData;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SimcProfileParser.Interfaces.DataSync
 {

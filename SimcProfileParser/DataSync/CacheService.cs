@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.DataSync;
@@ -10,8 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace SimcProfileParser.DataSync
 {
@@ -151,7 +148,7 @@ namespace SimcProfileParser.DataSync
         T ICacheService.GetParsedFileContents<T>(SimcParsedFileType fileType)
         {
             // First check if we already have the data loaded:
-            if(_cachedFileData.ContainsKey(fileType))
+            if (_cachedFileData.ContainsKey(fileType))
             {
                 var cachedData = _cachedFileData[fileType];
 
@@ -175,7 +172,7 @@ namespace SimcProfileParser.DataSync
 
             if (configuration == null)
                 throw new ArgumentOutOfRangeException("Supplied fileType has not been registered.");
-            
+
             // If the file doesn't exist, generate it.
             if (!File.Exists(localPath))
             {
@@ -278,7 +275,7 @@ namespace SimcProfileParser.DataSync
 
             DateTime lastModified = DateTime.UtcNow;
 
-            if(File.Exists(destinationUri.LocalPath))
+            if (File.Exists(destinationUri.LocalPath))
                 lastModified = File.GetLastWriteTimeUtc(destinationUri.LocalPath);
 
             // Check if we need to download it or not.
@@ -290,7 +287,7 @@ namespace SimcProfileParser.DataSync
             var downloadResponse = DownloadFile(sourceUri, destinationUri);
 
             // If the download was successful, save the etag.
-            if(downloadResponse)
+            if (downloadResponse)
             {
                 lastModified = File.GetLastWriteTimeUtc(destinationUri.LocalPath);
                 UpdateCacheData(destinationUri.LocalPath, response.Headers.ETag.Tag, lastModified);
