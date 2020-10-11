@@ -18,9 +18,12 @@ namespace SimcProfileParser
 
             // The cache is a singleton as it keeps a bunch of stuff in memory.
             services.TryAddSingleton<ICacheService, CacheService>();
-
             services.TryAddSingleton<IRawDataExtractionService, RawDataExtractionService>();
+
             services.TryAddSingleton<ISimcParserService, SimcParserService>();
+            services.TryAddSingleton<ISimcUtilityService, SimcUtilityService>();
+            services.TryAddSingleton<ISimcSpellCreationService, SimcSpellCreationService>();
+            services.TryAddSingleton<ISimcItemCreationService, SimcItemCreationService>();
 
             return services;
         }

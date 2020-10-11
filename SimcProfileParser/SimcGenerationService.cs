@@ -37,16 +37,27 @@ namespace SimcProfileParser
                 loggerFactory.CreateLogger<RawDataExtractionService>());
             var cacheService = new CacheService(dataExtractionService,
                 loggerFactory.CreateLogger<CacheService>());
+            var utilityService = new SimcUtilityService(
+                cacheService,
+                loggerFactory.CreateLogger<SimcUtilityService>());
+
+            var spellCreationService = new SimcSpellCreationService(
+                cacheService,
+                utilityService,
+                loggerFactory.CreateLogger<SimcSpellCreationService>());
 
             _simcParserService = new SimcParserService(
                 loggerFactory.CreateLogger<SimcParserService>());
 
             _simcItemCreationService = new SimcItemCreationService(
                 cacheService,
+                spellCreationService,
+                utilityService,
                 loggerFactory.CreateLogger<SimcItemCreationService>());
 
             _simcSpellCreationService = new SimcSpellCreationService(
                 cacheService,
+                utilityService,
                 loggerFactory.CreateLogger<SimcSpellCreationService>());
         }
 
