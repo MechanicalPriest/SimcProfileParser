@@ -77,7 +77,42 @@ namespace SimcProfileParser
 
         private void AddSpellEffects(SimcItem item, List<SimcRawItemEffect> itemEffects)
         {
+            // Note: there is a similar process inside this method:
+            // double spelleffect_data_t::average( const player_t* p, unsigned level ) const
+            // That is done to get scale values for non-item effects based instead on player level
+            // This is for things like racial abilities and uses a simpler formula
+            // It does use the spell scaling array values, which we already have.
 
+            foreach (var effect in itemEffects)
+            {
+                var effectSpell = GetItemSpell(item, effect.SpellId);
+
+                var newEffect = new SimcItemEffect
+                {
+                    EffectId = effect.Id,
+                    CooldownDuration = effect.CooldownDuration,
+                    CooldownGroup = effect.CooldownGroup,
+                    CooldownGroupDuration = effect.CooldownGroupDuration,
+                    Spell = effectSpell
+                };
+
+                item.Effects.Add(newEffect);
+            }
+        }
+
+        internal SimcSpell GetPlayerSpell()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Get a spell that scales with item level
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        internal SimcSpell GetItemSpell(SimcItem item, uint spellId)
+        {
             // From double spelleffect_data_t::average( const item_t* item )
             // Get the item budget from item_database::item_budget
             // For this we need the item with appropriate item level
@@ -100,91 +135,72 @@ namespace SimcProfileParser
 
             // Finally multiply the coefficient of the spell effect against the budget.
 
-            // Note: there is a similar process inside this method:
-            // double spelleffect_data_t::average( const player_t* p, unsigned level ) const
-            // That is done to get scale values for non-item effects based instead on player level
-            // This is for things like racial abilities and uses a simpler formula
-            // It does use the spell scaling array values, which we already have.
+            var spell = GetSpellData(spellId);
 
-            foreach (var effect in itemEffects)
+            var budget = GetItemBudget(item, spell.MaxScalingLevel);
+
+            var spellScalingClass = GetScaleClass(spell.ScalingType);
+
+            if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
             {
-                // TODO: Factor in the level scaling caps from item_database::item_budget
-                var spell = GetSpellData(effect.SpellId);
-
-                var budget = GetItemBudget(item, spell.MaxScalingLevel);
-
-                var spellScalingClass = GetScaleClass(spell.ScalingType);
-
-                if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
-                {
-                    var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
-                    var multi = GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
-                    budget *= multi;
-                }
-                else if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE8)
-                {
-                    var props = GetRandomProps(item.ItemLevel);
-                    budget = props.DamageReplaceStat;
-                }
-                else if (spellScalingClass == PlayerScaling.PLAYER_NONE)
-                {
-                    // This is from spelleffect_data_t::average's call to _spell->flags( spell_attribute::SX_SCALE_ILEVEL )
-                    _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Item: {item.ItemId} Effect: {effect.Id} Spell: {spell.Id}");
-                }
-
-                var effectSpell = new SimcSpell()
-                {
-                    SpellId = spell.Id,
-                    Name = spell.Name,
-                    School = spell.School,
-                    ScalingType = spell.ScalingType,
-                    MinRange = spell.MinRange,
-                    MaxRange = spell.MaxRange,
-                    Cooldown = spell.Cooldown,
-                    Gcd = spell.Gcd,
-                    Category = spell.Category,
-                    CategoryCooldown = spell.CategoryCooldown,
-                    Charges = spell.Charges,
-                    ChargeCooldown = spell.ChargeCooldown,
-                    MaxTargets = spell.MaxTargets,
-                    Duration = spell.Duration,
-                    MaxStacks = spell.MaxStack,
-                    ProcChance = spell.ProcChance,
-                    InternalCooldown = spell.InternalCooldown,
-                    Rppm = spell.Rppm,
-                    CastTime = spell.CastTime,
-                    ItemScaleBudget = budget,
-                };
-
-                foreach (var spellEffect in spell.Effects)
-                {
-                    effectSpell.Effects.Add(new SimcSpellEffect()
-                    {
-                        Id = spellEffect.Id,
-                        EffectIndex = spellEffect.EffectIndex,
-                        EffectType = spellEffect.EffectType,
-                        EffectSubType = spellEffect.EffectSubType,
-                        Coefficient = spellEffect.Coefficient,
-                        SpCoefficient = spellEffect.SpCoefficient,
-                        Delta = spellEffect.Delta,
-                        Amplitude = spellEffect.Amplitude,
-                        Radius = spellEffect.Radius,
-                        RadiusMax = spellEffect.RadiusMax,
-                        BaseValue = spellEffect.BaseValue,
-                    });
-                }
-
-                var newEffect = new SimcItemEffect
-                {
-                    EffectId = effect.Id,
-                    CooldownDuration = effect.CooldownDuration,
-                    CooldownGroup = effect.CooldownGroup,
-                    CooldownGroupDuration = effect.CooldownGroupDuration,
-                    Spell = effectSpell
-                };
-
-                item.Effects.Add(newEffect);
+                var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
+                var multi = GetCombatRatingMultiplier(item.ItemLevel, combatRatingType);
+                budget *= multi;
             }
+            else if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE8)
+            {
+                var props = GetRandomProps(item.ItemLevel);
+                budget = props.DamageReplaceStat;
+            }
+            else if (spellScalingClass == PlayerScaling.PLAYER_NONE)
+            {
+                // This is from spelleffect_data_t::average's call to _spell->flags( spell_attribute::SX_SCALE_ILEVEL )
+                _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Item: {item.ItemId} Effect: {effect.Id} Spell: {spell.Id}");
+            }
+
+            var itemSpell = new SimcSpell()
+            {
+                SpellId = spell.Id,
+                Name = spell.Name,
+                School = spell.School,
+                ScalingType = spell.ScalingType,
+                MinRange = spell.MinRange,
+                MaxRange = spell.MaxRange,
+                Cooldown = spell.Cooldown,
+                Gcd = spell.Gcd,
+                Category = spell.Category,
+                CategoryCooldown = spell.CategoryCooldown,
+                Charges = spell.Charges,
+                ChargeCooldown = spell.ChargeCooldown,
+                MaxTargets = spell.MaxTargets,
+                Duration = spell.Duration,
+                MaxStacks = spell.MaxStack,
+                ProcChance = spell.ProcChance,
+                InternalCooldown = spell.InternalCooldown,
+                Rppm = spell.Rppm,
+                CastTime = spell.CastTime,
+                ItemScaleBudget = budget,
+            };
+
+            foreach (var spellEffect in spell.Effects)
+            {
+                itemSpell.Effects.Add(new SimcSpellEffect()
+                {
+                    Id = spellEffect.Id,
+                    EffectIndex = spellEffect.EffectIndex,
+                    EffectType = spellEffect.EffectType,
+                    EffectSubType = spellEffect.EffectSubType,
+                    Coefficient = spellEffect.Coefficient,
+                    SpCoefficient = spellEffect.SpCoefficient,
+                    Delta = spellEffect.Delta,
+                    Amplitude = spellEffect.Amplitude,
+                    Radius = spellEffect.Radius,
+                    RadiusMax = spellEffect.RadiusMax,
+                    BaseValue = spellEffect.BaseValue,
+                });
+            }
+
+            return itemSpell;
         }
 
         internal void AddGems(SimcItem item, IReadOnlyCollection<int> gemIds)
