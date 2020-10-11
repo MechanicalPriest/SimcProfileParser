@@ -44,19 +44,6 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void SPS_Handles_Multiline_String()
-        {
-            // Arrange
-            var multiLineString = string.Join("\r\n", TestFileString);
-
-            // Act
-            var result = SimcParser.ParseProfileAsync(multiLineString);
-
-            // Assert
-            Assert.IsNotNull(result);
-        }
-
-        [Test]
         public void SPS_Handles_Collection_Input()
         {
             // Arrange
@@ -66,38 +53,6 @@ namespace SimcProfileParser.Tests
 
             // Assert
             Assert.IsNotNull(result);
-        }
-
-        [Test]
-        public void SPS_Throws_On_Empty_String()
-        {
-            // Arrange
-
-            // Act
-            SimcParsedProfile result = null;
-            void EmptyString()
-            {
-                result = SimcParser.ParseProfileAsync(string.Empty);
-            }
-
-            // Assert
-            Assert.Throws(typeof(ArgumentNullException), EmptyString);
-        }
-
-        [Test]
-        public void SPS_Throws_On_Null_String()
-        {
-            // Arrange
-
-            // Act
-            void NullString()
-            {
-                string input = null;
-                SimcParser.ParseProfileAsync(input);
-            }
-
-            // Assert
-            Assert.Throws(typeof(ArgumentNullException), NullString);
         }
 
         [Test]

@@ -57,12 +57,15 @@ namespace SimcProfileParser
 
         public async Task<SimcProfile> GenerateProfileAsync(List<string> profileString)
         {
+            if (profileString == null || profileString.Count == 0)
+                throw new ArgumentNullException(nameof(profileString), "profile string must contain valid entries");
+
             // Process the incoming profile string
             var parsedProfile  = await Task<SimcParsedProfile>.Factory.StartNew(
                 () => _simcParserService.ParseProfileAsync(profileString));
 
             if (parsedProfile == null)
-                throw new ArgumentOutOfRangeException("profileString provided was invalid or produced no results");
+                throw new ArgumentOutOfRangeException(nameof(profileString), "profileString provided was invalid or produced no results");
 
             // Build up the basics of the new object
             var newProfile = new SimcProfile
