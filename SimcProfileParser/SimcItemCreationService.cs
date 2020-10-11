@@ -220,9 +220,11 @@ namespace SimcProfileParser
 
                     //// Now add it to the item
                     // Create a new SimcItemGem with the stat, rating etc.
-                    var newGem = new SimcItemGem();
-                    newGem.StatRating = (int)scaledValue;
-                    newGem.Type = stat;
+                    var newGem = new SimcItemGem
+                    {
+                        StatRating = (int)scaledValue,
+                        Type = stat
+                    };
                     item.Gems.Add(newGem);
                 }
             }
@@ -618,51 +620,30 @@ namespace SimcProfileParser
         internal int GetClassId(PlayerScaling scaleType)
         {
             // from util::class_id
-            switch (scaleType)
+            return scaleType switch
             {
-                case PlayerScaling.WARRIOR:
-                    return 1;
-                case PlayerScaling.PALADIN:
-                    return 2;
-                case PlayerScaling.HUNTER:
-                    return 3;
-                case PlayerScaling.ROGUE:
-                    return 4;
-                case PlayerScaling.PRIEST:
-                    return 5;
-                case PlayerScaling.DEATH_KNIGHT:
-                    return 6;
-                case PlayerScaling.SHAMAN:
-                    return 7;
-                case PlayerScaling.MAGE:
-                    return 8;
-                case PlayerScaling.WARLOCK:
-                    return 9;
-                case PlayerScaling.MONK:
-                    return 10;
-                case PlayerScaling.DRUID:
-                    return 11;
-                case PlayerScaling.DEMON_HUNTER:
-                    return 12;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE:
-                    return 13;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE2:
-                    return 14;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE3:
-                    return 15;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE4:
-                    return 16;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE5:
-                    return 17;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE6:
-                    return 18;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE7:
-                    return 13;
-                case PlayerScaling.PLAYER_SPECIAL_SCALE8:
-                    return 19;
-                default:
-                    return 0;
-            }
+                PlayerScaling.WARRIOR => 1,
+                PlayerScaling.PALADIN => 2,
+                PlayerScaling.HUNTER => 3,
+                PlayerScaling.ROGUE => 4,
+                PlayerScaling.PRIEST => 5,
+                PlayerScaling.DEATH_KNIGHT => 6,
+                PlayerScaling.SHAMAN => 7,
+                PlayerScaling.MAGE => 8,
+                PlayerScaling.WARLOCK => 9,
+                PlayerScaling.MONK => 10,
+                PlayerScaling.DRUID => 11,
+                PlayerScaling.DEMON_HUNTER => 12,
+                PlayerScaling.PLAYER_SPECIAL_SCALE => 13,
+                PlayerScaling.PLAYER_SPECIAL_SCALE2 => 14,
+                PlayerScaling.PLAYER_SPECIAL_SCALE3 => 15,
+                PlayerScaling.PLAYER_SPECIAL_SCALE4 => 16,
+                PlayerScaling.PLAYER_SPECIAL_SCALE5 => 17,
+                PlayerScaling.PLAYER_SPECIAL_SCALE6 => 18,
+                PlayerScaling.PLAYER_SPECIAL_SCALE7 => 13,
+                PlayerScaling.PLAYER_SPECIAL_SCALE8 => 19,
+                _ => 0,
+            };
         }
 
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.
