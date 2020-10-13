@@ -6,7 +6,7 @@ namespace SimcProfileParser.Model.Generated
     {
         public uint SpellId { get; set; }
         public int ItemLevel { get; set; }
-        public uint PlayerLevel { get; set; }
+        public uint? PlayerLevel { get; set; }
         public ItemQuality? ItemQuality { get; internal set; }
         public InventoryType? ItemInventoryType { get; internal set; }
 

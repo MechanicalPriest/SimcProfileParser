@@ -64,7 +64,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(40, spell.ItemScaleBudget);
+            Assert.AreEqual(40, spell.ScaleBudget);
             Assert.AreEqual(300.020416, spell.Effects[0].Coefficient);
             Assert.AreEqual(371.653076, spell.Effects[1].Coefficient);
         }
@@ -73,6 +73,7 @@ namespace SimcProfileParser.Tests
         public void SSC_Creates_Item_Spell_Raw_Obj()
         {
             // Arrange
+            // Use the Brimming Ember Shard spell 343538
             var item = new SimcItem()
             {
                 ItemLevel = 226,
@@ -87,9 +88,49 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(40, spell.ItemScaleBudget);
+            Assert.AreEqual(40, spell.ScaleBudget);
             Assert.AreEqual(300.020416, spell.Effects[0].Coefficient);
             Assert.AreEqual(371.653076, spell.Effects[1].Coefficient);
+        }
+
+        [Test]
+        public void SSC_Creates_Player_Spell_Spell_Options()
+        {
+            // Arrange
+            // Use the 
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 274740,
+                PlayerLevel = 60
+            };
+
+            // Act
+            var spell = _spellCreationService.GeneratePlayerSpell(spellOptions);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.Effects);
+            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
+            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
+            Assert.AreEqual(95, spell.ScaleBudget);
+        }
+
+        [Test]
+        public void SSC_Creates_Player_Spell_Raw()
+        {
+            // Arrange
+            var playerLevel = 60u;
+            var spellId = 274740u;
+
+            // Act
+            var spell = _spellCreationService.GeneratePlayerSpell(playerLevel, spellId);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.Effects);
+            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
+            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
+            Assert.AreEqual(95, spell.ScaleBudget);
         }
     }
 }

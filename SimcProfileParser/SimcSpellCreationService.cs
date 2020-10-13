@@ -49,12 +49,81 @@ namespace SimcProfileParser
         {
             var spellData = _simcUtilityService.GetRawSpellData(spellId);
 
-            return null;
+            var spellScalingClass = _simcUtilityService.GetScaleClass(spellData.ScalingType);
+
+            double budget = 0;
+
+            if (spellScalingClass != PlayerScaling.PLAYER_NONE)
+            {
+                // Cap the scaling level if needed
+                if (spellData.MaxScalingLevel > 0)
+                    playerLevel = Math.Min(playerLevel, (uint)spellData.MaxScalingLevel);
+
+                var scaleIndex = _simcUtilityService.GetClassId(spellScalingClass);
+
+                var scaledValue = _simcUtilityService.GetSpellScalingMultiplier(scaleIndex, (int)playerLevel);
+
+                budget = scaledValue;
+            }
+
+            var itemSpell = new SimcSpell()
+            {
+                SpellId = spellData.Id,
+                Name = spellData.Name,
+                School = spellData.School,
+                ScalingType = spellData.ScalingType,
+                MinRange = spellData.MinRange,
+                MaxRange = spellData.MaxRange,
+                Cooldown = spellData.Cooldown,
+                Gcd = spellData.Gcd,
+                Category = spellData.Category,
+                CategoryCooldown = spellData.CategoryCooldown,
+                Charges = spellData.Charges,
+                ChargeCooldown = spellData.ChargeCooldown,
+                MaxTargets = spellData.MaxTargets,
+                Duration = spellData.Duration,
+                MaxStacks = spellData.MaxStack,
+                ProcChance = spellData.ProcChance,
+                InternalCooldown = spellData.InternalCooldown,
+                Rppm = spellData.Rppm,
+                CastTime = spellData.CastTime,
+                ScaleBudget = budget,
+            };
+
+            foreach (var spellEffect in spellData.Effects)
+            {
+                itemSpell.Effects.Add(new SimcSpellEffect()
+                {
+                    Id = spellEffect.Id,
+                    EffectIndex = spellEffect.EffectIndex,
+                    EffectType = spellEffect.EffectType,
+                    EffectSubType = spellEffect.EffectSubType,
+                    Coefficient = spellEffect.Coefficient,
+                    SpCoefficient = spellEffect.SpCoefficient,
+                    Delta = spellEffect.Delta,
+                    Amplitude = spellEffect.Amplitude,
+                    Radius = spellEffect.Radius,
+                    RadiusMax = spellEffect.RadiusMax,
+                    BaseValue = spellEffect.BaseValue,
+                });
+            }
+
+            return itemSpell;
         }
 
         public SimcSpell GeneratePlayerSpell(SimcSpellOptions spellOptions)
         {
-            throw new System.NotImplementedException();
+            if (!spellOptions.PlayerLevel.HasValue)
+                throw new ArgumentNullException(nameof(spellOptions.PlayerLevel),
+                    "SpellOptions must include Player Level to generate a player scaled spell.");
+
+            if (spellOptions.SpellId <= 0)
+                throw new ArgumentNullException(nameof(spellOptions.SpellId),
+                    "SpellOptions must include Spell ID to generate a player scaled spell.");
+
+            var spell = GeneratePlayerSpell(spellOptions.PlayerLevel.Value, spellOptions.SpellId);
+
+            return spell;
         }
 
         internal SimcSpell BuildItemSpell(uint spellId, int itemLevel, 
@@ -126,7 +195,7 @@ namespace SimcProfileParser
                 InternalCooldown = spellData.InternalCooldown,
                 Rppm = spellData.Rppm,
                 CastTime = spellData.CastTime,
-                ItemScaleBudget = budget,
+                ScaleBudget = budget,
             };
 
             foreach (var spellEffect in spellData.Effects)

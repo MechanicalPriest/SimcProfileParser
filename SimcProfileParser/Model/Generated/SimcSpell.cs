@@ -25,9 +25,10 @@ namespace SimcProfileParser.Model.Generated
         public double Rppm { get; internal set; }
         public int CastTime { get; internal set; }
         /// <summary>
-        /// Calculated field, generated from the associated item to get the scale budget for the SP coefficient
+        /// Calculated field, generated from the associated item or player level scaling
+        /// to get the scale budget for the SP coefficient
         /// </summary>
-        public double ItemScaleBudget { get; internal set; }
+        public double ScaleBudget { get; internal set; }
 
         public SimcSpell()
         {
