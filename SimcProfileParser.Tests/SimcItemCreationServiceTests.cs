@@ -44,9 +44,8 @@ namespace SimcProfileParser.Tests
             // Create a new profile service
             var simcParser = new SimcParserService(_loggerFactory.CreateLogger<SimcParserService>());
             ParsedProfile = simcParser.ParseProfileAsync(testFileString);
-
-            
         }
+
         [Test]
         public void ICS_Test()
         {
