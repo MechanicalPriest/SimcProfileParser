@@ -49,7 +49,7 @@ class MyClass
 }
 ```
 ### Examples
-
+#### Parsing profile files/strings
 Generating a profile object from a simc import file named `import.simc`:
 
 ```csharp
@@ -78,7 +78,46 @@ Console.WriteLine($"Profile object created for a level {profile.Level}");
 Console.WriteLine($"They are weilding {profile.Items.FirstOrDefault().Name}.");
 ```
 
-TODO: Show some more examples of how to use the library to parse strings and manually create options/objects.
+#### Creating a single spell
+There are some basic options to manually create an item using `ISimcGenerationService.GenerateSpellAsync`.
+
+There are two types of generatable spells: 
+
+ - Player Scaling: the type that scale with the player level / class, such as racials. 
+ - Item Scaling: the type that scales with the item quality/level, such as trinkets.
+
+Generating an item scaling spell (id 343538) for a **rare trinket at ilvl 226**:
+
+```csharp
+ISimcProfileParser spp = new SimcProfileParser();
+
+var spellOptions = new SimcSpellOptions()
+{
+    ItemLevel = 226,
+    SpellId = 343538,
+    ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
+    ItemInventoryType = InventoryType.INVTYPE_TRINKET
+};
+
+var spell = await spp.GenerateSpellAsync(spellOptions);
+```
+
+Generating an player scaling spell (id 274740):
+
+```csharp
+ISimcProfileParser spp = new SimcProfileParser();
+
+var spellOptions = new SimcSpellOptions()
+{
+    SpellId = 274740,
+    PlayerLevel = 60
+};
+
+var spell = await spp.GenerateSpellAsync(spellOptions);
+```
+
+The spell object has a property `ScaleBudget` which can be multiplied with a coeffecient from a spells effect if required. 
+Otherwise typically the BaseValue/ScaledValue of the effect will be what you're looking for.
 
 ## Support
 For bugs please search [issues](https://github.com/MechanicalPriest/SimcProfileParser/issues) 

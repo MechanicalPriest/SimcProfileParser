@@ -122,9 +122,24 @@ namespace SimcProfileParser
             throw new NotImplementedException();
         }
 
-        public Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options)
+        public async Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options)
         {
-            throw new NotImplementedException();
+            SimcSpell spell;
+
+            if (options.ItemLevel != 0)
+            {
+                // TODO: Remove this await once the rest of the library chain supports async better
+                spell = await Task<SimcSpell>.Factory.StartNew(
+                    () => _simcSpellCreationService.GenerateItemSpell(options));
+            }
+            else
+            {
+                // TODO: Remove this await once the rest of the library chain supports async better
+                spell = await Task<SimcSpell>.Factory.StartNew(
+                    () => _simcSpellCreationService.GeneratePlayerSpell(options));
+            }
+
+            return spell;
         }
     }
 }
