@@ -138,6 +138,16 @@ namespace SimcProfileParser.DataSync
                     { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_spell_data.inc" }
                 }
             });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "CurveData.json",
+                ParsedFileType = SimcParsedFileType.CurvePoints,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "CurveData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_scaling.inc" }
+                }
+            });
         }
 
         /// <summary>

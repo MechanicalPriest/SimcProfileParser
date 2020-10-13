@@ -38,6 +38,7 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.GemData => GenerateGemData(incomingRawData),
                 SimcParsedFileType.ItemEnchantData => GenerateItemEnchantData(incomingRawData),
                 SimcParsedFileType.SpellScaleMultipliers => GenerateSpellScalingMultipliers(incomingRawData),
+                SimcParsedFileType.CurvePoints => GenerateCurveData(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -914,6 +915,61 @@ namespace SimcProfileParser.DataSync
 
 
             return spellScalingTable;
+        }
+        internal List<SimcRawCurvePoint> GenerateCurveData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "CurveData.raw").FirstOrDefault().Value;
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var curvePoints = new List<SimcRawCurvePoint>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() != 7)
+                    continue;
+
+                var curvePoint = new SimcRawCurvePoint();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is curve Id
+                curvePoint.CurveId = Convert.ToUInt32(data[0]);
+
+                // 1 is Index
+                curvePoint.Index = Convert.ToUInt32(data[1]);
+
+                // 2 is Primary1
+                float.TryParse(data[2], out float primary1);
+                curvePoint.Primary1 = primary1;
+
+                // 3 is Primary2
+                float.TryParse(data[3], out float primary2);
+                curvePoint.Primary2 = primary2;
+
+                // 4 is Secondary1
+                float.TryParse(data[4], out float secondary1);
+                curvePoint.Secondary1 = secondary1;
+
+                // 5 is value Secondary2
+                float.TryParse(data[5], out float secondary2);
+                curvePoint.Secondary2 = secondary2;
+
+                curvePoints.Add(curvePoint);
+            }
+
+            return curvePoints;
         }
     }
 }
