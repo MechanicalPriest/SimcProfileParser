@@ -7,8 +7,10 @@ using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
+using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,10 +22,10 @@ namespace SimcProfileParser.Tests
     {
         private ILoggerFactory _loggerFactory;
 
-        SimcParsedProfile ParsedProfile { get; set; }
+        ISimcItemCreationService _ics;
 
         [OneTimeSetUp]
-        public async Task InitOnce()
+        public void InitOnce()
         {
             // Configure Logging
             Log.Logger = new LoggerConfiguration()
@@ -36,20 +38,7 @@ namespace SimcProfileParser.Tests
                 .AddSerilog()
                 .AddFilter(level => level >= LogLevel.Trace));
 
-            // Load a data file
-            var testFile = @"RawData" + Path.DirectorySeparatorChar + "Ardaysauk.simc";
-            var testFileContents = await File.ReadAllLinesAsync(testFile);
-            var testFileString = new List<string>(testFileContents);
 
-            // Create a new profile service
-            var simcParser = new SimcParserService(_loggerFactory.CreateLogger<SimcParserService>());
-            ParsedProfile = simcParser.ParseProfileAsync(testFileString);
-        }
-
-        [Test]
-        public void ICS_Test()
-        {
-            // Arrange
             IRawDataExtractionService rawDataExtractionService =
                 new RawDataExtractionService(_loggerFactory.CreateLogger<RawDataExtractionService>());
             ICacheService cacheService = new CacheService(rawDataExtractionService, _loggerFactory.CreateLogger<CacheService>());
@@ -62,23 +51,222 @@ namespace SimcProfileParser.Tests
                 utilityService,
                 _loggerFactory.CreateLogger<SimcSpellCreationService>());
 
-            ISimcItemCreationService ics = new SimcItemCreationService(
+            _ics = new SimcItemCreationService(
                 cacheService,
                 spellCreationService,
                 utilityService,
                 _loggerFactory.CreateLogger<SimcItemCreationService>());
+        }
+
+        [Test]
+        public async Task ICS_Parses_Entire_Data_file()
+        {
+            // Arrange
+
+            // Load a data file
+            var testFile = @"RawData" + Path.DirectorySeparatorChar + "Alfouhk.simc";
+            var testFileContents = await File.ReadAllLinesAsync(testFile);
+            var testFileString = new List<string>(testFileContents);
+
+            // Create a new item creation service
+            var simcParser = new SimcParserService(_loggerFactory.CreateLogger<SimcParserService>());
+            var parsedProfile = simcParser.ParseProfileAsync(testFileString);
 
             // Act
             var items = new List<SimcItem>();
-            foreach (var parsedItemData in ParsedProfile.Items)
+            foreach (var parsedItemData in parsedProfile.Items)
             {
-                var item = ics.CreateItem(parsedItemData);
+                var item = _ics.CreateItem(parsedItemData);
                 items.Add(item);
             }
 
             // Assert
             Assert.IsNotNull(items);
             Assert.NotZero(items.Count);
+        }
+
+        [Test]
+        public void ICS_Builds_Item_From_Options()
+        {
+            // Arrange
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 177813,
+                Quality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemLevel = 226
+            };
+
+            // Act
+            var item = _ics.CreateItem(itemOptions);
+
+            // Assert
+            Assert.IsNotNull(item);
+        }
+
+        [Test]
+        public void ICS_Builds_Trinket_From_ParsedItem_Secondary_Stat_UseEffect()
+        {
+            // Arrange
+            // Flame of Battle (226)
+            // trinket1=,id=181501,bonus_id=6652/7215,drop_level=50
+            // 226 ilvl. 77 int, 1211 vers proc for 6s (90s cd)
+            var parsedData = new SimcParsedItem()
+            {
+                ItemId = 181501,
+                BonusIds = new ReadOnlyCollection<int>(new List<int>()
+                {
+                    6652, 7215
+                }),
+                DropLevel = 50
+            };
+
+            // Act
+            var item = _ics.CreateItem(parsedData);
+
+            // Assert
+            Assert.IsNotNull(item);
+            Assert.IsNotNull(item.Effects);
+            Assert.AreEqual(1, item.Effects.Count);
+            Assert.AreEqual(126201, item.Effects[0].EffectId);
+            Assert.IsNotNull(item.Effects[0].Spell);
+            Assert.AreEqual(336841, item.Effects[0].Spell.SpellId);
+            Assert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
+            Assert.AreEqual(6000, item.Effects[0].Spell.Duration);
+            Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
+            Assert.AreEqual(155, item.Effects[0].Spell.ScaleBudget);
+            Assert.IsNotNull(item.Effects[0].Spell.Effects);
+            Assert.AreEqual(1, item.Effects[0].Spell.Effects.Count);
+            Assert.AreEqual(5.966555, item.Effects[0].Spell.Effects[0].Coefficient);
+        }
+
+        [Test]
+        public void ICS_Builds_Trinket_From_ParsedItem_HealDmg_UseEffect()
+        {
+            // Arrange
+            // Brimming Ember Shard (226)
+            // trinket1=,id=175733,bonus_id=6706/7215,drop_level=50
+            // 226 ilvl. 100 vers, 14866 health over 6s split between allies
+            // 12001 damage over 6s split between enemies
+            // 40yd beam, 90s cd.
+            var parsedData = new SimcParsedItem()
+            {
+                ItemId = 175733,
+                BonusIds = new ReadOnlyCollection<int>(new List<int>()
+                {
+                    6706, 7215
+                }),
+                DropLevel = 50
+            };
+
+            // Act
+            var item = _ics.CreateItem(parsedData);
+
+            // Assert
+            Assert.IsNotNull(item);
+            Assert.IsNotNull(item.Effects);
+            Assert.AreEqual(2, item.Effects.Count);
+            // First effect
+            Assert.AreEqual(126207, item.Effects[0].EffectId);
+            Assert.IsNotNull(item.Effects[0].Spell);
+            Assert.AreEqual(336866, item.Effects[0].Spell.SpellId);
+            Assert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
+            Assert.AreEqual(6000, item.Effects[0].Spell.Duration);
+            Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
+            Assert.AreEqual(40, item.Effects[0].Spell.ScaleBudget);
+            // Second effect
+            Assert.AreEqual(135863, item.Effects[1].EffectId);
+            Assert.IsNotNull(item.Effects[1].Spell);
+            Assert.AreEqual(343538, item.Effects[1].Spell.SpellId);
+            Assert.AreEqual(1.3098933696746826, item.Effects[1].Spell.CombatRatingMultiplier);
+            Assert.AreEqual(40, item.Effects[1].Spell.ScaleBudget);
+            Assert.IsNotNull(item.Effects[1].Spell.Effects);
+            Assert.AreEqual(2, item.Effects[1].Spell.Effects.Count);
+            // Second effect's spells first effect
+            Assert.AreEqual(300.020416, item.Effects[1].Spell.Effects[0].Coefficient);
+            Assert.AreEqual(371.653076, item.Effects[1].Spell.Effects[1].Coefficient);
+        }
+
+        [Test]
+        public void ICS_Builds_Trinket_From_ParsedItem_Primary_ProcEffectt()
+        {
+            // Arrange
+            // Misfiring Centurion Controller (226)
+            // trinket1=,id=173349,bonus_id=6706/7215,drop_level=50
+            // 226 ilvl. 100 crit, 164 int for 15s proc
+            var parsedData = new SimcParsedItem()
+            {
+                ItemId = 173349,
+                BonusIds = new ReadOnlyCollection<int>(new List<int>()
+                {
+                    6706, 7215
+                }),
+                DropLevel = 50
+            };
+
+            // Act
+            var item = _ics.CreateItem(parsedData);
+
+            // Assert
+            Assert.IsNotNull(item);
+            Assert.IsNotNull(item.Effects);
+            Assert.AreEqual(1, item.Effects.Count);
+            // First effect
+            Assert.AreEqual(135894, item.Effects[0].EffectId);
+            Assert.IsNotNull(item.Effects[0].Spell);
+            Assert.AreEqual(344117, item.Effects[0].Spell.SpellId);
+            Assert.AreEqual(1.5, item.Effects[0].Spell.Rppm);
+            Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
+            Assert.AreEqual(155, item.Effects[0].Spell.ScaleBudget);
+            // First effect's spells first effect trigger spells first effect (lol)
+            // This is basically testing that the trigger spell gets linked. This particular spell
+            // stores the proc coefficient in the trigger spell and multiplies it by 155.
+            // amusingly the previous lines have "trigger spell" lined up vertically.
+            Assert.AreEqual(1.055432, item.Effects[0].Spell.Effects[0].TriggerSpell.Effects[0].Coefficient);
+        }
+
+        [Test]
+        public void ICS_ParsedData_Invalid_ItemId_Throws()
+        {
+            // Arrange
+            // Glowing Endmire Stinger (226)
+            // trinket1=,id=179927,bonus_id=6652/7215,drop_level=50
+            var parsedData = new SimcParsedItem()
+            {
+                ItemId = 12333333,
+                BonusIds = new ReadOnlyCollection<int>(new List<int>()
+                {
+                    6706, 7215
+                }),
+                DropLevel = 50
+            };
+
+            // Act
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => _ics.CreateItem(parsedData));
+        }
+
+
+
+        [Test]
+        public void ICS_Options_Invalid_ItemId_Throws()
+        {
+            // Arrange
+            // Glowing Endmire Stinger (226)
+            // trinket1=,id=179927,bonus_id=6652/7215,drop_level=50
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 12333333,
+                Quality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemLevel = 226
+            };
+
+            // Act
+
+            // Assert 
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => _ics.CreateItem(itemOptions));
         }
     }
 }

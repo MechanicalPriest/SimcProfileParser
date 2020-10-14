@@ -92,6 +92,11 @@ namespace SimcProfileParser
 
             foreach (var spellEffect in spellData.Effects)
             {
+                // Populate the trigger spell if one exists.
+                SimcSpell triggerSpell = null;
+                if (spellEffect.TriggerSpellId > 0)
+                    triggerSpell = GeneratePlayerSpell(playerLevel, spellEffect.TriggerSpellId);
+
                 itemSpell.Effects.Add(new SimcSpellEffect()
                 {
                     Id = spellEffect.Id,
@@ -105,6 +110,8 @@ namespace SimcProfileParser
                     Radius = spellEffect.Radius,
                     RadiusMax = spellEffect.RadiusMax,
                     BaseValue = spellEffect.BaseValue,
+                    TriggerSpellId = spellEffect.TriggerSpellId,
+                    TriggerSpell = triggerSpell
                 });
             }
 
@@ -157,10 +164,11 @@ namespace SimcProfileParser
 
             var spellScalingClass = _simcUtilityService.GetScaleClass(spellData.ScalingType);
 
+            var combatRatingType = _simcUtilityService.GetCombatRatingMultiplierType(inventoryType);
+            var multi = _simcUtilityService.GetCombatRatingMultiplier(itemLevel, combatRatingType);
+
             if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
             {
-                var combatRatingType = _simcUtilityService.GetCombatRatingMultiplierType(inventoryType);
-                var multi = _simcUtilityService.GetCombatRatingMultiplier(itemLevel, combatRatingType);
                 budget *= multi;
             }
             else if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE8)
@@ -196,10 +204,17 @@ namespace SimcProfileParser
                 Rppm = spellData.Rppm,
                 CastTime = spellData.CastTime,
                 ScaleBudget = budget,
+                CombatRatingMultiplier = multi
             };
 
             foreach (var spellEffect in spellData.Effects)
             {
+                // Populate the trigger spell if one exists.
+                SimcSpell triggerSpell = null;
+                if(spellEffect.TriggerSpellId > 0)
+                    triggerSpell = BuildItemSpell(
+                        spellEffect.TriggerSpellId, itemLevel, itemQuality, inventoryType);
+
                 itemSpell.Effects.Add(new SimcSpellEffect()
                 {
                     Id = spellEffect.Id,
@@ -213,10 +228,16 @@ namespace SimcProfileParser
                     Radius = spellEffect.Radius,
                     RadiusMax = spellEffect.RadiusMax,
                     BaseValue = spellEffect.BaseValue,
+                    TriggerSpellId = spellEffect.TriggerSpellId,
+                    TriggerSpell = triggerSpell
                 });
             }
 
             return itemSpell;
+            // stat_buff_t::stat_buff_t
+            // Checks if the effects subtype  is A_MOOD_RATING
+            // Then grab the rating then translate value1 to get the stat type
+            // and if its an item, apply the combat rating multi for the item.
         }
     }
 }

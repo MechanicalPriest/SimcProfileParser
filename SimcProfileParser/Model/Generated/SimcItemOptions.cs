@@ -10,6 +10,7 @@ namespace SimcProfileParser.Model.Generated
         public IList<int> BonusIds { get; internal set; }
         public IList<int> GemIds { get; internal set; }
         public ItemQuality Quality { get; internal set; }
+        public int DropLevel { get; internal set; }
 
         public SimcItemOptions()
         {

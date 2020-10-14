@@ -35,9 +35,14 @@ namespace SimcProfileParser
         {
             var item = BuildItem(parsedItemData.ItemId);
 
+            if (item == null)
+                throw new ArgumentOutOfRangeException(
+                    nameof(parsedItemData.ItemId), $"ItemId not found: {parsedItemData.ItemId}");
+
             UpdateItem(item,
                 parsedItemData.BonusIds.ToList(),
-                parsedItemData.GemIds.ToList());
+                parsedItemData.GemIds.ToList(),
+                parsedItemData.DropLevel);
 
             return item;
         }
@@ -46,9 +51,14 @@ namespace SimcProfileParser
         {
             var item = BuildItem(itemOptions.ItemId);
 
+            if (item == null)
+                throw new ArgumentOutOfRangeException(
+                    nameof(itemOptions.ItemId), $"ItemId not found: {itemOptions.ItemId}");
+
             UpdateItem(item,
                 itemOptions.BonusIds,
-                itemOptions.GemIds);
+                itemOptions.GemIds,
+                itemOptions.DropLevel);
 
             // Set the item level if provided
             if(itemOptions.ItemLevel > 0)
@@ -82,7 +92,7 @@ namespace SimcProfileParser
                 ItemId = rawItemData.Id,
                 ItemClass = rawItemData.ItemClass,
                 ItemSubClass = rawItemData.ItemSubClass,
-                InventoryType = rawItemData.InventoryType
+                InventoryType = rawItemData.InventoryType,
             };
 
             foreach (var socketColour in rawItemData.SocketColour)
@@ -103,7 +113,7 @@ namespace SimcProfileParser
         /// <param name="bonusIds">Bonus IDs to apply</param>
         /// <param name="gemIds">Gem IDs to apply</param>
         internal void UpdateItem(SimcItem item, 
-            IList<int> bonusIds, IList<int> gemIds)
+            IList<int> bonusIds, IList<int> gemIds, int dropLevel)
         {
             var rawItemData = _simcUtilityService.GetRawItemData(item.ItemId);
 
@@ -115,7 +125,7 @@ namespace SimcProfileParser
                 AddItemMod(item, mod.ModType, mod.StatAllocation);
             }
 
-            ProcessBonusIds(item, bonusIds);
+            ProcessBonusIds(item, bonusIds, dropLevel);
 
             foreach (var mod in item.Mods)
             {
@@ -196,7 +206,7 @@ namespace SimcProfileParser
             }
         }
 
-        internal void ProcessBonusIds(SimcItem item, IList<int> bonusIds)
+        internal void ProcessBonusIds(SimcItem item, IList<int> bonusIds, int dropLevel = 0)
         {
             var bonuses = _cacheService.GetParsedFileContents<List<SimcRawItemBonus>>(SimcParsedFileType.ItemBonusData);
 
@@ -204,7 +214,7 @@ namespace SimcProfileParser
             foreach (var bonusId in bonusIds)
             {
                 // Find the bonus data for this bonus id
-                var bonusEntries = bonuses.Where(b => b.BonusId == bonusId);
+                var bonusEntries = bonuses.Where(b => b.BonusId == bonusId).ToList();
 
                 if (bonusEntries == null)
                     continue;
@@ -240,6 +250,11 @@ namespace SimcProfileParser
                             AddItemEffect(item, entry.Value1);
                             break;
 
+                        case ItemBonusType.ITEM_BONUS_SCALING_2:
+                            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding item scaling {entry.Value4} from {dropLevel}");
+                            AddBonusScaling(item, entry.Value4, dropLevel);
+                            break;
+
                         // Unused bonustypes:
                         case ItemBonusType.ITEM_BONUS_DESC:
                         case ItemBonusType.ITEM_BONUS_SUFFIX:
@@ -252,6 +267,85 @@ namespace SimcProfileParser
                     }
                 }
             }
+        }
+
+        internal void AddBonusScaling(SimcItem item, int curveId, int dropLevel)
+        {
+            // from item_database::apply_item_scaling (sc_item_data.cpp)
+            if (curveId == 0)
+                return;
+
+            // Then the base_value becomes MIN(player_level, curveData.last().primary1);
+            var curveData = FindCurvePointById(curveId);
+            if (curveData.Count == 0)
+                return;
+
+            var baseValue = Math.Min(dropLevel, curveData.LastOrDefault().Primary1);
+
+            double scaledResult = FindCurvePointValue(curveId, baseValue);
+
+            int newItemLevel =  (int)Math.Floor(scaledResult + 0.5);
+
+            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} setting scaled item level to {newItemLevel}");
+
+            item.ItemLevel = newItemLevel;
+        }
+
+        internal List<SimcRawCurvePoint> FindCurvePointById(int curveId)
+        {
+            // from curve_point_t::find
+            List<SimcRawCurvePoint> points = new List<SimcRawCurvePoint>();
+
+            var curveData = _cacheService.GetParsedFileContents<List<SimcRawCurvePoint>>(SimcParsedFileType.CurvePoints);
+
+            var curvePoints = curveData.Where(c => c.CurveId == curveId).ToList();
+
+            return curvePoints;
+        }
+
+        internal double FindCurvePointValue(int curveId, double pointValue)
+        {
+            // From item_database::curve_point_value
+            // First call dbc_t::curve_point and get the two curve points either side of the value
+            var curveData = _cacheService.GetParsedFileContents<List<SimcRawCurvePoint>>(SimcParsedFileType.CurvePoints);
+
+            var curvePoints = curveData
+                .Where(c => c.CurveId == curveId)
+                .ToList();
+
+            // The one right below the value
+            var curvePointFirst = curvePoints
+                .Where(c => c.Primary1 <= pointValue)
+                .OrderBy(c => c.Primary1)
+                .Last();
+            // The one right above the value
+            var curvePointSecond = curvePoints
+                .Where(c => c.Primary1 >= pointValue)
+                .OrderBy(c => c.Primary1)
+                .First();
+
+            if (curvePointFirst == null)
+                curvePointFirst = curvePointSecond;
+
+            if (curvePointSecond == null)
+                curvePointSecond = curvePointFirst;
+
+            // Now back to item_database::curve_point_value
+            double scaledResult = 0;
+            // item_database::curve_point_value seems to get the primary 2 value from whichever of the relevant curve points
+            if (curvePointFirst.Primary1 == pointValue)
+                scaledResult = curvePointFirst.Primary2;
+            else if (curvePointFirst.Primary1 > pointValue)
+                scaledResult = curvePointFirst.Primary2;
+            else if (curvePointSecond.Primary1 < pointValue)
+                scaledResult = curvePointSecond.Primary2;
+            else if (curvePointSecond.Primary1 == pointValue)
+                throw new ArgumentOutOfRangeException("Incorrect curve data retreived");
+            else
+                scaledResult = curvePointFirst.Primary2 + (curvePointSecond.Primary2 - curvePointFirst.Primary2) *
+                    (scaledResult - curvePointFirst.Primary1) / (curvePointSecond.Primary1 - curvePointFirst.Primary1);
+
+            return scaledResult;
         }
 
         internal void AddItemMod(SimcItem item, ItemModType modType, int statAllocation)

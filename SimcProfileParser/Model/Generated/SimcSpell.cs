@@ -29,6 +29,10 @@ namespace SimcProfileParser.Model.Generated
         /// to get the scale budget for the SP coefficient
         /// </summary>
         public double ScaleBudget { get; internal set; }
+        /// <summary>
+        /// Combat Rating Multiplier, used for Item spells to store an optional multiplier
+        /// </summary>
+        public double CombatRatingMultiplier { get; internal set; }
 
         public SimcSpell()
         {

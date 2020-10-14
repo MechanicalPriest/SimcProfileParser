@@ -13,5 +13,7 @@
         public double Radius { get; internal set; }
         public double RadiusMax { get; internal set; }
         public double BaseValue { get; internal set; }
+        public uint TriggerSpellId { get; internal set; }
+        public SimcSpell TriggerSpell { get; internal set; }
     }
 }
