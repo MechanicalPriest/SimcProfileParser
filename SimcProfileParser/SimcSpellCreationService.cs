@@ -66,6 +66,7 @@ namespace SimcProfileParser
                 budget = scaledValue;
             }
 
+
             var itemSpell = new SimcSpell()
             {
                 SpellId = spellData.Id,
@@ -90,6 +91,23 @@ namespace SimcProfileParser
                 ScaleBudget = budget,
             };
 
+            // Add the RPPM modifiers
+            var rppmModifiers = _simcUtilityService.GetSpellRppmModifiers(spellData.Id);
+
+            foreach (var modifier in rppmModifiers)
+            {
+                var newRppmModifier = new SimcSpellRppmModifier()
+                {
+                    RppmIsHasted = modifier.ModifierType == RppmModifierType.RPPM_MODIFIER_HASTE,
+                    RppmIsSpecModified = modifier.ModifierType == RppmModifierType.RPPM_MODIFIER_SPEC,
+                    RppmCoefficient = modifier.Coefficient,
+                    RppmSpec = modifier.ModifierType == RppmModifierType.RPPM_MODIFIER_SPEC ? modifier.Type : 0
+                };
+
+                itemSpell.RppmModifiers.Add(newRppmModifier);
+            }
+
+            // Populate the spell effects
             foreach (var spellEffect in spellData.Effects)
             {
                 // Populate the trigger spell if one exists.
@@ -207,6 +225,24 @@ namespace SimcProfileParser
                 CombatRatingMultiplier = multi
             };
 
+            // Add the RPPM modifiers
+            var rppmModifiers = _simcUtilityService.GetSpellRppmModifiers(spellData.Id);
+
+            foreach (var modifier in rppmModifiers)
+            {
+                var newRppmModifier = new SimcSpellRppmModifier()
+                {
+                    SpellId = modifier.SpellId,
+                    RppmIsHasted = modifier.ModifierType == RppmModifierType.RPPM_MODIFIER_HASTE,
+                    RppmIsSpecModified = modifier.ModifierType == RppmModifierType.RPPM_MODIFIER_SPEC,
+                    RppmCoefficient = modifier.Coefficient,
+                    RppmSpec = modifier.ModifierType == RppmModifierType.RPPM_MODIFIER_SPEC ? modifier.Type : 0
+                };
+
+                itemSpell.RppmModifiers.Add(newRppmModifier);
+            }
+
+            // Populate the spell effects
             foreach (var spellEffect in spellData.Effects)
             {
                 // Populate the trigger spell if one exists.

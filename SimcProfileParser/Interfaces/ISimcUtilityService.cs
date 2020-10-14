@@ -21,6 +21,7 @@ namespace SimcProfileParser.Interfaces
         PlayerScaling GetScaleClass(int scaleType);
         int GetScaledModValue(SimcItem item, ItemModType modType, int statAllocation);
         int GetSlotType(ItemClass itemClass, int itemSubClass, InventoryType itemInventoryType);
+        List<SimcRawRppmEntry> GetSpellRppmModifiers(uint spellId);
         double GetSpellScalingMultiplier(int scaleIndex, int playerLevel);
         double GetStaminaMultiplier(int itemLevel, CombatRatingMultiplayerType staminaRatingType);
     }

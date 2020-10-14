@@ -7,6 +7,7 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 
 namespace SimcProfileParser
@@ -420,6 +421,15 @@ namespace SimcProfileParser
             var spellData = _cacheService.GetParsedFileContents<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
 
             var result = spellData.Where(s => s.Id == spellId).FirstOrDefault();
+
+            return result;
+        }
+
+        public List<SimcRawRppmEntry> GetSpellRppmModifiers(uint spellId)
+        {
+            var modifiers = _cacheService.GetParsedFileContents<List<SimcRawRppmEntry>>(SimcParsedFileType.RppmData);
+
+            var result = modifiers.Where(m => m.SpellId == spellId).ToList();
 
             return result;
         }

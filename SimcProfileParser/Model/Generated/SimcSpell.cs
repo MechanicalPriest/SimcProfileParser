@@ -33,10 +33,12 @@ namespace SimcProfileParser.Model.Generated
         /// Combat Rating Multiplier, used for Item spells to store an optional multiplier
         /// </summary>
         public double CombatRatingMultiplier { get; internal set; }
+        public List<SimcSpellRppmModifier> RppmModifiers { get; internal set; }
 
         public SimcSpell()
         {
             Effects = new List<SimcSpellEffect>();
+            RppmModifiers = new List<SimcSpellRppmModifier>();
         }
     }
 }

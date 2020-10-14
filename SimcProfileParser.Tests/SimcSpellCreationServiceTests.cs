@@ -132,5 +132,57 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
             Assert.AreEqual(95, spell.ScaleBudget);
         }
+
+        [Test]
+        public void SSC_Creates_Item_Spell_RppmSpecModifiers()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                ItemLevel = 226,
+                SpellId = 339343,
+                ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemInventoryType = InventoryType.INVTYPE_TRINKET
+            };
+
+            // Act
+            var spell = _spellCreationService.GenerateItemSpell(spellOptions);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.RppmModifiers);
+            Assert.AreEqual(7, spell.RppmModifiers.Count);
+            Assert.AreEqual(339343, spell.RppmModifiers[4].SpellId);
+            Assert.IsFalse(spell.RppmModifiers[4].RppmIsHasted);
+            Assert.IsTrue(spell.RppmModifiers[4].RppmIsSpecModified);
+            Assert.AreEqual(257, spell.RppmModifiers[4].RppmSpec);
+            Assert.AreEqual(-0.5000, spell.RppmModifiers[4].RppmCoefficient);
+        }
+
+        [Test]
+        public void SSC_Creates_Item_Spell_RppmHasteModifiers()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                ItemLevel = 226,
+                SpellId = 345533,
+                ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemInventoryType = InventoryType.INVTYPE_TRINKET
+            };
+
+            // Act
+            var spell = _spellCreationService.GenerateItemSpell(spellOptions);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.RppmModifiers);
+            Assert.AreEqual(2, spell.RppmModifiers.Count);
+            Assert.AreEqual(345533, spell.RppmModifiers[0].SpellId);
+            Assert.IsTrue(spell.RppmModifiers[0].RppmIsHasted);
+            Assert.IsFalse(spell.RppmModifiers[0].RppmIsSpecModified);
+            Assert.AreEqual(0, spell.RppmModifiers[0].RppmSpec);
+            Assert.AreEqual(1, spell.RppmModifiers[0].RppmCoefficient);
+        }
     }
 }

@@ -39,6 +39,7 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.ItemEnchantData => GenerateItemEnchantData(incomingRawData),
                 SimcParsedFileType.SpellScaleMultipliers => GenerateSpellScalingMultipliers(incomingRawData),
                 SimcParsedFileType.CurvePoints => GenerateCurveData(incomingRawData),
+                SimcParsedFileType.RppmData => GenerateRppmData(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
