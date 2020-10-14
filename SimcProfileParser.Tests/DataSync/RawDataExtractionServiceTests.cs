@@ -370,5 +370,31 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.AreEqual(0.79273f, firstResult.Secondary1, "Secondary 1");
             Assert.AreEqual(-42.35294f, firstResult.Secondary2, "Secondary 2");
         }
+
+        [Test]
+        public void RDE_Generates_RppmData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "RppmData.raw", @"  { 339343,  257,  4, -0.5000 }," }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateRppmData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(339343, firstResult.SpellId, "Spell Id");
+            Assert.AreEqual(257, firstResult.Type, "Type");
+            Assert.AreEqual(4, (int)firstResult.ModifierType, "ModifierType");
+            Assert.AreEqual(-0.5000, firstResult.Coefficient, "Coefficient");
+        }
     }
 }

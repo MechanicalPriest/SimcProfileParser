@@ -971,5 +971,50 @@ namespace SimcProfileParser.DataSync
 
             return curvePoints;
         }
+        internal List<SimcRawRppmEntry> GenerateRppmData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "RppmData.raw").FirstOrDefault().Value;
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var rppmData = new List<SimcRawRppmEntry>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() != 5)
+                    continue;
+
+                var rppmEntry = new SimcRawRppmEntry();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is curve Id
+                rppmEntry.SpellId = Convert.ToUInt32(data[0]);
+
+                // 1 is Type
+                rppmEntry.Type = Convert.ToUInt32(data[1]);
+
+                // 2 is ModifierType
+                rppmEntry.ModifierType = (RppmModifierType)Convert.ToUInt32(data[2]);
+
+                // 3 is Coefficient
+                rppmEntry.Coefficient = Convert.ToDouble(data[3]);
+
+                rppmData.Add(rppmEntry);
+            }
+
+            return rppmData;
+        }
     }
 }

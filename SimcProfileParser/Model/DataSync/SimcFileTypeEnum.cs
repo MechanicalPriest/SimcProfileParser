@@ -12,6 +12,7 @@
         GemData,
         ItemEnchantData,
         SpellScaleMultipliers,
-        CurvePoints
+        CurvePoints,
+        RppmData
     }
 }

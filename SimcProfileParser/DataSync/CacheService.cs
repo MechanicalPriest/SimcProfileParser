@@ -148,6 +148,16 @@ namespace SimcProfileParser.DataSync
                     { "CurveData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_scaling.inc" }
                 }
             });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "RppmData.json",
+                ParsedFileType = SimcParsedFileType.RppmData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "RppmData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/real_ppm_data.inc" }
+                }
+            });
         }
 
         /// <summary>
