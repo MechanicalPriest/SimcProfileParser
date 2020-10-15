@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SimcProfileParser.Interfaces
 {
-    interface ISimcGenerationService
+    public interface ISimcGenerationService
     {
         Task<SimcProfile> GenerateProfileAsync(List<string> profileString);
         Task<SimcProfile> GenerateProfileAsync(string profileString);
