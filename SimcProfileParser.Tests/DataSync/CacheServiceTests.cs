@@ -78,7 +78,7 @@ namespace SimcProfileParser.Tests.DataSync
 
             // Act
             await cache.UpdateCacheDataAsync(filename, eTag, lastModified);
-            var data = File.ReadAllText(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
+            var data = await File.ReadAllTextAsync(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
 
             // Assert
             FileAssert.Exists(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
@@ -134,7 +134,7 @@ namespace SimcProfileParser.Tests.DataSync
                 @"]";
 
             await cache.SaveCacheDataAsync(entries);
-            var data = File.ReadAllText(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
+            var data = await File.ReadAllTextAsync(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
 
 
             // Assert
