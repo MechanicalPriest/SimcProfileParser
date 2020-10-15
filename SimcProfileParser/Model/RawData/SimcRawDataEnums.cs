@@ -355,6 +355,17 @@
         PLAYER_MAX
     };
 
+    enum RppmModifierType
+    {
+        RPPM_MODIFIER_HASTE = 1,
+        RPPM_MODIFIER_CRIT,
+        RPPM_MODIFIER_UNK_FLAG,
+        RPPM_MODIFIER_SPEC,
+        RPPM_MODIFIER_UNK,
+        RPPM_MODIFIER_ILEVEL,
+        RPPM_MODIFIER_UNK_ADJUST
+    };
+
     public static class Lookups
     {
         public static float[] SpellScalingLookup = new float[13]

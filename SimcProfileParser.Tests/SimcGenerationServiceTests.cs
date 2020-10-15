@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests
 {
+    [TestFixture]
     class SimcGenerationServiceTests
     {
         [Test]

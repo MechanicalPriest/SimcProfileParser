@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
-using SimcProfileParser.Model;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 using System;
@@ -37,17 +36,24 @@ namespace SimcProfileParser
                 loggerFactory.CreateLogger<RawDataExtractionService>());
             var cacheService = new CacheService(dataExtractionService,
                 loggerFactory.CreateLogger<CacheService>());
+            var utilityService = new SimcUtilityService(
+                cacheService,
+                loggerFactory.CreateLogger<SimcUtilityService>());
+
+            var spellCreationService = new SimcSpellCreationService(
+                utilityService,
+                loggerFactory.CreateLogger<SimcSpellCreationService>());
 
             _simcParserService = new SimcParserService(
                 loggerFactory.CreateLogger<SimcParserService>());
 
             _simcItemCreationService = new SimcItemCreationService(
                 cacheService,
+                spellCreationService,
+                utilityService,
                 loggerFactory.CreateLogger<SimcItemCreationService>());
 
-            _simcSpellCreationService = new SimcSpellCreationService(
-                cacheService,
-                loggerFactory.CreateLogger<SimcSpellCreationService>());
+            _simcSpellCreationService = spellCreationService;
         }
 
         public SimcGenerationService()
@@ -62,7 +68,7 @@ namespace SimcProfileParser
                 throw new ArgumentNullException(nameof(profileString), "profile string must contain valid entries");
 
             // Process the incoming profile string
-            var parsedProfile  = await Task<SimcParsedProfile>.Factory.StartNew(
+            var parsedProfile = await Task<SimcParsedProfile>.Factory.StartNew(
                 () => _simcParserService.ParseProfileAsync(profileString));
 
             if (parsedProfile == null)
@@ -75,9 +81,9 @@ namespace SimcProfileParser
             };
 
             // Now build up the items
-            foreach(var item in newProfile.ParsedProfile.Items)
+            foreach (var item in newProfile.ParsedProfile.Items)
             {
-                var newItem = _simcItemCreationService.CreateItem(item);
+                var newItem = await _simcItemCreationService.CreateItemAsync(item);
                 newProfile.GeneratedItems.Add(newItem);
             }
 
@@ -106,14 +112,41 @@ namespace SimcProfileParser
             return await GenerateProfileAsync(lines);
         }
 
-        public Task<SimcItem> GenerateItemAsync(SimcItemOptions options)
+        public async Task<SimcItem> GenerateItemAsync(SimcItemOptions options)
         {
-            throw new NotImplementedException();
+            if (options == null)
+            {
+                _logger?.LogWarning($"Incoming item options invalid");
+                throw new ArgumentNullException(nameof(options));
+            }
+            if (options.ItemId == 0)
+            {
+                _logger?.LogWarning($"Incoming item options has invalid ItemId:{options.ItemId}.");
+                throw new ArgumentOutOfRangeException(nameof(options.ItemId),
+                    $"Incoming item options has invalid ItemId:{options.ItemId}.");
+            }
+
+            var item = await _simcItemCreationService.CreateItemAsync(options);
+
+            return item;
         }
 
-        public Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options)
+        public async Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options)
         {
-            throw new NotImplementedException();
+            SimcSpell spell;
+
+            if (options.ItemLevel != 0)
+            {
+                // TODO: Remove this await once the rest of the library chain supports async better
+                spell = await _simcSpellCreationService.GenerateItemSpellAsync(options);
+            }
+            else
+            {
+                // TODO: Remove this await once the rest of the library chain supports async better
+                spell = await _simcSpellCreationService.GeneratePlayerSpellAsync(options);
+            }
+
+            return spell;
         }
     }
 }

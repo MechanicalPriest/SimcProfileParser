@@ -342,5 +342,59 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.AreEqual(9d, result[8][0]);
             Assert.AreEqual(0.143964076d, result[19][4]);
         }
+
+        [Test]
+        public void RDE_Generates_CurveData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "CurveData.raw", @"  { 5481,  2,    0.79273,  -42.35294,    0.79273,  -42.35294 }," }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateCurveData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(5481, firstResult.CurveId, "Curve Id");
+            Assert.AreEqual(2, firstResult.Index, "Index");
+            Assert.AreEqual(0.79273f, firstResult.Primary1, "Primary 1");
+            Assert.AreEqual(-42.35294f, firstResult.Primary2, "Primary 2");
+            Assert.AreEqual(0.79273f, firstResult.Secondary1, "Secondary 1");
+            Assert.AreEqual(-42.35294f, firstResult.Secondary2, "Secondary 2");
+        }
+
+        [Test]
+        public void RDE_Generates_RppmData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "RppmData.raw", @"  { 339343,  257,  4, -0.5000 }," }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateRppmData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(339343, firstResult.SpellId, "Spell Id");
+            Assert.AreEqual(257, firstResult.Type, "Type");
+            Assert.AreEqual(4, (int)firstResult.ModifierType, "ModifierType");
+            Assert.AreEqual(-0.5000, firstResult.Coefficient, "Coefficient");
+        }
     }
 }

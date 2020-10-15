@@ -11,6 +11,8 @@
         ItemBonusData,
         GemData,
         ItemEnchantData,
-        SpellScaleMultipliers
+        SpellScaleMultipliers,
+        CurvePoints,
+        RppmData
     }
 }

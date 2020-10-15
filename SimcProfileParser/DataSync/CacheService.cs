@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace SimcProfileParser.DataSync
 {
@@ -33,7 +34,6 @@ namespace SimcProfileParser.DataSync
             BaseFileDirectory = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory, "SimcProfileParserData");
 
-            _eTagCacheData = GetCacheData();
             _rawDataExtractionService = rawDataExtractionService;
             _logger = logger;
 
@@ -138,6 +138,26 @@ namespace SimcProfileParser.DataSync
                     { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_spell_data.inc" }
                 }
             });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "CurveData.json",
+                ParsedFileType = SimcParsedFileType.CurvePoints,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "CurveData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_scaling.inc" }
+                }
+            });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "RppmData.json",
+                ParsedFileType = SimcParsedFileType.RppmData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "RppmData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/real_ppm_data.inc" }
+                }
+            });
         }
 
         /// <summary>
@@ -145,7 +165,7 @@ namespace SimcProfileParser.DataSync
         /// </summary>
         /// <typeparam name="T">Type to deserialise the json into</typeparam>
         /// <param name="fileType">Type of file to return data from</param>
-        T ICacheService.GetParsedFileContents<T>(SimcParsedFileType fileType)
+        async Task<T> ICacheService.GetParsedFileContentsAsync<T>(SimcParsedFileType fileType)
         {
             // First check if we already have the data loaded:
             if (_cachedFileData.ContainsKey(fileType))
@@ -176,10 +196,10 @@ namespace SimcProfileParser.DataSync
             // If the file doesn't exist, generate it.
             if (!File.Exists(localPath))
             {
-                ((ICacheService)this).GenerateParsedFile(fileType);
+                await ((ICacheService)this).GenerateParsedFileAsync(fileType);
             }
 
-            var fileText = File.ReadAllText(localPath);
+            var fileText = await File.ReadAllTextAsync(localPath);
 
             var deserialisedData = JsonConvert.DeserializeObject<T>(fileText);
 
@@ -192,7 +212,7 @@ namespace SimcProfileParser.DataSync
         /// Generates a parsed .json file for the specified configuration by calling the RawDataExtractionService
         /// </summary>
         /// <param name="fileType">Type of file to generate data for</param>
-        void ICacheService.GenerateParsedFile(SimcParsedFileType fileType)
+        async Task ICacheService.GenerateParsedFileAsync(SimcParsedFileType fileType)
         {
             var configuration = _registeredFiles.Where(f => f.ParsedFileType == fileType).FirstOrDefault();
 
@@ -203,7 +223,7 @@ namespace SimcProfileParser.DataSync
             var rawData = new Dictionary<string, string>();
             foreach (var rawFile in configuration.RawFiles)
             {
-                var data = GetRawFileContents(configuration, rawFile.Key);
+                var data = await GetRawFileContentsAsync(configuration, rawFile.Key);
                 rawData.Add(rawFile.Key, data);
             }
 
@@ -211,7 +231,7 @@ namespace SimcProfileParser.DataSync
             var parsedData = _rawDataExtractionService.GenerateData(configuration.ParsedFileType, rawData);
             var localPath = Path.Combine(BaseFileDirectory, configuration.LocalParsedFile);
 
-            File.WriteAllText(localPath, JsonConvert.SerializeObject(parsedData));
+            await File.WriteAllTextAsync(localPath, JsonConvert.SerializeObject(parsedData));
         }
 
         void ICacheService.RegisterFileConfiguration(CacheFileConfiguration configuration)
@@ -228,17 +248,17 @@ namespace SimcProfileParser.DataSync
             _registeredFiles.Add(configuration);
         }
 
-        internal string GetRawFileContents(CacheFileConfiguration configuration, string localRawFile)
+        internal async Task<string> GetRawFileContentsAsync(CacheFileConfiguration configuration, string localRawFile)
         {
             var localPath = new Uri(Path.Combine(BaseFileDirectory, localRawFile)).LocalPath;
             if (!File.Exists(localPath))
             {
                 var destinationRawFile = configuration.RawFiles.Where(r => r.Key == localRawFile).FirstOrDefault();
-                DownloadFileIfChanged(new Uri(destinationRawFile.Value),
+                await DownloadFileIfChangedAsync(new Uri(destinationRawFile.Value),
                     new Uri(Path.Combine(BaseFileDirectory, destinationRawFile.Key)));
             }
 
-            var data = File.ReadAllText(localPath);
+            var data = await File.ReadAllTextAsync(localPath);
 
             return data;
         }
@@ -249,7 +269,7 @@ namespace SimcProfileParser.DataSync
         /// <param name="sourceUri"></param>
         /// <param name="destinationUri"></param>
         /// <returns></returns>
-        internal bool DownloadFileIfChanged(Uri sourceUri, Uri destinationUri)
+        internal async Task<bool> DownloadFileIfChangedAsync(Uri sourceUri, Uri destinationUri)
         {
             HttpClient httpClient = new HttpClient();
 
@@ -261,7 +281,7 @@ namespace SimcProfileParser.DataSync
 
             try
             {
-                response = httpClient.SendAsync(request).Result;
+                response = await httpClient.SendAsync(request);
             }
             catch (Exception)
             {
@@ -269,7 +289,8 @@ namespace SimcProfileParser.DataSync
             }
 
             // Grab the cache info and the files last modified date.
-            var eTag = _eTagCacheData
+            var eTagCacheData = await GetCacheDataAsync();
+            var eTag = eTagCacheData
                 .Where(e => e.Filename == destinationUri.LocalPath)
                 .FirstOrDefault();
 
@@ -284,19 +305,19 @@ namespace SimcProfileParser.DataSync
                 eTag.LastModified == lastModified) // and the last modified's match
                 return true; // Then we don't need to download it.
 
-            var downloadResponse = DownloadFile(sourceUri, destinationUri);
+            var downloadResponse = await DownloadFileAsync(sourceUri, destinationUri);
 
             // If the download was successful, save the etag.
             if (downloadResponse)
             {
                 lastModified = File.GetLastWriteTimeUtc(destinationUri.LocalPath);
-                UpdateCacheData(destinationUri.LocalPath, response.Headers.ETag.Tag, lastModified);
+                await UpdateCacheDataAsync(destinationUri.LocalPath, response.Headers.ETag.Tag, lastModified);
             }
 
             return downloadResponse;
         }
 
-        internal bool DownloadFile(Uri sourceUri, Uri destinationUri)
+        internal async Task<bool> DownloadFileAsync(Uri sourceUri, Uri destinationUri)
         {
             WebClient client = new WebClient();
 
@@ -306,23 +327,13 @@ namespace SimcProfileParser.DataSync
                 if (!Directory.Exists(baseDirectory.OriginalString))
                     Directory.CreateDirectory(baseDirectory.OriginalString);
 
-                client.DownloadFile(sourceUri, destinationUri.LocalPath);
+                await client.DownloadFileTaskAsync(sourceUri, destinationUri.LocalPath);
             }
             catch (Exception)
             {
                 return false;
             }
             return true;
-        }
-
-        internal void SaveParsedFile(SimcParsedFileType fileType, object contents)
-        {
-            var fileConfig = _registeredFiles.Where(f => f.ParsedFileType == fileType).FirstOrDefault();
-            var localPath = new Uri(Path.Combine(BaseFileDirectory, fileConfig.LocalParsedFile)).LocalPath;
-
-            var data = JsonConvert.SerializeObject(contents);
-
-            File.WriteAllText(localPath, data);
         }
 
         #region eTag Cache
@@ -335,18 +346,17 @@ namespace SimcProfileParser.DataSync
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="eTag"></param>
-        internal void UpdateCacheData(string filename, string eTag, DateTime lastModified)
+        internal async Task UpdateCacheDataAsync(string filename, string eTag, DateTime lastModified)
         {
-            if (_eTagCacheData.Count == 0)
-                _eTagCacheData = GetCacheData();
+            var eTagCacheData = await GetCacheDataAsync();
 
-            var existing = _eTagCacheData.Where(e => e.Filename == filename).FirstOrDefault();
+            var existing = eTagCacheData.Where(e => e.Filename == filename).FirstOrDefault();
 
             if (existing != null)
                 existing.ETag = eTag;
             else
             {
-                _eTagCacheData.Add(new FileETag()
+                eTagCacheData.Add(new FileETag()
                 {
                     Filename = filename,
                     ETag = eTag,
@@ -354,20 +364,23 @@ namespace SimcProfileParser.DataSync
                 });
             }
 
-            SaveCacheData(_eTagCacheData);
+            await SaveCacheDataAsync(eTagCacheData);
         }
 
         /// <summary>
         /// Load the cached etag data from file
         /// </summary>
-        internal List<FileETag> GetCacheData()
+        internal async Task<List<FileETag>> GetCacheDataAsync(bool force = false)
         {
+            if (!force && _eTagCacheData.Count > 0)
+                return _eTagCacheData;
+
             var results = new List<FileETag>();
             var cacheDataFile = Path.Combine(BaseFileDirectory, _etagCacheDataFile);
 
             if (File.Exists(cacheDataFile))
             {
-                var data = File.ReadAllText(cacheDataFile);
+                var data = await File.ReadAllTextAsync(cacheDataFile);
 
                 var deserialised = JsonConvert.DeserializeObject<List<FileETag>>(data);
 
@@ -381,7 +394,7 @@ namespace SimcProfileParser.DataSync
         /// <summary>
         /// Save the cached etag data to file
         /// </summary>
-        internal void SaveCacheData(List<FileETag> data)
+        internal async Task SaveCacheDataAsync(List<FileETag> data)
         {
             var baseDirectory = new Uri(BaseFileDirectory);
             if (!Directory.Exists(baseDirectory.OriginalString))
@@ -390,7 +403,7 @@ namespace SimcProfileParser.DataSync
             var cacheDataFile = Path.Combine(BaseFileDirectory, _etagCacheDataFile);
             var dataString = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-            File.WriteAllText(cacheDataFile, dataString);
+            await File.WriteAllTextAsync(cacheDataFile, dataString);
         }
 
         #endregion
