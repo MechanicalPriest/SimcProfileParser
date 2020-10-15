@@ -10,6 +10,8 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace SimcProfileParser
 {
@@ -31,15 +33,15 @@ namespace SimcProfileParser
             _logger = logger;
         }
 
-        SimcItem ISimcItemCreationService.CreateItem(SimcParsedItem parsedItemData)
+        async Task<SimcItem> ISimcItemCreationService.CreateItemAsync(SimcParsedItem parsedItemData)
         {
-            var item = BuildItem(parsedItemData.ItemId);
+            var item = await BuildItemAsync(parsedItemData.ItemId);
 
             if (item == null)
                 throw new ArgumentOutOfRangeException(
                     nameof(parsedItemData.ItemId), $"ItemId not found: {parsedItemData.ItemId}");
 
-            UpdateItem(item,
+            await UpdateItemAsync(item,
                 parsedItemData.BonusIds.ToList(),
                 parsedItemData.GemIds.ToList(),
                 parsedItemData.DropLevel);
@@ -47,15 +49,15 @@ namespace SimcProfileParser
             return item;
         }
 
-        SimcItem ISimcItemCreationService.CreateItem(SimcItemOptions itemOptions)
+        async Task<SimcItem> ISimcItemCreationService.CreateItemAsync(SimcItemOptions itemOptions)
         {
-            var item = BuildItem(itemOptions.ItemId);
+            var item = await BuildItemAsync(itemOptions.ItemId);
 
             if (item == null)
                 throw new ArgumentOutOfRangeException(
                     nameof(itemOptions.ItemId), $"ItemId not found: {itemOptions.ItemId}");
 
-            UpdateItem(item,
+            await UpdateItemAsync(item,
                 itemOptions.BonusIds,
                 itemOptions.GemIds,
                 itemOptions.DropLevel);
@@ -75,9 +77,9 @@ namespace SimcProfileParser
         /// Setup a basic item
         /// </summary>
         /// <param name="itemId">The ID of the item</param>
-        internal SimcItem BuildItem(uint itemId)
+        internal async Task<SimcItem> BuildItemAsync(uint itemId)
         {
-            var rawItemData = _simcUtilityService.GetRawItemData(itemId);
+            var rawItemData = await _simcUtilityService.GetRawItemDataAsync(itemId);
 
             if (rawItemData == null)
             {
@@ -112,10 +114,10 @@ namespace SimcProfileParser
         /// <param name="item">Base item to update</param>
         /// <param name="bonusIds">Bonus IDs to apply</param>
         /// <param name="gemIds">Gem IDs to apply</param>
-        internal void UpdateItem(SimcItem item, 
+        internal async Task UpdateItemAsync(SimcItem item, 
             IList<int> bonusIds, IList<int> gemIds, int dropLevel)
         {
-            var rawItemData = _simcUtilityService.GetRawItemData(item.ItemId);
+            var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
 
             // Now add the base mods
             foreach (var mod in rawItemData.ItemMods)
@@ -125,19 +127,19 @@ namespace SimcProfileParser
                 AddItemMod(item, mod.ModType, mod.StatAllocation);
             }
 
-            ProcessBonusIds(item, bonusIds, dropLevel);
+            await ProcessBonusIdsAsync(item, bonusIds, dropLevel);
 
             foreach (var mod in item.Mods)
             {
-                mod.StatRating = _simcUtilityService.GetScaledModValue(item, mod.Type, mod.RawStatAllocation);
+                mod.StatRating = await _simcUtilityService.GetScaledModValueAsync(item, mod.Type, mod.RawStatAllocation);
             }
 
-            AddGems(item, gemIds);
+            await AddGemsAsync(item, gemIds);
 
-            AddSpellEffects(item, rawItemData.ItemEffects);
+            await AddSpellEffectsAsync(item, rawItemData.ItemEffects);
         }
 
-        private void AddSpellEffects(SimcItem item, List<SimcRawItemEffect> itemEffects)
+        private async Task AddSpellEffectsAsync(SimcItem item, List<SimcRawItemEffect> itemEffects)
         {
             // Note: there is a similar process inside this method:
             // double spelleffect_data_t::average( const player_t* p, unsigned level ) const
@@ -147,7 +149,7 @@ namespace SimcProfileParser
 
             foreach (var effect in itemEffects)
             {
-                var effectSpell = _simcSpellCreationService.GenerateItemSpell(item, effect.SpellId);
+                var effectSpell = await _simcSpellCreationService.GenerateItemSpellAsync(item, effect.SpellId);
 
                 var newEffect = new SimcItemEffect
                 {
@@ -162,15 +164,15 @@ namespace SimcProfileParser
             }
         }
 
-        internal void AddGems(SimcItem item, IList<int> gemIds)
+        internal async Task AddGemsAsync(SimcItem item, IList<int> gemIds)
         {
             foreach (var gemId in gemIds)
             {
-                var gem = _simcUtilityService.GetRawItemData((uint)gemId);
+                var gem = await _simcUtilityService.GetRawItemDataAsync((uint)gemId);
 
-                var gemProperty = _simcUtilityService.GetGemProperty(gem.GemProperties);
+                var gemProperty = await _simcUtilityService.GetGemPropertyAsync(gem.GemProperties);
 
-                var enchantmentProperties = _simcUtilityService.GetItemEnchantment(gemProperty.EnchantId);
+                var enchantmentProperties = await _simcUtilityService.GetItemEnchantmentAsync(gemProperty.EnchantId);
 
                 // Here we can either veer off and grab enchant details from the spell id
                 // 1) If there is an enchantmentProperties.spellid
@@ -189,7 +191,7 @@ namespace SimcProfileParser
                     // enchant breakdown from item_database::item_enchantment_effect_stats
                     // from dbc_t::spell_scaling
                     // TODO: Pull the players level through to here
-                    var scaledValue = _simcUtilityService.GetSpellScalingMultiplier(scaleIndex, 60);
+                    var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, 60);
 
                     //// Grab the stat this gem increases
                     var stat = (ItemModType)enchantmentProperties.SubEnchantments[0].Property;
@@ -206,9 +208,9 @@ namespace SimcProfileParser
             }
         }
 
-        internal void ProcessBonusIds(SimcItem item, IList<int> bonusIds, int dropLevel = 0)
+        internal async Task ProcessBonusIdsAsync(SimcItem item, IList<int> bonusIds, int dropLevel = 0)
         {
-            var bonuses = _cacheService.GetParsedFileContents<List<SimcRawItemBonus>>(SimcParsedFileType.ItemBonusData);
+            var bonuses = await _cacheService.GetParsedFileContentsAsync<List<SimcRawItemBonus>>(SimcParsedFileType.ItemBonusData);
 
             // Go through each of the bonus IDs on the item
             foreach (var bonusId in bonusIds)
@@ -252,7 +254,7 @@ namespace SimcProfileParser
 
                         case ItemBonusType.ITEM_BONUS_SCALING_2:
                             _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding item scaling {entry.Value4} from {dropLevel}");
-                            AddBonusScaling(item, entry.Value4, dropLevel);
+                            await AddBonusScalingAsync(item, entry.Value4, dropLevel);
                             break;
 
                         // Unused bonustypes:
@@ -269,20 +271,20 @@ namespace SimcProfileParser
             }
         }
 
-        internal void AddBonusScaling(SimcItem item, int curveId, int dropLevel)
+        internal async Task AddBonusScalingAsync(SimcItem item, int curveId, int dropLevel)
         {
             // from item_database::apply_item_scaling (sc_item_data.cpp)
             if (curveId == 0)
                 return;
 
             // Then the base_value becomes MIN(player_level, curveData.last().primary1);
-            var curveData = FindCurvePointById(curveId);
+            var curveData = await FindCurvePointByIdAsync(curveId);
             if (curveData.Count == 0)
                 return;
 
             var baseValue = Math.Min(dropLevel, curveData.LastOrDefault().Primary1);
 
-            double scaledResult = FindCurvePointValue(curveId, baseValue);
+            double scaledResult = await FindCurvePointValueAsync(curveId, baseValue);
 
             int newItemLevel =  (int)Math.Floor(scaledResult + 0.5);
 
@@ -291,23 +293,23 @@ namespace SimcProfileParser
             item.ItemLevel = newItemLevel;
         }
 
-        internal List<SimcRawCurvePoint> FindCurvePointById(int curveId)
+        internal async Task<List<SimcRawCurvePoint>> FindCurvePointByIdAsync(int curveId)
         {
             // from curve_point_t::find
             List<SimcRawCurvePoint> points = new List<SimcRawCurvePoint>();
 
-            var curveData = _cacheService.GetParsedFileContents<List<SimcRawCurvePoint>>(SimcParsedFileType.CurvePoints);
+            var curveData = await _cacheService.GetParsedFileContentsAsync<List<SimcRawCurvePoint>>(SimcParsedFileType.CurvePoints);
 
             var curvePoints = curveData.Where(c => c.CurveId == curveId).ToList();
 
             return curvePoints;
         }
 
-        internal double FindCurvePointValue(int curveId, double pointValue)
+        internal async Task<double> FindCurvePointValueAsync(int curveId, double pointValue)
         {
             // From item_database::curve_point_value
             // First call dbc_t::curve_point and get the two curve points either side of the value
-            var curveData = _cacheService.GetParsedFileContents<List<SimcRawCurvePoint>>(SimcParsedFileType.CurvePoints);
+            var curveData = await _cacheService.GetParsedFileContentsAsync<List<SimcRawCurvePoint>>(SimcParsedFileType.CurvePoints);
 
             var curvePoints = curveData
                 .Where(c => c.CurveId == curveId)

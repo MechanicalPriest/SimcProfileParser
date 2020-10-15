@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests
 {
@@ -40,13 +41,12 @@ namespace SimcProfileParser.Tests
                 _loggerFactory.CreateLogger<SimcUtilityService>());
 
             _spellCreationService = new SimcSpellCreationService(
-                cacheService,
                 utilityService,
                 _loggerFactory.CreateLogger<SimcSpellCreationService>());
         }
 
         [Test]
-        public void SSC_Creates_Item_Spell_Spell_Options()
+        public async Task SSC_Creates_Item_Spell_Spell_Options()
         {
             // Arrange
             var spellOptions = new SimcSpellOptions()
@@ -58,7 +58,7 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var spell = _spellCreationService.GenerateItemSpell(spellOptions);
+            var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
 
             // Assert
             Assert.IsNotNull(spell);
@@ -70,7 +70,7 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void SSC_Creates_Item_Spell_Raw_Obj()
+        public async Task SSC_Creates_Item_Spell_Raw_Obj()
         {
             // Arrange
             // Use the Brimming Ember Shard spell 343538
@@ -82,7 +82,7 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var spell = _spellCreationService.GenerateItemSpell(item, 343538);
+            var spell = await _spellCreationService.GenerateItemSpellAsync(item, 343538);
 
             // Assert
             Assert.IsNotNull(spell);
@@ -94,7 +94,7 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void SSC_Creates_Player_Spell_Spell_Options()
+        public async Task SSC_Creates_Player_Spell_Spell_Options()
         {
             // Arrange
             // Use the 
@@ -105,7 +105,7 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var spell = _spellCreationService.GeneratePlayerSpell(spellOptions);
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
 
             // Assert
             Assert.IsNotNull(spell);
@@ -116,14 +116,14 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void SSC_Creates_Player_Spell_Raw()
+        public async Task SSC_Creates_Player_Spell_Raw()
         {
             // Arrange
             var playerLevel = 60u;
             var spellId = 274740u;
 
             // Act
-            var spell = _spellCreationService.GeneratePlayerSpell(playerLevel, spellId);
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(playerLevel, spellId);
 
             // Assert
             Assert.IsNotNull(spell);
@@ -134,7 +134,7 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void SSC_Creates_Item_Spell_RppmSpecModifiers()
+        public async Task SSC_Creates_Item_Spell_RppmSpecModifiers()
         {
             // Arrange
             var spellOptions = new SimcSpellOptions()
@@ -146,7 +146,7 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var spell = _spellCreationService.GenerateItemSpell(spellOptions);
+            var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
 
             // Assert
             Assert.IsNotNull(spell);
@@ -160,7 +160,7 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void SSC_Creates_Item_Spell_RppmHasteModifiers()
+        public async Task SSC_Creates_Item_Spell_RppmHasteModifiers()
         {
             // Arrange
             var spellOptions = new SimcSpellOptions()
@@ -172,7 +172,7 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var spell = _spellCreationService.GenerateItemSpell(spellOptions);
+            var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
 
             // Assert
             Assert.IsNotNull(spell);

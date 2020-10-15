@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests.DataSync
 {
@@ -35,7 +36,7 @@ namespace SimcProfileParser.Tests.DataSync
 
         [Test]
         /// Integration test of sorts. Checking the file download works.
-        public void CS_Downloads_File()
+        public async Task CS_Downloads_File()
         {
             // Arrange
             CacheService cache = new CacheService(null, null);
@@ -51,7 +52,7 @@ namespace SimcProfileParser.Tests.DataSync
             var filePath = Path.Combine(cache.BaseFileDirectory, "ScaleData.raw");
 
             // Act
-            var data = cache.GetRawFileContents(configuration, "ScaleData.raw");
+            var data = await cache.GetRawFileContentsAsync(configuration, "ScaleData.raw");
 
             // Assert
             DirectoryAssert.Exists(cache.BaseFileDirectory);
@@ -60,7 +61,7 @@ namespace SimcProfileParser.Tests.DataSync
         }
 
         [Test]
-        public void CS_Cache_Updates()
+        public async Task CS_Cache_Updates()
         {
             // Arrange
             CacheService cache = new CacheService(null, null);
@@ -76,7 +77,7 @@ namespace SimcProfileParser.Tests.DataSync
             var lastModified = new DateTime(1);
 
             // Act
-            cache.UpdateCacheData(filename, eTag, lastModified);
+            await cache.UpdateCacheDataAsync(filename, eTag, lastModified);
             var data = File.ReadAllText(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
 
             // Assert
@@ -85,7 +86,7 @@ namespace SimcProfileParser.Tests.DataSync
         }
 
         [Test]
-        public void CS_Cache_Reads()
+        public async Task CS_Cache_Reads()
         {
             // Arrange
             CacheService cache = new CacheService(null, null);
@@ -94,8 +95,8 @@ namespace SimcProfileParser.Tests.DataSync
             var lastModified = new DateTime(1);
 
             // Act
-            cache.UpdateCacheData(filename, eTag, lastModified);
-            var cacheData = cache.GetCacheData();
+            await cache.UpdateCacheDataAsync(filename, eTag, lastModified);
+            var cacheData = await cache.GetCacheDataAsync();
 
             // Assert
             Assert.IsNotNull(cacheData);
@@ -106,7 +107,7 @@ namespace SimcProfileParser.Tests.DataSync
         }
 
         [Test]
-        public void CS_Cache_Saves()
+        public async Task CS_Cache_Saves()
         {
             // Arrange
             CacheService cache = new CacheService(null, null);
@@ -132,7 +133,7 @@ namespace SimcProfileParser.Tests.DataSync
                 @"  }" + Environment.NewLine +
                 @"]";
 
-            cache.SaveCacheData(entries);
+            await cache.SaveCacheDataAsync(entries);
             var data = File.ReadAllText(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
 
 

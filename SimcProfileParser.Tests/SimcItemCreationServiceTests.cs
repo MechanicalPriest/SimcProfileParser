@@ -47,7 +47,6 @@ namespace SimcProfileParser.Tests
                 _loggerFactory.CreateLogger<SimcUtilityService>());
 
             var spellCreationService = new SimcSpellCreationService(
-                cacheService,
                 utilityService,
                 _loggerFactory.CreateLogger<SimcSpellCreationService>());
 
@@ -76,7 +75,7 @@ namespace SimcProfileParser.Tests
             var items = new List<SimcItem>();
             foreach (var parsedItemData in parsedProfile.Items)
             {
-                var item = _ics.CreateItem(parsedItemData);
+                var item = await _ics.CreateItemAsync(parsedItemData);
                 items.Add(item);
             }
 
@@ -86,7 +85,7 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void ICS_Builds_Item_From_Options()
+        public async Task ICS_Builds_Item_From_Options()
         {
             // Arrange
             var itemOptions = new SimcItemOptions()
@@ -97,14 +96,14 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var item = _ics.CreateItem(itemOptions);
+            var item = await _ics.CreateItemAsync(itemOptions);
 
             // Assert
             Assert.IsNotNull(item);
         }
 
         [Test]
-        public void ICS_Builds_Trinket_From_ParsedItem_Secondary_Stat_UseEffect()
+        public async Task ICS_Builds_Trinket_From_ParsedItem_Secondary_Stat_UseEffect()
         {
             // Arrange
             // Flame of Battle (226)
@@ -121,7 +120,7 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var item = _ics.CreateItem(parsedData);
+            var item = await _ics.CreateItemAsync(parsedData);
 
             // Assert
             Assert.IsNotNull(item);
@@ -140,7 +139,7 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void ICS_Builds_Trinket_From_ParsedItem_HealDmg_UseEffect()
+        public async Task ICS_Builds_Trinket_From_ParsedItem_HealDmg_UseEffect()
         {
             // Arrange
             // Brimming Ember Shard (226)
@@ -159,7 +158,7 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var item = _ics.CreateItem(parsedData);
+            var item = await _ics.CreateItemAsync(parsedData);
 
             // Assert
             Assert.IsNotNull(item);
@@ -187,7 +186,7 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void ICS_Builds_Trinket_From_ParsedItem_Primary_ProcEffectt()
+        public async Task ICS_Builds_Trinket_From_ParsedItem_Primary_ProcEffectt()
         {
             // Arrange
             // Misfiring Centurion Controller (226)
@@ -204,7 +203,7 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var item = _ics.CreateItem(parsedData);
+            var item = await _ics.CreateItemAsync(parsedData);
 
             // Assert
             Assert.IsNotNull(item);
@@ -243,8 +242,8 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => _ics.CreateItem(parsedData));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+                async () => await _ics.CreateItemAsync(parsedData));
         }
 
 
@@ -265,8 +264,8 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert 
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => _ics.CreateItem(itemOptions));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+                async () => await _ics.CreateItemAsync(itemOptions));
         }
     }
 }

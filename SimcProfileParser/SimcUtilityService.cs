@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SimcProfileParser
 {
@@ -237,7 +238,7 @@ namespace SimcProfileParser
             };
         }
 
-        public double GetItemBudget(int itemLevel, ItemQuality itemQuality, int maxItemlevel)
+        public async Task<double> GetItemBudgetAsync(int itemLevel, ItemQuality itemQuality, int maxItemlevel)
         {
             // from item_database::item_budget
             // Weirdly, ITEM_QUALITY_MAX (Heirloom) appears with the pic tier
@@ -249,7 +250,7 @@ namespace SimcProfileParser
             if (maxItemlevel > 0)
                 scale_ilvl = Math.Min(scale_ilvl, maxItemlevel);
 
-            var ilvlRandomProps = GetRandomProps(scale_ilvl);
+            var ilvlRandomProps = await GetRandomPropsAsync(scale_ilvl);
 
             switch (itemQuality)
             {
@@ -271,7 +272,7 @@ namespace SimcProfileParser
             return budget;
         }
 
-        public int GetScaledModValue(SimcItem item, ItemModType modType, int statAllocation)
+        public async Task<int> GetScaledModValueAsync(SimcItem item, ItemModType modType, int statAllocation)
         {
             // based on item_database::scaled_stat
             var slotType = GetSlotType(item.ItemClass, item.ItemSubClass, item.InventoryType);
@@ -281,7 +282,7 @@ namespace SimcProfileParser
             // If the item has a slot and quality we can parse
             if (slotType != -1 && item.Quality > 0)
             {
-                var ilvlRandomProps = GetRandomProps(item.ItemLevel);
+                var ilvlRandomProps = await GetRandomPropsAsync(item.ItemLevel);
                 switch (item.Quality)
                 {
                     case ItemQuality.ITEM_QUALITY_EPIC:
@@ -313,7 +314,7 @@ namespace SimcProfileParser
                     var combatRatingType = GetCombatRatingMultiplierType(item.InventoryType);
                     if (combatRatingType != CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID)
                     {
-                        var combatRatingMultiplier = GetCombatRatingMultiplier(
+                        var combatRatingMultiplier = await GetCombatRatingMultiplierAsync(
                             item.ItemLevel, combatRatingType);
 
                         if (combatRatingMultiplier != 0)
@@ -326,7 +327,7 @@ namespace SimcProfileParser
                     var staminaRatingType = GetCombatRatingMultiplierType(item.InventoryType);
                     if (staminaRatingType != CombatRatingMultiplayerType.CR_MULTIPLIER_INVALID)
                     {
-                        var staminaRatingMultiplier = GetStaminaMultiplier(
+                        var staminaRatingMultiplier = await GetStaminaMultiplierAsync(
                             item.ItemLevel, staminaRatingType);
 
                         if (staminaRatingMultiplier != 0)
@@ -337,22 +338,23 @@ namespace SimcProfileParser
                 return rawValue;
             }
 
+            _logger?.LogError("Items and mods that don't scale are not yet implemented");
             throw new NotImplementedException("Items and mods that don't scale are not yet implemented");
         }
 
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.
-        public SimcRawItem GetRawItemData(uint itemId)
+        public async Task<SimcRawItem> GetRawItemDataAsync(uint itemId)
         {
             var rawItem = new SimcRawItem();
 
-            var items = _cacheService.GetParsedFileContents<List<SimcRawItem>>(SimcParsedFileType.ItemDataNew);
+            var items = await _cacheService.GetParsedFileContentsAsync<List<SimcRawItem>>(SimcParsedFileType.ItemDataNew);
 
             rawItem = items.Where(i => i.Id == itemId).FirstOrDefault();
 
             if (rawItem == null)
             {
                 // If we can't find it in the new data, try all the older items
-                items = _cacheService.GetParsedFileContents<List<SimcRawItem>>(SimcParsedFileType.ItemDataOld);
+                items = await _cacheService.GetParsedFileContentsAsync<List<SimcRawItem>>(SimcParsedFileType.ItemDataOld);
                 rawItem = items.Where(i => i.Id == itemId).FirstOrDefault();
             }
 
@@ -360,74 +362,74 @@ namespace SimcProfileParser
         }
 
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.
-        public SimcRawRandomPropData GetRandomProps(int itemLevel)
+        public async Task<SimcRawRandomPropData> GetRandomPropsAsync(int itemLevel)
         {
             var rawProps = new SimcRawRandomPropData();
 
-            var randomProps = _cacheService.GetParsedFileContents<List<SimcRawRandomPropData>>(SimcParsedFileType.RandomPropPoints);
+            var randomProps = await _cacheService.GetParsedFileContentsAsync<List<SimcRawRandomPropData>>(SimcParsedFileType.RandomPropPoints);
 
             rawProps = randomProps.Where(p => p.ItemLevel == itemLevel).FirstOrDefault();
 
             return rawProps;
         }
 
-        public double GetCombatRatingMultiplier(int itemLevel, CombatRatingMultiplayerType combatRatingType)
+        public async Task<double> GetCombatRatingMultiplierAsync(int itemLevel, CombatRatingMultiplayerType combatRatingType)
         {
-            var crMultipliers = _cacheService.GetParsedFileContents<float[][]>(SimcParsedFileType.CombatRatingMultipliers);
+            var crMultipliers = await _cacheService.GetParsedFileContentsAsync<float[][]>(SimcParsedFileType.CombatRatingMultipliers);
 
             var crMulti = crMultipliers[(int)combatRatingType][itemLevel - 1];
 
             return crMulti;
         }
 
-        public double GetStaminaMultiplier(int itemLevel, CombatRatingMultiplayerType staminaRatingType)
+        public async Task<double> GetStaminaMultiplierAsync(int itemLevel, CombatRatingMultiplayerType staminaRatingType)
         {
-            var stamMultipliers = _cacheService.GetParsedFileContents<float[][]>(SimcParsedFileType.StaminaMultipliers);
+            var stamMultipliers = await _cacheService.GetParsedFileContentsAsync<float[][]>(SimcParsedFileType.StaminaMultipliers);
 
             var stamMulti = stamMultipliers[(int)staminaRatingType][itemLevel - 1];
 
             return stamMulti;
         }
 
-        public SimcRawGemProperty GetGemProperty(int gemId)
+        public async Task<SimcRawGemProperty> GetGemPropertyAsync(int gemId)
         {
-            var gemPropertyData = _cacheService.GetParsedFileContents<List<SimcRawGemProperty>>(SimcParsedFileType.GemData);
+            var gemPropertyData = await _cacheService.GetParsedFileContentsAsync<List<SimcRawGemProperty>>(SimcParsedFileType.GemData);
 
             var gemProperty = gemPropertyData.Where(g => g.Id == gemId).FirstOrDefault();
 
             return gemProperty;
         }
 
-        public SimcRawItemEnchantment GetItemEnchantment(uint enchantId)
+        public async Task<SimcRawItemEnchantment> GetItemEnchantmentAsync(uint enchantId)
         {
-            var itemEnchantData = _cacheService.GetParsedFileContents<List<SimcRawItemEnchantment>>(SimcParsedFileType.ItemEnchantData);
+            var itemEnchantData = await _cacheService.GetParsedFileContentsAsync<List<SimcRawItemEnchantment>>(SimcParsedFileType.ItemEnchantData);
 
             var enchantmentProperties = itemEnchantData.Where(e => e.Id == enchantId).FirstOrDefault();
 
             return enchantmentProperties;
         }
 
-        public double GetSpellScalingMultiplier(int scaleIndex, int playerLevel)
+        public async Task<double> GetSpellScalingMultiplierAsync(int scaleIndex, int playerLevel)
         {
-            var spellScaleData = _cacheService.GetParsedFileContents<double[][]>(SimcParsedFileType.SpellScaleMultipliers);
+            var spellScaleData = await _cacheService.GetParsedFileContentsAsync<double[][]>(SimcParsedFileType.SpellScaleMultipliers);
 
             var result = spellScaleData[scaleIndex][playerLevel - 1];
 
             return result;
         }
 
-        public SimcRawSpell GetRawSpellData(uint spellId)
+        public async Task<SimcRawSpell> GetRawSpellDataAsync(uint spellId)
         {
-            var spellData = _cacheService.GetParsedFileContents<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
+            var spellData = await _cacheService.GetParsedFileContentsAsync<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
 
             var result = spellData.Where(s => s.Id == spellId).FirstOrDefault();
 
             return result;
         }
 
-        public List<SimcRawRppmEntry> GetSpellRppmModifiers(uint spellId)
+        public async Task<List<SimcRawRppmEntry>> GetSpellRppmModifiersAsync(uint spellId)
         {
-            var modifiers = _cacheService.GetParsedFileContents<List<SimcRawRppmEntry>>(SimcParsedFileType.RppmData);
+            var modifiers = await _cacheService.GetParsedFileContentsAsync<List<SimcRawRppmEntry>>(SimcParsedFileType.RppmData);
 
             var result = modifiers.Where(m => m.SpellId == spellId).ToList();
 

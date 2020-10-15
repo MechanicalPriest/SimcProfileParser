@@ -42,7 +42,6 @@ namespace SimcProfileParser
                 loggerFactory.CreateLogger<SimcUtilityService>());
 
             var spellCreationService = new SimcSpellCreationService(
-                cacheService,
                 utilityService,
                 loggerFactory.CreateLogger<SimcSpellCreationService>());
 
@@ -55,10 +54,7 @@ namespace SimcProfileParser
                 utilityService,
                 loggerFactory.CreateLogger<SimcItemCreationService>());
 
-            _simcSpellCreationService = new SimcSpellCreationService(
-                cacheService,
-                utilityService,
-                loggerFactory.CreateLogger<SimcSpellCreationService>());
+            _simcSpellCreationService = spellCreationService;
         }
 
         public SimcGenerationService()
@@ -88,7 +84,7 @@ namespace SimcProfileParser
             // Now build up the items
             foreach(var item in newProfile.ParsedProfile.Items)
             {
-                var newItem = _simcItemCreationService.CreateItem(item);
+                var newItem = await _simcItemCreationService.CreateItemAsync(item);
                 newProfile.GeneratedItems.Add(newItem);
             }
 
@@ -131,8 +127,7 @@ namespace SimcProfileParser
                     $"Incoming item options has invalid ItemId:{options.ItemId}.");
             }
 
-            var item = await Task<SimcItem>.Factory.StartNew(
-                () => _simcItemCreationService.CreateItem(options));
+            var item = await _simcItemCreationService.CreateItemAsync(options);
 
             return item;
         }
@@ -144,14 +139,12 @@ namespace SimcProfileParser
             if (options.ItemLevel != 0)
             {
                 // TODO: Remove this await once the rest of the library chain supports async better
-                spell = await Task<SimcSpell>.Factory.StartNew(
-                    () => _simcSpellCreationService.GenerateItemSpell(options));
+                spell = await _simcSpellCreationService.GenerateItemSpellAsync(options);
             }
             else
             {
                 // TODO: Remove this await once the rest of the library chain supports async better
-                spell = await Task<SimcSpell>.Factory.StartNew(
-                    () => _simcSpellCreationService.GeneratePlayerSpell(options));
+                spell = await _simcSpellCreationService.GeneratePlayerSpellAsync(options);
             }
 
             return spell;

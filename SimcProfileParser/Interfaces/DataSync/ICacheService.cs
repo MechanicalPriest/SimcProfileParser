@@ -1,5 +1,6 @@
 ﻿using SimcProfileParser.Model.DataSync;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SimcProfileParser.Interfaces.DataSync
 {
@@ -28,12 +29,12 @@ namespace SimcProfileParser.Interfaces.DataSync
         /// <typeparam name="T">Return type to attempt to deserialise into</typeparam>
         /// <param name="fileType">Type of parsed file to return</param>
         /// <returns></returns>
-        T GetParsedFileContents<T>(SimcParsedFileType fileType);
+        Task<T> GetParsedFileContentsAsync<T>(SimcParsedFileType fileType);
         /// <summary>
         /// Generates a version of the raw files that's stored as parsed.json data which can be
         /// used by GetParsedFileContents to extract the parsed data as objects
         /// </summary>
         /// <param name="fileType">The type of file this should generate</param>
-        void GenerateParsedFile(SimcParsedFileType fileType);
+        Task GenerateParsedFileAsync(SimcParsedFileType fileType);
     }
 }

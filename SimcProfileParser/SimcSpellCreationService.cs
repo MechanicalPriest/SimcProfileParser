@@ -4,32 +4,30 @@ using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
 using System;
+using System.Threading.Tasks;
 
 namespace SimcProfileParser
 {
     internal class SimcSpellCreationService : ISimcSpellCreationService
     {
-        private readonly ICacheService _cacheService;
         private readonly ISimcUtilityService _simcUtilityService;
         private readonly ILogger<SimcSpellCreationService> _logger;
 
-        public SimcSpellCreationService(ICacheService cacheService,
-            ISimcUtilityService simcUtilityService,
+        public SimcSpellCreationService(ISimcUtilityService simcUtilityService,
             ILogger<SimcSpellCreationService> logger)
         {
-            _cacheService = cacheService;
             _simcUtilityService = simcUtilityService;
             _logger = logger;
         }
 
-        public SimcSpell GenerateItemSpell(SimcItem item, uint spellId)
+        public async Task<SimcSpell> GenerateItemSpellAsync(SimcItem item, uint spellId)
         {
-            var spell = BuildItemSpell(spellId, item.ItemLevel, item.Quality, item.InventoryType);
+            var spell = await BuildItemSpellAsync(spellId, item.ItemLevel, item.Quality, item.InventoryType);
 
             return spell;
         }
 
-        public SimcSpell GenerateItemSpell(SimcSpellOptions spellOptions)
+        public async Task<SimcSpell> GenerateItemSpellAsync(SimcSpellOptions spellOptions)
         {
             if (!spellOptions.ItemQuality.HasValue)
                 throw new ArgumentNullException(nameof(spellOptions.ItemQuality),
@@ -39,15 +37,15 @@ namespace SimcProfileParser
                 throw new ArgumentNullException(nameof(spellOptions.ItemInventoryType),
                     "SpellOptions must include Item Inventory Type to generate an item spell.");
 
-            var spell = BuildItemSpell(spellOptions.SpellId, spellOptions.ItemLevel,
+            var spell = await BuildItemSpellAsync(spellOptions.SpellId, spellOptions.ItemLevel,
                 spellOptions.ItemQuality.Value, spellOptions.ItemInventoryType.Value);
 
             return spell;
         }
 
-        public SimcSpell GeneratePlayerSpell(uint playerLevel, uint spellId)
+        public async Task<SimcSpell> GeneratePlayerSpellAsync(uint playerLevel, uint spellId)
         {
-            var spellData = _simcUtilityService.GetRawSpellData(spellId);
+            var spellData = await _simcUtilityService.GetRawSpellDataAsync(spellId);
 
             var spellScalingClass = _simcUtilityService.GetScaleClass(spellData.ScalingType);
 
@@ -61,7 +59,7 @@ namespace SimcProfileParser
 
                 var scaleIndex = _simcUtilityService.GetClassId(spellScalingClass);
 
-                var scaledValue = _simcUtilityService.GetSpellScalingMultiplier(scaleIndex, (int)playerLevel);
+                var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, (int)playerLevel);
 
                 budget = scaledValue;
             }
@@ -92,7 +90,7 @@ namespace SimcProfileParser
             };
 
             // Add the RPPM modifiers
-            var rppmModifiers = _simcUtilityService.GetSpellRppmModifiers(spellData.Id);
+            var rppmModifiers = await _simcUtilityService.GetSpellRppmModifiersAsync(spellData.Id);
 
             foreach (var modifier in rppmModifiers)
             {
@@ -113,7 +111,7 @@ namespace SimcProfileParser
                 // Populate the trigger spell if one exists.
                 SimcSpell triggerSpell = null;
                 if (spellEffect.TriggerSpellId > 0)
-                    triggerSpell = GeneratePlayerSpell(playerLevel, spellEffect.TriggerSpellId);
+                    triggerSpell = await GeneratePlayerSpellAsync(playerLevel, spellEffect.TriggerSpellId);
 
                 itemSpell.Effects.Add(new SimcSpellEffect()
                 {
@@ -136,7 +134,7 @@ namespace SimcProfileParser
             return itemSpell;
         }
 
-        public SimcSpell GeneratePlayerSpell(SimcSpellOptions spellOptions)
+        public async Task<SimcSpell> GeneratePlayerSpellAsync(SimcSpellOptions spellOptions)
         {
             if (!spellOptions.PlayerLevel.HasValue)
                 throw new ArgumentNullException(nameof(spellOptions.PlayerLevel),
@@ -146,12 +144,12 @@ namespace SimcProfileParser
                 throw new ArgumentNullException(nameof(spellOptions.SpellId),
                     "SpellOptions must include Spell ID to generate a player scaled spell.");
 
-            var spell = GeneratePlayerSpell(spellOptions.PlayerLevel.Value, spellOptions.SpellId);
+            var spell = await GeneratePlayerSpellAsync(spellOptions.PlayerLevel.Value, spellOptions.SpellId);
 
             return spell;
         }
 
-        internal SimcSpell BuildItemSpell(uint spellId, int itemLevel, 
+        internal async Task<SimcSpell> BuildItemSpellAsync(uint spellId, int itemLevel, 
             ItemQuality itemQuality, InventoryType inventoryType)
         {
             // From double spelleffect_data_t::average( const item_t* item )
@@ -176,14 +174,14 @@ namespace SimcProfileParser
 
             // Finally multiply the coefficient of the spell effect against the budget.
 
-            var spellData = _simcUtilityService.GetRawSpellData(spellId);
+            var spellData = await _simcUtilityService.GetRawSpellDataAsync(spellId);
 
-            var budget = _simcUtilityService.GetItemBudget(itemLevel, itemQuality, spellData.MaxScalingLevel);
+            var budget = await _simcUtilityService.GetItemBudgetAsync(itemLevel, itemQuality, spellData.MaxScalingLevel);
 
             var spellScalingClass = _simcUtilityService.GetScaleClass(spellData.ScalingType);
 
             var combatRatingType = _simcUtilityService.GetCombatRatingMultiplierType(inventoryType);
-            var multi = _simcUtilityService.GetCombatRatingMultiplier(itemLevel, combatRatingType);
+            var multi = await _simcUtilityService.GetCombatRatingMultiplierAsync(itemLevel, combatRatingType);
 
             if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
             {
@@ -191,7 +189,7 @@ namespace SimcProfileParser
             }
             else if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE8)
             {
-                var props = _simcUtilityService.GetRandomProps(itemLevel);
+                var props = await _simcUtilityService.GetRandomPropsAsync(itemLevel);
                 budget = props.DamageReplaceStat;
             }
             else if (spellScalingClass == PlayerScaling.PLAYER_NONE)
@@ -226,7 +224,7 @@ namespace SimcProfileParser
             };
 
             // Add the RPPM modifiers
-            var rppmModifiers = _simcUtilityService.GetSpellRppmModifiers(spellData.Id);
+            var rppmModifiers = await _simcUtilityService.GetSpellRppmModifiersAsync(spellData.Id);
 
             foreach (var modifier in rppmModifiers)
             {
@@ -248,7 +246,7 @@ namespace SimcProfileParser
                 // Populate the trigger spell if one exists.
                 SimcSpell triggerSpell = null;
                 if(spellEffect.TriggerSpellId > 0)
-                    triggerSpell = BuildItemSpell(
+                    triggerSpell = await BuildItemSpellAsync(
                         spellEffect.TriggerSpellId, itemLevel, itemQuality, inventoryType);
 
                 itemSpell.Effects.Add(new SimcSpellEffect()
