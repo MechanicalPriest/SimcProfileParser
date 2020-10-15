@@ -14,7 +14,10 @@ namespace SimcProfileParser
         /// <returns></returns>
         public static IServiceCollection AddSimcProfileParser(this IServiceCollection services)
         {
-            services.TryAddTransient<ISimcGenerationService, SimcGenerationService>();
+            services.AddTransient<ISimcGenerationService, SimcGenerationService>((provider) =>
+            {
+                return ActivatorUtilities.CreateInstance<SimcGenerationService>(provider);
+            });
 
             // The cache is a singleton as it keeps a bunch of stuff in memory.
             services.TryAddSingleton<ICacheService, CacheService>();
