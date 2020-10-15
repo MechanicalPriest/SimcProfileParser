@@ -20,7 +20,7 @@ namespace SimcProfileParser
         private readonly ISimcUtilityService _simcUtilityService;
         private readonly ILogger<SimcItemCreationService> _logger;
 
-        internal SimcItemCreationService(ICacheService cacheService,
+        public SimcItemCreationService(ICacheService cacheService,
             ISimcSpellCreationService simcSpellCreationService,
             ISimcUtilityService simcUtilityService,
             ILogger<SimcItemCreationService> logger)
