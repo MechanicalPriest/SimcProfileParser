@@ -117,9 +117,24 @@ namespace SimcProfileParser
             return await GenerateProfileAsync(lines);
         }
 
-        public Task<SimcItem> GenerateItemAsync(SimcItemOptions options)
+        public async Task<SimcItem> GenerateItemAsync(SimcItemOptions options)
         {
-            throw new NotImplementedException();
+            if (options == null)
+            {
+                _logger?.LogWarning($"Incoming item options invalid");
+                throw new ArgumentNullException(nameof(options));
+            }
+            if (options.ItemId == 0)
+            {
+                _logger?.LogWarning($"Incoming item options has invalid ItemId:{options.ItemId}.");
+                throw new ArgumentOutOfRangeException(nameof(options.ItemId), 
+                    $"Incoming item options has invalid ItemId:{options.ItemId}.");
+            }
+
+            var item = await Task<SimcItem>.Factory.StartNew(
+                () => _simcItemCreationService.CreateItem(options));
+
+            return item;
         }
 
         public async Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options)

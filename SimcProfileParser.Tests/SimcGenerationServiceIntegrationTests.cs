@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using SimcProfileParser.Model.Generated;
+using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,6 +40,69 @@ namespace SimcProfileParser.Tests
             Assert.NotZero(profile.ParsedProfile.Level);
             Assert.NotZero(profile.GeneratedItems.Count);
             return;
+        }
+
+        [Test]
+        public async Task SGS_Creates_Item()
+        {
+            // Arrange
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 177813,
+                Quality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemLevel = 226
+            };
+
+            // Act
+            var item = await _sgs.GenerateItemAsync(itemOptions);
+
+            // Assert
+            Assert.IsNotNull(item);
+        }
+
+        [Test]
+        public async Task SGS_Creates_ItemSpell()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                ItemLevel = 226,
+                SpellId = 343538,
+                ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemInventoryType = InventoryType.INVTYPE_TRINKET
+            };
+
+            // Act
+            var spell = await _sgs.GenerateSpellAsync(spellOptions);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.Effects);
+            Assert.AreEqual(2, spell.Effects.Count);
+            Assert.AreEqual(40, spell.ScaleBudget);
+            Assert.AreEqual(300.020416, spell.Effects[0].Coefficient);
+            Assert.AreEqual(371.653076, spell.Effects[1].Coefficient);
+        }
+
+        [Test]
+        public async Task SGS_Creates_PlayerSpell()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 274740,
+                PlayerLevel = 60
+            };
+
+            // Act
+            var spell = await _sgs.GenerateSpellAsync(spellOptions);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.Effects);
+            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
+            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
+            Assert.AreEqual(95, spell.ScaleBudget);
         }
     }
 }
