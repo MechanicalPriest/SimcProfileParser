@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
-using SimcProfileParser.Model;
 using SimcProfileParser.Model.DataSync;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
@@ -10,7 +9,6 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser
@@ -63,11 +61,11 @@ namespace SimcProfileParser
                 itemOptions.DropLevel);
 
             // Set the item level if provided
-            if(itemOptions.ItemLevel > 0)
+            if (itemOptions.ItemLevel > 0)
                 AddItemLevel(item, itemOptions.ItemLevel - item.ItemLevel);
 
             // Set the quality if provided
-            if(itemOptions.Quality != ItemQuality.ITEM_QUALITY_NONE)
+            if (itemOptions.Quality != ItemQuality.ITEM_QUALITY_NONE)
                 SetItemQuality(item, itemOptions.Quality);
 
             return item;
@@ -114,7 +112,7 @@ namespace SimcProfileParser
         /// <param name="item">Base item to update</param>
         /// <param name="bonusIds">Bonus IDs to apply</param>
         /// <param name="gemIds">Gem IDs to apply</param>
-        internal async Task UpdateItemAsync(SimcItem item, 
+        internal async Task UpdateItemAsync(SimcItem item,
             IList<int> bonusIds, IList<int> gemIds, int dropLevel)
         {
             var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
@@ -286,7 +284,7 @@ namespace SimcProfileParser
 
             double scaledResult = await FindCurvePointValueAsync(curveId, baseValue);
 
-            int newItemLevel =  (int)Math.Floor(scaledResult + 0.5);
+            int newItemLevel = (int)Math.Floor(scaledResult + 0.5);
 
             _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} setting scaled item level to {newItemLevel}");
 

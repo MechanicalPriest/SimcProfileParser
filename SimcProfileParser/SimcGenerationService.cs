@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
-using SimcProfileParser.Model;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 using System;
@@ -69,7 +68,7 @@ namespace SimcProfileParser
                 throw new ArgumentNullException(nameof(profileString), "profile string must contain valid entries");
 
             // Process the incoming profile string
-            var parsedProfile  = await Task<SimcParsedProfile>.Factory.StartNew(
+            var parsedProfile = await Task<SimcParsedProfile>.Factory.StartNew(
                 () => _simcParserService.ParseProfileAsync(profileString));
 
             if (parsedProfile == null)
@@ -82,7 +81,7 @@ namespace SimcProfileParser
             };
 
             // Now build up the items
-            foreach(var item in newProfile.ParsedProfile.Items)
+            foreach (var item in newProfile.ParsedProfile.Items)
             {
                 var newItem = await _simcItemCreationService.CreateItemAsync(item);
                 newProfile.GeneratedItems.Add(newItem);
@@ -123,7 +122,7 @@ namespace SimcProfileParser
             if (options.ItemId == 0)
             {
                 _logger?.LogWarning($"Incoming item options has invalid ItemId:{options.ItemId}.");
-                throw new ArgumentOutOfRangeException(nameof(options.ItemId), 
+                throw new ArgumentOutOfRangeException(nameof(options.ItemId),
                     $"Incoming item options has invalid ItemId:{options.ItemId}.");
             }
 

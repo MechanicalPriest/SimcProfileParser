@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using SimcProfileParser.Interfaces;
-using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
 using System;
@@ -149,7 +148,7 @@ namespace SimcProfileParser
             return spell;
         }
 
-        internal async Task<SimcSpell> BuildItemSpellAsync(uint spellId, int itemLevel, 
+        internal async Task<SimcSpell> BuildItemSpellAsync(uint spellId, int itemLevel,
             ItemQuality itemQuality, InventoryType inventoryType)
         {
             // From double spelleffect_data_t::average( const item_t* item )
@@ -245,7 +244,7 @@ namespace SimcProfileParser
             {
                 // Populate the trigger spell if one exists.
                 SimcSpell triggerSpell = null;
-                if(spellEffect.TriggerSpellId > 0)
+                if (spellEffect.TriggerSpellId > 0)
                     triggerSpell = await BuildItemSpellAsync(
                         spellEffect.TriggerSpellId, itemLevel, itemQuality, inventoryType);
 

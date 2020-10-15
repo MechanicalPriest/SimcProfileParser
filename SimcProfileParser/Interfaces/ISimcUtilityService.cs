@@ -1,8 +1,6 @@
 ﻿using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Interfaces
@@ -10,7 +8,7 @@ namespace SimcProfileParser.Interfaces
     interface ISimcUtilityService
     {
         // Static Lookups
-        int GetClassId(PlayerScaling scaleType); 
+        int GetClassId(PlayerScaling scaleType);
         CombatRatingMultiplayerType GetCombatRatingMultiplierType(InventoryType inventoryType);
         bool GetIsCombatRating(ItemModType modType);
         PlayerScaling GetScaleClass(int scaleType);
