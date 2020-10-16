@@ -166,7 +166,7 @@ namespace SimcProfileParser.Tests
             var spellOptions = new SimcSpellOptions()
             {
                 ItemLevel = 226,
-                SpellId = 345533,
+                SpellId = 339547,
                 ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
                 ItemInventoryType = InventoryType.INVTYPE_TRINKET
             };
@@ -177,8 +177,8 @@ namespace SimcProfileParser.Tests
             // Assert
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.RppmModifiers);
-            Assert.AreEqual(2, spell.RppmModifiers.Count);
-            Assert.AreEqual(345533, spell.RppmModifiers[0].SpellId);
+            Assert.AreEqual(1, spell.RppmModifiers.Count);
+            Assert.AreEqual(339547, spell.RppmModifiers[0].SpellId);
             Assert.IsTrue(spell.RppmModifiers[0].RppmIsHasted);
             Assert.IsFalse(spell.RppmModifiers[0].RppmIsSpecModified);
             Assert.AreEqual(0, spell.RppmModifiers[0].RppmSpec);
