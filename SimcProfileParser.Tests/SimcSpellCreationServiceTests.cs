@@ -129,8 +129,22 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
             Assert.AreEqual(95, spell.ScaleBudget);
+        }
+
+        [Test]
+        public async Task SSC_Creates_Player_Spell_WithPower()
+        {
+            // Arrange
+            var playerLevel = 60u;
+            var spellId = 2061u;
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(playerLevel, spellId);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.AreEqual(3.6, spell.PowerCost);
         }
 
         [Test]

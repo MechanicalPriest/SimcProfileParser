@@ -3,6 +3,7 @@ using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser
@@ -63,6 +64,7 @@ namespace SimcProfileParser
                 budget = scaledValue;
             }
 
+            var powerCostPercent = spellData.SpellPowers.FirstOrDefault()?.PercentCost;
 
             var itemSpell = new SimcSpell()
             {
@@ -86,6 +88,7 @@ namespace SimcProfileParser
                 Rppm = spellData.Rppm,
                 CastTime = spellData.CastTime,
                 ScaleBudget = budget,
+                PowerCost = powerCostPercent.HasValue ? powerCostPercent.Value : 0
             };
 
             // Add the RPPM modifiers
@@ -197,6 +200,8 @@ namespace SimcProfileParser
                 _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Spell: {spellData.Id}");
             }
 
+            var powerCostPercent = spellData.SpellPowers.FirstOrDefault()?.PercentCost;
+
             var itemSpell = new SimcSpell()
             {
                 SpellId = spellData.Id,
@@ -219,7 +224,8 @@ namespace SimcProfileParser
                 Rppm = spellData.Rppm,
                 CastTime = spellData.CastTime,
                 ScaleBudget = budget,
-                CombatRatingMultiplier = multi
+                CombatRatingMultiplier = multi,
+                PowerCost = powerCostPercent.HasValue ? powerCostPercent.Value : 0
             };
 
             // Add the RPPM modifiers
