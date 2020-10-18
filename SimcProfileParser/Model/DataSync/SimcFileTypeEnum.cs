@@ -13,6 +13,7 @@
         ItemEnchantData,
         SpellScaleMultipliers,
         CurvePoints,
-        RppmData
+        RppmData,
+        ConduitRankData
     }
 }

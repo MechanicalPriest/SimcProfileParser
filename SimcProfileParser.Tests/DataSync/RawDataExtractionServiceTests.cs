@@ -400,5 +400,34 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.AreEqual(4, (int)firstResult.ModifierType, "ModifierType");
             Assert.AreEqual(-0.5000, firstResult.Coefficient, "Coefficient");
         }
+
+        [Test]
+        public void RDE_Generates_ConduitRankData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ConduitData.raw", "__conduit_rank_data { {\r\n" +
+                "{  41,  0, 337078, 10.000000 },\r\n" +
+                "{  41,  1, 337078, 11.000000 },\r\n" +
+                "};"}
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateConduitRankData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(337078, firstResult.SpellId, "Spell Id");
+            Assert.AreEqual(41, firstResult.ConduitId, "Conduit Id");
+            Assert.AreEqual(10.000000, firstResult.Value, "Value");
+            Assert.AreEqual(0, firstResult.Rank, "Rank");
+        }
     }
 }
