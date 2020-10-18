@@ -33,12 +33,29 @@ namespace SimcProfileParser.Model.Generated
         /// Combat Rating Multiplier, used for Item spells to store an optional multiplier
         /// </summary>
         public double CombatRatingMultiplier { get; internal set; }
+        /// <summary>
+        /// This is the PercentCost from the spellpower_data_t (SimcRawSpellPower)
+        /// This may need to be turned into an object, or even a list of objects to 
+        /// properly capture all of the relevant power costs if they're needed for
+        /// other purposes. Just getting percent mana is fine for our purposes now.
+        /// </summary>
+        public double PowerCost { get; internal set; }
+
+        /// <summary>
+        /// Set if this spell is a conduit
+        /// </summary>
+        public uint ConduitId { get; set; }
+        /// <summary>
+        /// Contains each of the ranks stored as N-1 (0-indexed). Entry [0] is Rank 1.
+        /// </summary>
+        public Dictionary<uint, double> ConduitRanks { get; set; }
         public List<SimcSpellRppmModifier> RppmModifiers { get; internal set; }
 
         public SimcSpell()
         {
             Effects = new List<SimcSpellEffect>();
             RppmModifiers = new List<SimcSpellRppmModifier>();
+            ConduitRanks = new Dictionary<uint, double>();
         }
     }
 }

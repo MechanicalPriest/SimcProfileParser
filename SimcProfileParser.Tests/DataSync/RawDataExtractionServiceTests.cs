@@ -148,13 +148,14 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "SpellData.raw", "  { 871236, 345396,  0,   6, 395, 0.000000, 0.000000, 0.000000, 0.000000, " +
-                "0.000000, 0, 0.000000, 0.000000,      5.0000, 22058, 0, { 0, 0, 0, 0 }, 0, 1.000000, 0.000000, 0.000000,  0,   " +
-                "0, 1, 0, 0.000000, 1.000000, 0, 0 },\r\n" +
-                @"{ ""The Hunt"" , 345396, 1, 0.000000, 0x0000000000000000, 0x00000800, 0, 0, " +
-                "0, 0, 0, 0.000000, 50.000000,       0, 0, 0, 0, 0,    0, 1, 0, 1500, 0, 0, 0, 0, 0, 0.000000, 0, 0, " +
-                "0, 0, { 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 262144, 0 }, 107, 0x00000000,  0, " + 
-                "  0,  0, 0, 0, 0, 0, 1, 0, 1, 0 }, /* 871236 */" }
+                { "SpellData.raw", "  { \"Flash Heal\"                        ,   2061, 2, 0.000000, 0x0000000000000000, 0x00000010, 0, 0, 3, " + 
+                "0, 0, 0.000000, 40.000000,       0, 1500, 0, 0, 0,    0, 1, 0, 0, 0, 0, 0, 0, 0, 0.000000, 0, 0, " + 
+                "0, 1500, { 65536, 0, 524288, 0, 0, 0, 0, 0, 16781312, 0, 0, 0, 0, 1, 0 }, { 2048, 0, 0, 1073741824 }, 6, " + 
+                "0x80000000,  0,   0,  0, 0, 0, 0, 0, 1, 1, 1, 1 }, /* 613 */\r\n" +
+                @"  {    613,   2061,  0,  10,   0, 0.000000, 0.050000, 0.000000, 2.030000, " + 
+                "0.000000, 0, 0.000000, 0.000000,      0.0000, 0, 0, { 0, 0, 0, 0 }, 0, 1.000000, " + 
+                "0.000000, 0.000000,  0,   0, 21, 0, 1.000000, 1.000000, 0, 0 },\r\n" +
+                "  {    154,   2061,       0,   0,     0,    0, 0,   3.600,   0.000,   0.000 }," }
             };
 
             // Act
@@ -166,11 +167,14 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count);
             Assert.IsNotNull(firstResult);
-            Assert.AreEqual("The Hunt", firstResult.Name);
-            Assert.AreEqual(345396, firstResult.Id);
+            Assert.AreEqual("Flash Heal", firstResult.Name);
+            Assert.AreEqual(2061, firstResult.Id);
             Assert.IsNotNull(firstResult.Effects);
             Assert.NotZero(firstResult.Effects.Count);
-            Assert.AreEqual(871236, firstResult.Effects[0].Id);
+            Assert.AreEqual(613, firstResult.Effects[0].Id);
+            Assert.IsNotNull(firstResult.SpellPowers);
+            Assert.AreEqual(1, firstResult.SpellPowers.Count);
+            Assert.AreEqual(154, firstResult.SpellPowers[0].Id);
         }
 
         [Test]
@@ -395,6 +399,35 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.AreEqual(257, firstResult.Type, "Type");
             Assert.AreEqual(4, (int)firstResult.ModifierType, "ModifierType");
             Assert.AreEqual(-0.5000, firstResult.Coefficient, "Coefficient");
+        }
+
+        [Test]
+        public void RDE_Generates_ConduitRankData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "CovenantData.raw", "__conduit_rank_data { {\r\n" +
+                "{  41,  0, 337078, 10.000000 },\r\n" +
+                "{  41,  1, 337078, 11.000000 },\r\n" +
+                "};"}
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateConduitRankData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(337078, firstResult.SpellId, "Spell Id");
+            Assert.AreEqual(41, firstResult.ConduitId, "Conduit Id");
+            Assert.AreEqual(10.000000, firstResult.Value, "Value");
+            Assert.AreEqual(0, firstResult.Rank, "Rank");
         }
     }
 }

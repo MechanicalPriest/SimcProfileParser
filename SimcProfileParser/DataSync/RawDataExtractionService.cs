@@ -5,6 +5,7 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -40,6 +41,7 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.SpellScaleMultipliers => GenerateSpellScalingMultipliers(incomingRawData),
                 SimcParsedFileType.CurvePoints => GenerateCurveData(incomingRawData),
                 SimcParsedFileType.RppmData => GenerateRppmData(incomingRawData),
+                SimcParsedFileType.CovenantData => GenerateConduitRankData(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -371,6 +373,7 @@ namespace SimcProfileParser.DataSync
 
             var spells = new List<SimcRawSpell>();
             var effects = new List<SimcRawSpellEffect>();
+            var spellPowers = new List<SimcRawSpellPower>();
 
             foreach (var line in lines)
             {
@@ -470,6 +473,54 @@ namespace SimcProfileParser.DataSync
                     effect.PvpCoeff = Convert.ToDouble(data[29]);
 
                     effects.Add(effect);
+                }
+                else if (line.Split(',').Count() == 11)
+                {
+                    // If it has 10 it's very likely a spellpower_data_t entry
+                    var spellPower = new SimcRawSpellPower();
+
+                    // Split the data up
+                    var data = line.Split(',');
+                    // Clean it up
+                    for (var i = 0; i < data.Length; i++)
+                    {
+                        data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                    }
+
+                    if (data[0].Contains("&__spell_data"))
+                        continue;
+
+                    // 0 is Id
+                    spellPower.Id = Convert.ToUInt32(data[0]);
+
+                    // 1 is Spell Id
+                    spellPower.SpellId = Convert.ToUInt32(data[1]);
+
+                    // 2 is AuraId
+                    spellPower.AuraId = Convert.ToUInt32(data[2]);
+
+                    // 3 is power type
+                    spellPower.PowerType = Convert.ToInt32(data[3]);
+
+                    // 4 is cost
+                    spellPower.Cost = Convert.ToInt32(data[4]);
+
+                    // 5 is max cost
+                    spellPower.CostMax = Convert.ToInt32(data[5]);
+
+                    // 6 is cost per tick
+                    spellPower.CostPerTick = Convert.ToInt32(data[6]);
+
+                    // 7 is percent cost
+                    spellPower.PercentCost = Convert.ToDouble(data[7]);
+
+                    // 8 is percent cost max
+                    spellPower.PercentCostMax = Convert.ToDouble(data[8]);
+
+                    // 9 is percent cost per tick
+                    spellPower.PercentCostPerTick = Convert.ToDouble(data[9]);
+
+                    spellPowers.Add(spellPower);
                 }
                 else
                 {
@@ -633,14 +684,22 @@ namespace SimcProfileParser.DataSync
                 }
             }
 
-            // Add the spell effects to spells
+            
             foreach (var spell in spells)
             {
+                // Add the spell effects to spells
                 foreach (var effect in effects.Where(e => e.SpellId == spell.Id))
                 {
                     spell.Effects.Add(effect);
                 }
+                // Add any spell power data
+                foreach (var spellPower in spellPowers.Where(s => s.SpellId == spell.Id))
+                {
+                    spell.SpellPowers.Add(spellPower);
+                }
             }
+
+
 
             return spells;
         }
@@ -1016,6 +1075,60 @@ namespace SimcProfileParser.DataSync
             }
 
             return rppmData;
+        }
+
+        internal List<SimcRawSpellConduitRankEntry> GenerateConduitRankData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "CovenantData.raw").FirstOrDefault().Value;
+
+            // Split the raw data to only be the parts we want.
+            string key = "__conduit_rank_data {";
+
+            int start = rawData.IndexOf(key) + key.Length;
+            int end = rawData.IndexOf("};", start);
+
+            var dataChunk = rawData[start..end];
+
+            var lines = dataChunk.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var conduitRankEntries = new List<SimcRawSpellConduitRankEntry>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() != 5)
+                    continue;
+
+                var conduitRank = new SimcRawSpellConduitRankEntry();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is curve Id
+                conduitRank.ConduitId = Convert.ToUInt32(data[0]);
+
+                // 1 is rank
+                conduitRank.Rank = Convert.ToUInt32(data[1]);
+
+                // 2 is spell id
+                conduitRank.SpellId = Convert.ToUInt32(data[2]);
+
+                // 3 is spell id
+                conduitRank.Value = Convert.ToDouble(data[3]);
+
+                conduitRankEntries.Add(conduitRank);
+            }
+
+            return conduitRankEntries;
         }
     }
 }
