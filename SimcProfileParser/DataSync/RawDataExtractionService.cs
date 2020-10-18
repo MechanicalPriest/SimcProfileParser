@@ -41,7 +41,7 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.SpellScaleMultipliers => GenerateSpellScalingMultipliers(incomingRawData),
                 SimcParsedFileType.CurvePoints => GenerateCurveData(incomingRawData),
                 SimcParsedFileType.RppmData => GenerateRppmData(incomingRawData),
-                SimcParsedFileType.ConduitRankData => GenerateConduitRankData(incomingRawData),
+                SimcParsedFileType.CovenantData => GenerateConduitRankData(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -1079,7 +1079,7 @@ namespace SimcProfileParser.DataSync
 
         internal List<SimcRawSpellConduitRankEntry> GenerateConduitRankData(Dictionary<string, string> incomingRawData)
         {
-            var rawData = incomingRawData.Where(d => d.Key == "ConduitData.raw").FirstOrDefault().Value;
+            var rawData = incomingRawData.Where(d => d.Key == "CovenantData.raw").FirstOrDefault().Value;
 
             // Split the raw data to only be the parts we want.
             string key = "__conduit_rank_data {";

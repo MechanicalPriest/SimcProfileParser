@@ -8,6 +8,7 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -145,6 +146,26 @@ namespace SimcProfileParser.Tests
             // Assert
             Assert.IsNotNull(spell);
             Assert.AreEqual(3.6, spell.PowerCost);
+        }
+
+        [Test]
+        public async Task SSC_Creates_Player_Spell_WithConduitRanks()
+        {
+            // Arrange
+            var playerLevel = 60u;
+            var spellId = 340609u;
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(playerLevel, spellId);
+            var firstConduitRank = spell.ConduitRanks.FirstOrDefault();
+            
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.ConduitRanks);
+            Assert.AreEqual(270, spell.ConduitId);
+            Assert.IsNotNull(firstConduitRank);
+            Assert.AreEqual(10, firstConduitRank.Value);
+            Assert.AreEqual(0, firstConduitRank.Key);
         }
 
         [Test]

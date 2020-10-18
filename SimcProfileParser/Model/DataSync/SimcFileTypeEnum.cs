@@ -14,6 +14,6 @@
         SpellScaleMultipliers,
         CurvePoints,
         RppmData,
-        ConduitRankData
+        CovenantData
     }
 }

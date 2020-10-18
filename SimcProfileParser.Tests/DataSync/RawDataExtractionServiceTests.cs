@@ -410,7 +410,7 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "ConduitData.raw", "__conduit_rank_data { {\r\n" +
+                { "CovenantData.raw", "__conduit_rank_data { {\r\n" +
                 "{  41,  0, 337078, 10.000000 },\r\n" +
                 "{  41,  1, 337078, 11.000000 },\r\n" +
                 "};"}

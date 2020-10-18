@@ -133,6 +133,17 @@ namespace SimcProfileParser
                 });
             }
 
+            // Add the conduit info
+            var conduitRanks = await _simcUtilityService.GetSpellConduitRanksAsync(spellData.Id);
+
+            foreach(var rank in conduitRanks)
+            {
+                if (itemSpell.ConduitId == 0)
+                    itemSpell.ConduitId = rank.ConduitId;
+
+                itemSpell.ConduitRanks.Add(rank.Rank, rank.Value);
+            }
+
             return itemSpell;
         }
 

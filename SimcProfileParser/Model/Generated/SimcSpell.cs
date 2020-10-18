@@ -40,12 +40,22 @@ namespace SimcProfileParser.Model.Generated
         /// other purposes. Just getting percent mana is fine for our purposes now.
         /// </summary>
         public double PowerCost { get; internal set; }
+
+        /// <summary>
+        /// Set if this spell is a conduit
+        /// </summary>
+        public uint ConduitId { get; set; }
+        /// <summary>
+        /// Contains each of the ranks stored as N-1 (0-indexed). Entry [0] is Rank 1.
+        /// </summary>
+        public Dictionary<uint, double> ConduitRanks { get; set; }
         public List<SimcSpellRppmModifier> RppmModifiers { get; internal set; }
 
         public SimcSpell()
         {
             Effects = new List<SimcSpellEffect>();
             RppmModifiers = new List<SimcSpellRppmModifier>();
+            ConduitRanks = new Dictionary<uint, double>();
         }
     }
 }
