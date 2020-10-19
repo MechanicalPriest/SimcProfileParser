@@ -16,12 +16,12 @@ exception and it may be prioritised.
 A new instance can be manually created. 
 
 ```csharp
-ISimcProfileParser spp = new SimcProfileParser();
+ISimcGenerationService sgs = new SimcGenerationService();
 ```
 
 To provide logging to the new instance and its children, supply an `ILoggerFactory`:
 ```csharp
-ISimcProfileParser spp = new SimcProfileParser(myLoggerFactory);
+ISimcGenerationService sgs = new SimcGenerationService(myLoggerFactory);
 ```
 
 #### Using Dependency Injection
@@ -36,15 +36,15 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-Then you request an instance of `ISimcProfileParserService` through DI in your class constructors:
+Then you request an instance of `ISimcGenerationService` through DI in your class constructors:
 ```csharp
 class MyClass
 {
-    private readonly ISimcProfileParserService _simcProfileParserService;
+    private readonly ISimcGenerationService _simcGenerationService;
 
-    public MyClass(ISimcProfileParserService simcProfileParserService)
+    public MyClass(ISimcGenerationService simcGenerationService)
     {
-        _simcProfileParserService = simcProfileParserService;
+        _simcGenerationService = simcGenerationService;
     }
 }
 ```
@@ -53,10 +53,10 @@ class MyClass
 Generating a profile object from a simc import file named `import.simc`:
 
 ```csharp
-ISimcProfileParser spp = new SimcProfileParser();
+ISimcGenerationService sgs = new SimcGenerationService();
 
 // Using async
-var profile = await spp.GenerateProfileAsync(File.ReadAllText("import.simc"));
+var profile = await sgs.GenerateProfileAsync(File.ReadAllText("import.simc"));
 
 Console.WriteLine($"Profile object created for player {profile.Name}.");
 ```
@@ -64,7 +64,7 @@ Console.WriteLine($"Profile object created for player {profile.Name}.");
 You can also generate a profile object from individual lines of an import file:
 
 ```csharp
-ISimcProfileParser spp = new SimcProfileParser();
+ISimcGenerationService sgs = new SimcGenerationService();
 
 var lines = new List<string>()
 {
@@ -72,14 +72,41 @@ var lines = new List<string>()
     "main_hand=,id=178473,bonus_id=6774/1504/6646"
 };
 
-var profile = await spp.GenerateProfileAsync(lines);
+var profile = await sgs.GenerateProfileAsync(lines);
 
 Console.WriteLine($"Profile object created for a level {profile.Level}");
 Console.WriteLine($"They are weilding {profile.Items.FirstOrDefault().Name}.");
 ```
 
+#### Creating a single item
+There are some basic options to manually create an item using `ISimcGenerationService.GenerateItemAsync`.
+
+```csharp
+ISimcGenerationService sgs = new SimcGenerationService();
+
+var itemOptions = new SimcItemOptions()
+{
+    ItemId = 177813,
+    Quality = ItemQuality.ITEM_QUALITY_EPIC,
+    ItemLevel = 226
+};
+
+var item = await sgs.GenerateItemAsync(spellOptions);
+```
+
+There are other options that can be set, including bonus ids, gems and the original drop level:
+
+```csharp
+public uint ItemId { get; set; }
+public int ItemLevel { get; set; }
+public IList<int> BonusIds { get; set; }
+public IList<int> GemIds { get; set; }
+public ItemQuality Quality { get; set; }
+public int DropLevel { get; set; }
+```
+
 #### Creating a single spell
-There are some basic options to manually create an item using `ISimcGenerationService.GenerateSpellAsync`.
+There are some basic options to manually create a spell using `ISimcGenerationService.GenerateSpellAsync`.
 
 There are two types of generatable spells: 
 
@@ -89,7 +116,7 @@ There are two types of generatable spells:
 Generating an item scaling spell (id 343538) for a **rare trinket at ilvl 226**:
 
 ```csharp
-ISimcProfileParser spp = new SimcProfileParser();
+ISimcGenerationService sgs = new SimcGenerationService();
 
 var spellOptions = new SimcSpellOptions()
 {
@@ -99,13 +126,13 @@ var spellOptions = new SimcSpellOptions()
     ItemInventoryType = InventoryType.INVTYPE_TRINKET
 };
 
-var spell = await spp.GenerateSpellAsync(spellOptions);
+var spell = await sgs.GenerateSpellAsync(spellOptions);
 ```
 
 Generating an player scaling spell (id 274740):
 
 ```csharp
-ISimcProfileParser spp = new SimcProfileParser();
+ISimcGenerationService sgs = new SimcGenerationService();
 
 var spellOptions = new SimcSpellOptions()
 {
@@ -113,7 +140,7 @@ var spellOptions = new SimcSpellOptions()
     PlayerLevel = 60
 };
 
-var spell = await spp.GenerateSpellAsync(spellOptions);
+var spell = await sgs.GenerateSpellAsync(spellOptions);
 ```
 
 The spell object has a property `ScaleBudget` which can be multiplied with a coeffecient from a spells effect if required. 
