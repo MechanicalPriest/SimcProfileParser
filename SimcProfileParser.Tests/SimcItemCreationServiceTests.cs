@@ -100,6 +100,9 @@ namespace SimcProfileParser.Tests
 
             // Assert
             Assert.IsNotNull(item);
+            Assert.AreEqual(226, item.ItemLevel);
+            Assert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
+            Assert.AreEqual(177813, item.ItemId);
         }
 
         [Test]
@@ -125,7 +128,7 @@ namespace SimcProfileParser.Tests
             // Assert
             Assert.IsNotNull(item);
             Assert.IsNotNull(item.Effects);
-            Assert.AreEqual(1, item.Effects.Count);
+            Assert.AreEqual(2, item.Effects.Count);
             Assert.AreEqual(126201, item.Effects[0].EffectId);
             Assert.IsNotNull(item.Effects[0].Spell);
             Assert.AreEqual(336841, item.Effects[0].Spell.SpellId);
@@ -135,7 +138,7 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(155, item.Effects[0].Spell.ScaleBudget);
             Assert.IsNotNull(item.Effects[0].Spell.Effects);
             Assert.AreEqual(1, item.Effects[0].Spell.Effects.Count);
-            Assert.AreEqual(5.966555, item.Effects[0].Spell.Effects[0].Coefficient);
+            Assert.AreEqual(5.910356, item.Effects[1].Spell.Effects[0].Coefficient);
         }
 
         [Test]
@@ -181,8 +184,8 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(item.Effects[1].Spell.Effects);
             Assert.AreEqual(2, item.Effects[1].Spell.Effects.Count);
             // Second effect's spells first effect
-            Assert.AreEqual(300.020416, item.Effects[1].Spell.Effects[0].Coefficient);
-            Assert.AreEqual(371.653076, item.Effects[1].Spell.Effects[1].Coefficient);
+            Assert.AreEqual(294.97500600000001d, item.Effects[1].Spell.Effects[0].Coefficient);
+            Assert.AreEqual(455.39999399999999d, item.Effects[1].Spell.Effects[1].Coefficient);
         }
 
         [Test]
@@ -209,6 +212,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(item);
             Assert.IsNotNull(item.Effects);
             Assert.AreEqual(1, item.Effects.Count);
+            Assert.AreEqual(226, item.ItemLevel);
             // First effect
             Assert.AreEqual(135894, item.Effects[0].EffectId);
             Assert.IsNotNull(item.Effects[0].Spell);
@@ -220,7 +224,7 @@ namespace SimcProfileParser.Tests
             // This is basically testing that the trigger spell gets linked. This particular spell
             // stores the proc coefficient in the trigger spell and multiplies it by 155.
             // amusingly the previous lines have "trigger spell" lined up vertically.
-            Assert.AreEqual(1.055432, item.Effects[0].Spell.Effects[0].TriggerSpell.Effects[0].Coefficient);
+            Assert.AreEqual(1.406452, item.Effects[0].Spell.Effects[0].TriggerSpell.Effects[0].Coefficient);
         }
 
         [Test]
