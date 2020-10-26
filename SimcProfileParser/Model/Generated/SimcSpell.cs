@@ -35,11 +35,11 @@ namespace SimcProfileParser.Model.Generated
         public double CombatRatingMultiplier { get; internal set; }
         /// <summary>
         /// This is the PercentCost from the spellpower_data_t (SimcRawSpellPower)
-        /// This may need to be turned into an object, or even a list of objects to 
-        /// properly capture all of the relevant power costs if they're needed for
-        /// other purposes. Just getting percent mana is fine for our purposes now.
+        /// This is a list of percentage power costs that have a key relating to the AuraID 
+        /// that modifies this power usage. For example holy priest aura id is 137031. 
+        /// Just getting percent mana is fine for our purposes now.
         /// </summary>
-        public double PowerCost { get; internal set; }
+        public Dictionary<uint, double> PowerCosts { get; internal set; }
 
         /// <summary>
         /// Set if this spell is a conduit
@@ -56,6 +56,7 @@ namespace SimcProfileParser.Model.Generated
             Effects = new List<SimcSpellEffect>();
             RppmModifiers = new List<SimcSpellRppmModifier>();
             ConduitRanks = new Dictionary<uint, double>();
+            PowerCosts = new Dictionary<uint, double>();
         }
     }
 }
