@@ -3,6 +3,7 @@
     public class SimcParsedConduit
     {
         public int ConduitId { get; internal set; }
+        public uint SpellId { get; internal set; }
         public int Rank { get; internal set; }
         public override string ToString()
         {

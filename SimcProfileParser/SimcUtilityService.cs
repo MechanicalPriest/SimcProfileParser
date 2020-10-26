@@ -442,5 +442,14 @@ namespace SimcProfileParser
 
             return result;
         }
+
+        public async Task<uint> GetSpellConduitSpellIdAsync(uint conduitId)
+        {
+            var conduitRanks = await _cacheService.GetParsedFileContentsAsync<List<SimcRawSpellConduitRankEntry>>(SimcParsedFileType.CovenantData);
+
+            var result = conduitRanks.Where(c => c.ConduitId == conduitId).ToList().FirstOrDefault();
+
+            return result.SpellId;
+        }
     }
 }
