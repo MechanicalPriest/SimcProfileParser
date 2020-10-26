@@ -44,6 +44,8 @@ namespace SimcProfileParser
                 parsedItemData.GemIds.ToList(),
                 parsedItemData.DropLevel);
 
+            await UpdateItemEffects(item);
+
             return item;
         }
 
@@ -55,18 +57,20 @@ namespace SimcProfileParser
                 throw new ArgumentOutOfRangeException(
                     nameof(itemOptions.ItemId), $"ItemId not found: {itemOptions.ItemId}");
 
-            await UpdateItemAsync(item,
-                itemOptions.BonusIds,
-                itemOptions.GemIds,
-                itemOptions.DropLevel);
-
-            // Set the item level if provided
+            // Set the item level if provided. This needs to be done first as item stats scale off it.
             if (itemOptions.ItemLevel > 0)
                 AddItemLevel(item, itemOptions.ItemLevel - item.ItemLevel);
 
             // Set the quality if provided
             if (itemOptions.Quality != ItemQuality.ITEM_QUALITY_NONE)
                 SetItemQuality(item, itemOptions.Quality);
+
+            await UpdateItemAsync(item,
+                itemOptions.BonusIds,
+                itemOptions.GemIds,
+                itemOptions.DropLevel);
+
+            await UpdateItemEffects(item);
 
             return item;
         }
@@ -133,6 +137,11 @@ namespace SimcProfileParser
             }
 
             await AddGemsAsync(item, gemIds);
+        }
+
+        internal async Task UpdateItemEffects(SimcItem item)
+        {
+            var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
 
             await AddSpellEffectsAsync(item, rawItemData.ItemEffects);
         }
