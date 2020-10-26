@@ -88,11 +88,15 @@ namespace SimcProfileParser.Tests
         public async Task ICS_Builds_Item_From_Options()
         {
             // Arrange
+            // Hopebreakers Badge
+            // trinket1=,id=177813,bonus_id=6907/6652/603/7215,drop_level=50
             var itemOptions = new SimcItemOptions()
             {
                 ItemId = 177813,
-                Quality = ItemQuality.ITEM_QUALITY_EPIC,
-                ItemLevel = 226
+                Quality = ItemQuality.ITEM_QUALITY_COMMON,
+                ItemLevel = 226,
+                BonusIds = new List<int>() { 6907, 6652, 603, 7215 },
+                DropLevel = 50
             };
 
             // Act
@@ -103,6 +107,35 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(226, item.ItemLevel);
             Assert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
             Assert.AreEqual(177813, item.ItemId);
+            // Intellect
+            Assert.AreEqual(77, item.Mods[0].StatRating);
+            Assert.AreEqual(ItemModType.ITEM_MOD_STRENGTH_AGILITY_INTELLECT, item.Mods[0].Type);
+            // Crit rating
+            Assert.AreEqual(100, item.Mods[1].StatRating);
+            Assert.AreEqual(ItemModType.ITEM_MOD_CRIT_RATING, item.Mods[1].Type);
+        }
+
+        [Test]
+        public async Task ICS_BonusIds_Override_Quality()
+        {
+            // Arrange
+            // Hopebreakers Badge
+            // trinket1=,id=177813,bonus_id=6907/6652/603/7215,drop_level=50
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 177813,
+                Quality = ItemQuality.ITEM_QUALITY_RARE,
+                ItemLevel = 226,
+                BonusIds = new List<int>() { 6907, 6652, 603, 7215 },
+                DropLevel = 50
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.IsNotNull(item);
+            Assert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
         }
 
         [Test]

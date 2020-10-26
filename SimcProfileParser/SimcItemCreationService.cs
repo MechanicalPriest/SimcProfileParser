@@ -57,11 +57,6 @@ namespace SimcProfileParser
                 throw new ArgumentOutOfRangeException(
                     nameof(itemOptions.ItemId), $"ItemId not found: {itemOptions.ItemId}");
 
-            await UpdateItemAsync(item,
-                itemOptions.BonusIds,
-                itemOptions.GemIds,
-                itemOptions.DropLevel);
-
             // Set the item level if provided. This needs to be done first as item stats scale off it.
             if (itemOptions.ItemLevel > 0)
                 AddItemLevel(item, itemOptions.ItemLevel - item.ItemLevel);
@@ -69,6 +64,11 @@ namespace SimcProfileParser
             // Set the quality if provided
             if (itemOptions.Quality != ItemQuality.ITEM_QUALITY_NONE)
                 SetItemQuality(item, itemOptions.Quality);
+
+            await UpdateItemAsync(item,
+                itemOptions.BonusIds,
+                itemOptions.GemIds,
+                itemOptions.DropLevel);
 
             await UpdateItemEffects(item);
 
