@@ -87,6 +87,13 @@ namespace SimcProfileParser
                 newProfile.GeneratedItems.Add(newItem);
             }
 
+            // Populate the spell Ids of any conduits set)
+            foreach(var conduit in newProfile.ParsedProfile.Conduits)
+            {
+                conduit.SpellId = await _simcSpellCreationService
+                    .GetSpellIdFromConduitIdAsync((uint)conduit.ConduitId);
+            }
+
             return newProfile;
         }
 

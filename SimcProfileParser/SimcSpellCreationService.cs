@@ -162,6 +162,13 @@ namespace SimcProfileParser
             return spell;
         }
 
+        public async Task<uint> GetSpellIdFromConduitIdAsync(uint conduitId)
+        {
+            var result = await _simcUtilityService.GetSpellConduitSpellIdAsync(conduitId);
+
+            return result;
+        }
+
         internal async Task<SimcSpell> BuildItemSpellAsync(uint spellId, int itemLevel,
             ItemQuality itemQuality, InventoryType inventoryType)
         {

@@ -26,5 +26,6 @@ namespace SimcProfileParser.Interfaces
         Task<double> GetSpellScalingMultiplierAsync(int scaleIndex, int playerLevel);
         Task<double> GetStaminaMultiplierAsync(int itemLevel, CombatRatingMultiplayerType staminaRatingType);
         Task<List<SimcRawSpellConduitRankEntry>> GetSpellConduitRanksAsync(uint spellId);
+        Task<uint> GetSpellConduitSpellIdAsync(uint conduitId);
     }
 }
