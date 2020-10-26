@@ -117,6 +117,26 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public async Task SSC_Creates_Player_Spell_With_Power()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 274740,
+                PlayerLevel = 60
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.Effects);
+            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
+            Assert.AreEqual(95, spell.ScaleBudget);
+        }
+
+        [Test]
         public async Task SSC_Creates_Player_Spell_Raw()
         {
             // Arrange
@@ -138,14 +158,18 @@ namespace SimcProfileParser.Tests
         {
             // Arrange
             var playerLevel = 60u;
-            var spellId = 2061u;
+            var spellId = 589u;
 
             // Act
             var spell = await _spellCreationService.GeneratePlayerSpellAsync(playerLevel, spellId);
 
             // Assert
             Assert.IsNotNull(spell);
-            Assert.AreEqual(3.6, spell.PowerCost);
+            Assert.IsNotNull(spell.PowerCosts);
+            Assert.LessOrEqual(2, spell.PowerCosts.Count);
+            Assert.LessOrEqual(1.2, spell.PowerCosts.Skip(1).First().Value);
+            Assert.LessOrEqual(137031, spell.PowerCosts.Skip(1).First().Key);
+
         }
 
         [Test]

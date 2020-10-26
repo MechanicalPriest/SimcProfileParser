@@ -64,8 +64,6 @@ namespace SimcProfileParser
                 budget = scaledValue;
             }
 
-            var powerCostPercent = spellData.SpellPowers.FirstOrDefault()?.PercentCost;
-
             var itemSpell = new SimcSpell()
             {
                 SpellId = spellData.Id,
@@ -87,9 +85,14 @@ namespace SimcProfileParser
                 InternalCooldown = spellData.InternalCooldown,
                 Rppm = spellData.Rppm,
                 CastTime = spellData.CastTime,
-                ScaleBudget = budget,
-                PowerCost = powerCostPercent.HasValue ? powerCostPercent.Value : 0
+                ScaleBudget = budget
             };
+
+            // Add power costs
+            foreach(var power in spellData.SpellPowers)
+            {
+                itemSpell.PowerCosts.Add(power.AuraId, power.PercentCost);
+            }
 
             // Add the RPPM modifiers
             var rppmModifiers = await _simcUtilityService.GetSpellRppmModifiersAsync(spellData.Id);
@@ -218,8 +221,6 @@ namespace SimcProfileParser
                 _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Spell: {spellData.Id}");
             }
 
-            var powerCostPercent = spellData.SpellPowers.FirstOrDefault()?.PercentCost;
-
             var itemSpell = new SimcSpell()
             {
                 SpellId = spellData.Id,
@@ -242,9 +243,14 @@ namespace SimcProfileParser
                 Rppm = spellData.Rppm,
                 CastTime = spellData.CastTime,
                 ScaleBudget = budget,
-                CombatRatingMultiplier = multi,
-                PowerCost = powerCostPercent.HasValue ? powerCostPercent.Value : 0
+                CombatRatingMultiplier = multi
             };
+
+            // Add power costs
+            foreach (var power in spellData.SpellPowers)
+            {
+                itemSpell.PowerCosts.Add(power.AuraId, power.PercentCost);
+            }
 
             // Add the RPPM modifiers
             var rppmModifiers = await _simcUtilityService.GetSpellRppmModifiersAsync(spellData.Id);
