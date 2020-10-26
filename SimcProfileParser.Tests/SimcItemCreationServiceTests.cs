@@ -106,6 +106,30 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public async Task ICS_ItemOptions_Correct_iLvl_Scaling()
+        {
+            // Arrange
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 181360,
+                Quality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemLevel = 226
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.IsNotNull(item);
+            Assert.AreEqual(226, item.ItemLevel);
+            Assert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
+            Assert.AreEqual(181360, item.ItemId);
+            // This will make sure the scale value that's being pulled for spells is using the right
+            // item level. In this cast it's 226 = 1.3098933696746826.
+            Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
+        }
+
+        [Test]
         public async Task ICS_Builds_Trinket_From_ParsedItem_Secondary_Stat_UseEffect()
         {
             // Arrange
