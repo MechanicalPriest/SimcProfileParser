@@ -39,6 +39,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(profile.ParsedProfile.Name);
             Assert.NotZero(profile.ParsedProfile.Level);
             Assert.NotZero(profile.GeneratedItems.Count);
+            Assert.IsTrue(profile.GeneratedItems[0].Equipped);
             Assert.NotZero(profile.ParsedProfile.Conduits.Count);
             Assert.NotZero(profile.ParsedProfile.Conduits[0].SpellId);
             Assert.NotZero(profile.ParsedProfile.Soulbinds.Count);

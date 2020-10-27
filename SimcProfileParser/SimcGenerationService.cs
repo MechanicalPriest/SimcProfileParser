@@ -84,7 +84,9 @@ namespace SimcProfileParser
             foreach (var item in newProfile.ParsedProfile.Items)
             {
                 var newItem = await _simcItemCreationService.CreateItemAsync(item);
-                newProfile.GeneratedItems.Add(newItem);
+                    newProfile.GeneratedItems.Add(newItem);
+
+                newItem.Equipped = item.Equipped;
             }
 
             // Populate the spell Ids of any conduits set
