@@ -318,7 +318,16 @@ namespace SimcProfileParser
                 // Get the soulbind name
                 var soulbindName = line.Value.Split(',').FirstOrDefault();
                 if (soulbindName.Length > 0)
-                    result.Name = soulbindName;
+                {
+                    if(soulbindName.Contains(':'))
+                    {
+                        var soulbindNameParts = soulbindName.Split(':');
+                        result.Name = soulbindNameParts[0];
+                        result.SoulbindId = Convert.ToInt32(soulbindNameParts[1]);
+                    }
+                    else 
+                        result.Name = soulbindName;
+                }
                 else
                 {
                     _logger?.LogWarning($"Unable to parse soulbind name on line: {line.RawLine}");
