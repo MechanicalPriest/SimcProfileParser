@@ -264,14 +264,15 @@ namespace SimcProfileParser.Tests
         public void SPS_Parses_Soulbinds()
         {
             // Arrange
-            // # soulbind=niya,342270/82:1/73:1/320662/69:1/84:1/320668/322721
-            // soulbind = dreamweaver,319191 / 82:1 / 66:1 / 319213 / 69:1 / 84:1 / 319216 / 319217
-            // # soulbind=korayn,
+            // # soulbind=niya:1,342270/82:1/73:1/320662/69:1/84:1/320668/322721
+            // soulbind = dreamweaver:2,319191 / 82:1 / 66:1 / 319213 / 69:1 / 84:1 / 319216 / 319217
+            // # soulbind=korayn:6,
             var allSoulbinds = new List<SimcParsedSoulbind>()
             {
                 new SimcParsedSoulbind()
                 {
                     Name = "niya",
+                    SoulbindId = 1,
                     IsActive = false,
                     SocketedConduits = new List<SimcParsedConduit>()
                     {
@@ -288,6 +289,7 @@ namespace SimcProfileParser.Tests
                 new SimcParsedSoulbind()
                 {
                     Name = "dreamweaver",
+                    SoulbindId = 2,
                     IsActive = true,
                     SocketedConduits = new List<SimcParsedConduit>()
                     {
@@ -304,6 +306,7 @@ namespace SimcProfileParser.Tests
                 new SimcParsedSoulbind()
                 {
                     Name = "korayn",
+                    SoulbindId = 6,
                     IsActive = false,
                     SocketedConduits = new List<SimcParsedConduit>(),
                     SoulbindSpells = new List<int>()

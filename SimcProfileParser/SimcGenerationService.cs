@@ -84,14 +84,26 @@ namespace SimcProfileParser
             foreach (var item in newProfile.ParsedProfile.Items)
             {
                 var newItem = await _simcItemCreationService.CreateItemAsync(item);
-                newProfile.GeneratedItems.Add(newItem);
+                    newProfile.GeneratedItems.Add(newItem);
+
+                newItem.Equipped = item.Equipped;
             }
 
-            // Populate the spell Ids of any conduits set)
+            // Populate the spell Ids of any conduits set
             foreach(var conduit in newProfile.ParsedProfile.Conduits)
             {
                 conduit.SpellId = await _simcSpellCreationService
                     .GetSpellIdFromConduitIdAsync((uint)conduit.ConduitId);
+            }
+
+            // and populate the spell Ids of any conduits set)
+            foreach (var soulbind in newProfile.ParsedProfile.Soulbinds)
+            {
+                foreach(var conduit in soulbind.SocketedConduits)
+                {
+                    conduit.SpellId = await _simcSpellCreationService
+                        .GetSpellIdFromConduitIdAsync((uint)conduit.ConduitId);
+                }
             }
 
             return newProfile;

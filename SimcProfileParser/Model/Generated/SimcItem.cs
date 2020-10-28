@@ -9,6 +9,7 @@ namespace SimcProfileParser.Model.Generated
         public string Name { get; internal set; }
 
         public int ItemLevel { get; internal set; }
+        public bool Equipped { get; internal set; }
         public ItemQuality Quality { get; internal set; }
 
         public List<SimcItemMod> Mods { get; internal set; }
@@ -19,7 +20,6 @@ namespace SimcProfileParser.Model.Generated
         public InventoryType InventoryType { get; internal set; }
         public ItemClass ItemClass { get; internal set; }
         public int ItemSubClass { get; internal set; }
-
 
         public SimcItem()
         {
