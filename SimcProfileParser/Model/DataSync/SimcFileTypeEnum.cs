@@ -14,6 +14,8 @@
         SpellScaleMultipliers,
         CurvePoints,
         RppmData,
-        CovenantData
+        CovenantData,
+        ItemEffectData,
+        GameDataVersion
     }
 }

@@ -17,20 +17,23 @@ namespace SimcProfileParser
         private readonly ISimcParserService _simcParserService;
         private readonly ISimcItemCreationService _simcItemCreationService;
         private readonly ISimcSpellCreationService _simcSpellCreationService;
+        private readonly ISimcVersionService _simcVersionService;
 
         public SimcGenerationService(ILogger<SimcGenerationService> logger,
             ISimcParserService simcParserService,
             ISimcItemCreationService simcItemCreationService,
-            ISimcSpellCreationService simcSpellCreationService)
+            ISimcSpellCreationService simcSpellCreationService,
+            ISimcVersionService simcVersionService)
         {
             _logger = logger;
             _simcParserService = simcParserService;
             _simcItemCreationService = simcItemCreationService;
             _simcSpellCreationService = simcSpellCreationService;
+            _simcVersionService = simcVersionService;
         }
 
         public SimcGenerationService(ILoggerFactory loggerFactory)
-            : this(loggerFactory.CreateLogger<SimcGenerationService>(), null, null, null)
+            : this(loggerFactory.CreateLogger<SimcGenerationService>(), null, null, null, null)
         {
             var dataExtractionService = new RawDataExtractionService(
                 loggerFactory.CreateLogger<RawDataExtractionService>());
@@ -52,6 +55,10 @@ namespace SimcProfileParser
                 spellCreationService,
                 utilityService,
                 loggerFactory.CreateLogger<SimcItemCreationService>());
+
+            _simcVersionService = new SimcVersionService(
+                utilityService,
+                loggerFactory.CreateLogger<SimcVersionService>());
 
             _simcSpellCreationService = spellCreationService;
         }
@@ -84,13 +91,13 @@ namespace SimcProfileParser
             foreach (var item in newProfile.ParsedProfile.Items)
             {
                 var newItem = await _simcItemCreationService.CreateItemAsync(item);
-                    newProfile.GeneratedItems.Add(newItem);
+                newProfile.GeneratedItems.Add(newItem);
 
                 newItem.Equipped = item.Equipped;
             }
 
             // Populate the spell Ids of any conduits set
-            foreach(var conduit in newProfile.ParsedProfile.Conduits)
+            foreach (var conduit in newProfile.ParsedProfile.Conduits)
             {
                 conduit.SpellId = await _simcSpellCreationService
                     .GetSpellIdFromConduitIdAsync((uint)conduit.ConduitId);
@@ -99,7 +106,7 @@ namespace SimcProfileParser
             // and populate the spell Ids of any conduits set)
             foreach (var soulbind in newProfile.ParsedProfile.Soulbinds)
             {
-                foreach(var conduit in soulbind.SocketedConduits)
+                foreach (var conduit in soulbind.SocketedConduits)
                 {
                     conduit.SpellId = await _simcSpellCreationService
                         .GetSpellIdFromConduitIdAsync((uint)conduit.ConduitId);
@@ -166,6 +173,11 @@ namespace SimcProfileParser
             }
 
             return spell;
+        }
+
+        public async Task<string> GetGameDataVersionAsync()
+        {
+            return await _simcVersionService.GetGameDataVersionAsync();
         }
     }
 }

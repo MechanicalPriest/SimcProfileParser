@@ -2,13 +2,11 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Serilog;
-using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Profile;
+using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests
@@ -105,6 +103,7 @@ namespace SimcProfileParser.Tests
         {
             // Arrange
             var race = "undead";
+            var raceId = (int)Race.Undead;
 
             // Act
 
@@ -112,6 +111,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(ParsedProfile);
             Assert.IsNotNull(ParsedProfile.Race);
             Assert.AreEqual(race, ParsedProfile.Race);
+            Assert.AreEqual(raceId, ParsedProfile.RaceId);
         }
 
         [Test]
@@ -161,6 +161,7 @@ namespace SimcProfileParser.Tests
         {
             // Arrange
             var spec = "holy";
+            var specId = 257;
 
             // Act
 
@@ -168,6 +169,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(ParsedProfile);
             Assert.IsNotNull(ParsedProfile.Spec);
             Assert.AreEqual(spec, ParsedProfile.Spec);
+            Assert.AreEqual(specId, ParsedProfile.SpecId);
         }
 
         [Test]
@@ -251,6 +253,7 @@ namespace SimcProfileParser.Tests
         {
             // Arrange
             var className = "priest";
+            var classId = 5;
 
             // Act
 
@@ -258,6 +261,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(ParsedProfile);
             Assert.IsNotNull(ParsedProfile.Class);
             Assert.AreEqual(className, ParsedProfile.Class);
+            Assert.AreEqual(classId, ParsedProfile.ClassId);
         }
 
         [Test]

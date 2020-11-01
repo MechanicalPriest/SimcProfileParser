@@ -5,11 +5,8 @@ using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests
@@ -167,9 +164,8 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.PowerCosts);
             Assert.LessOrEqual(2, spell.PowerCosts.Count);
-            Assert.LessOrEqual(1.2, spell.PowerCosts.Skip(1).First().Value);
-            Assert.LessOrEqual(137031, spell.PowerCosts.Skip(1).First().Key);
-
+            Assert.AreEqual(0.3, spell.PowerCosts.Skip(1).First().Value);
+            Assert.AreEqual(137031, spell.PowerCosts.Skip(1).First().Key);
         }
 
         [Test]
@@ -182,13 +178,13 @@ namespace SimcProfileParser.Tests
             // Act
             var spell = await _spellCreationService.GeneratePlayerSpellAsync(playerLevel, spellId);
             var firstConduitRank = spell.ConduitRanks.FirstOrDefault();
-            
+
             // Assert
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.ConduitRanks);
             Assert.AreEqual(270, spell.ConduitId);
             Assert.IsNotNull(firstConduitRank);
-            Assert.AreEqual(10, firstConduitRank.Value);
+            Assert.AreEqual(15, firstConduitRank.Value);
             Assert.AreEqual(0, firstConduitRank.Key);
         }
 

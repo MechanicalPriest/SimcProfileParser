@@ -3,9 +3,6 @@ using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Generated;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +14,7 @@ namespace SimcProfileParser.Tests
         [SetUp]
         public void Init()
         {
-            
+
         }
 
         IHostBuilder CreateHostBuilder(string[] args) =>

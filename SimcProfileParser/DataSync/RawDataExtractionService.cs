@@ -5,7 +5,6 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -42,6 +41,8 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.CurvePoints => GenerateCurveData(incomingRawData),
                 SimcParsedFileType.RppmData => GenerateRppmData(incomingRawData),
                 SimcParsedFileType.CovenantData => GenerateConduitRankData(incomingRawData),
+                SimcParsedFileType.ItemEffectData => GenerateItemEffectData(incomingRawData),
+                SimcParsedFileType.GameDataVersion => GenerateGameDataVersion(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -107,9 +108,8 @@ namespace SimcProfileParser.DataSync
             int lowerBoundItemId = 0, int upperBoundItemId = int.MaxValue)
         {
             var rawData = incomingRawData.Where(d => d.Key == "ItemData.raw").FirstOrDefault().Value;
-            var rawEffectData = incomingRawData.Where(d => d.Key == "ItemEffect.raw").FirstOrDefault().Value;
 
-            var itemEffects = GenerateItemEffectData(rawEffectData);
+            var itemEffects = GenerateItemEffectData(incomingRawData);
 
             // Split by the last occurance of "". There is only one string in this data model.
             var lines = rawData.Split(
@@ -684,7 +684,7 @@ namespace SimcProfileParser.DataSync
                 }
             }
 
-            
+
             foreach (var spell in spells)
             {
                 // Add the spell effects to spells
@@ -761,8 +761,11 @@ namespace SimcProfileParser.DataSync
 
             return itemBonuses;
         }
-        List<SimcRawItemEffect> GenerateItemEffectData(string rawEffectData)
+
+        internal List<SimcRawItemEffect> GenerateItemEffectData(Dictionary<string, string> incomingRawData)
         {
+            var rawEffectData = incomingRawData.Where(d => d.Key == "ItemEffectData.raw").FirstOrDefault().Value;
+
             var lines = rawEffectData.Split(
                 new[] { "\r\n", "\r", "\n" },
                 StringSplitOptions.None
@@ -1129,6 +1132,29 @@ namespace SimcProfileParser.DataSync
             }
 
             return conduitRankEntries;
+        }
+
+        internal string GenerateGameDataVersion(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "GameDataVersion.raw").FirstOrDefault().Value;
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var gameDataVersion = "";
+
+            foreach (var line in lines)
+            {
+                var key = "#define CLIENT_DATA_WOW_VERSION ";
+                if (line.StartsWith(key))
+                {
+                    gameDataVersion = line.Substring(key.Length).Trim('"');
+                }
+            }
+
+            return gameDataVersion;
         }
     }
 }

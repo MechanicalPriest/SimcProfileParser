@@ -16,6 +16,7 @@ namespace SimcProfileParser.Interfaces
         // Data Methods
         Task<double> GetCombatRatingMultiplierAsync(int itemLevel, CombatRatingMultiplayerType combatRatingType);
         Task<SimcRawGemProperty> GetGemPropertyAsync(int gemId);
+        Task<string> GetClientDataVersionAsync();
         Task<double> GetItemBudgetAsync(int itemLevel, ItemQuality itemQuality, int maxItemlevel);
         Task<SimcRawItemEnchantment> GetItemEnchantmentAsync(uint enchantId);
         Task<SimcRawRandomPropData> GetRandomPropsAsync(int itemLevel);
@@ -27,5 +28,6 @@ namespace SimcProfileParser.Interfaces
         Task<double> GetStaminaMultiplierAsync(int itemLevel, CombatRatingMultiplayerType staminaRatingType);
         Task<List<SimcRawSpellConduitRankEntry>> GetSpellConduitRanksAsync(uint spellId);
         Task<uint> GetSpellConduitSpellIdAsync(uint conduitId);
+        Task<SimcRawItemEffect> GetItemEffectAsync(uint itemEffectId);
     }
 }

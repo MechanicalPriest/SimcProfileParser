@@ -44,7 +44,7 @@ namespace SimcProfileParser.DataSync
                 RawFiles = new Dictionary<string, string>()
                 {
                     { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc" },
-                    { "ItemEffect.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
                 }
             });
 
@@ -55,7 +55,7 @@ namespace SimcProfileParser.DataSync
                 RawFiles = new Dictionary<string, string>()
                 {
                     { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc" },
-                    { "ItemEffect.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
                 }
             });
 
@@ -166,6 +166,26 @@ namespace SimcProfileParser.DataSync
                 RawFiles = new Dictionary<string, string>()
                 {
                     { "CovenantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/covenant_data.inc" }
+                }
+            });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "ItemEffectData.json",
+                ParsedFileType = SimcParsedFileType.ItemEffectData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                }
+            });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "GameDataVersion.json",
+                ParsedFileType = SimcParsedFileType.GameDataVersion,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "GameDataVersion.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/client_data_version.inc" }
                 }
             });
         }

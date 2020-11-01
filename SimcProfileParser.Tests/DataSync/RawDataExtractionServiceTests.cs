@@ -1,13 +1,7 @@
-﻿using Newtonsoft.Json;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using SimcProfileParser.DataSync;
-using SimcProfileParser.Interfaces.DataSync;
-using SimcProfileParser.Model.RawData;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace SimcProfileParser.Tests.DataSync
 {
@@ -83,7 +77,7 @@ namespace SimcProfileParser.Tests.DataSync
             {
                 { "ItemData.raw", @"{ 32,  6667, 0.000000 },
                      { ""Gladiator's Medallion"", 184268, 0x00081000, 0x00006000, 0x00, 1, 35, 0, 0, 0, 12, 4, 0, 1, 0, 0.000000, 0.000000, &__item_stats_data[0], 1, 0xffff, 0xaa2aaaaa4e0ab3b2, { 0, 0, 0 }, 0, 0, 1458, 0, 0 }," },
-                { "ItemEffect.raw", @"  { 135983,  42292, 184268,   0,   0, 1182,  120000,  120000 }, // PvP Trinket" }
+                { "ItemEffectData.raw", @"  { 135983,  42292, 184268,   0,   0, 1182,  120000,  120000 }, // PvP Trinket" }
             };
 
             // Act
@@ -148,12 +142,12 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "SpellData.raw", "  { \"Flash Heal\"                        ,   2061, 2, 0.000000, 0x0000000000000000, 0x00000010, 0, 0, 3, " + 
-                "0, 0, 0.000000, 40.000000,       0, 1500, 0, 0, 0,    0, 1, 0, 0, 0, 0, 0, 0, 0, 0.000000, 0, 0, " + 
-                "0, 1500, { 65536, 0, 524288, 0, 0, 0, 0, 0, 16781312, 0, 0, 0, 0, 1, 0 }, { 2048, 0, 0, 1073741824 }, 6, " + 
+                { "SpellData.raw", "  { \"Flash Heal\"                        ,   2061, 2, 0.000000, 0x0000000000000000, 0x00000010, 0, 0, 3, " +
+                "0, 0, 0.000000, 40.000000,       0, 1500, 0, 0, 0,    0, 1, 0, 0, 0, 0, 0, 0, 0, 0.000000, 0, 0, " +
+                "0, 1500, { 65536, 0, 524288, 0, 0, 0, 0, 0, 16781312, 0, 0, 0, 0, 1, 0 }, { 2048, 0, 0, 1073741824 }, 6, " +
                 "0x80000000,  0,   0,  0, 0, 0, 0, 0, 1, 1, 1, 1 }, /* 613 */\r\n" +
-                @"  {    613,   2061,  0,  10,   0, 0.000000, 0.050000, 0.000000, 2.030000, " + 
-                "0.000000, 0, 0.000000, 0.000000,      0.0000, 0, 0, { 0, 0, 0, 0 }, 0, 1.000000, " + 
+                @"  {    613,   2061,  0,  10,   0, 0.000000, 0.050000, 0.000000, 2.030000, " +
+                "0.000000, 0, 0.000000, 0.000000,      0.0000, 0, 0, { 0, 0, 0, 0 }, 0, 1.000000, " +
                 "0.000000, 0.000000,  0,   0, 21, 0, 1.000000, 1.000000, 0, 0 },\r\n" +
                 "  {    154,   2061,       0,   0,     0,    0, 0,   3.600,   0.000,   0.000 }," }
             };
@@ -428,6 +422,56 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.AreEqual(41, firstResult.ConduitId, "Conduit Id");
             Assert.AreEqual(10.000000, firstResult.Value, "Value");
             Assert.AreEqual(0, firstResult.Rank, "Rank");
+        }
+
+        [Test]
+        public void RDE_Generates_ItemEffectData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ItemEffectData.raw", @"  { 135983,  42292, 184268,   0,   0, 1182,  120000,  120000 }, // PvP Trinket" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateItemEffectData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(135983, firstResult.Id, "Id");
+            Assert.AreEqual(42292, firstResult.SpellId, "Spell Id");
+            Assert.AreEqual(184268, firstResult.ItemId, "Id");
+            Assert.AreEqual(0, firstResult.Index, "Index");
+            Assert.AreEqual(0, firstResult.Type, "Type");
+            Assert.AreEqual(1182, firstResult.CooldownGroup, "CooldownGroup");
+            Assert.AreEqual(120000, firstResult.CooldownDuration, "CooldownDuration");
+            Assert.AreEqual(120000, firstResult.CooldownGroupDuration, "CooldownGroupDuration");
+        }
+
+        [Test]
+        public void RDE_Generates_GameVersionData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "GameDataVersion.raw", "#define CLIENT_DATA_WOW_VERSION \"9.0.2.36401\"" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateGameDataVersion(incomingRawData);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("9.0.2.36401", result);
         }
     }
 }
