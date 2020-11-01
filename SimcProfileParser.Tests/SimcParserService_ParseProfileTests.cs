@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Serilog;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Profile;
+using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -105,6 +106,7 @@ namespace SimcProfileParser.Tests
         {
             // Arrange
             var race = "undead";
+            var raceId = (int)Race.Undead;
 
             // Act
 
@@ -112,6 +114,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(ParsedProfile);
             Assert.IsNotNull(ParsedProfile.Race);
             Assert.AreEqual(race, ParsedProfile.Race);
+            Assert.AreEqual(raceId, ParsedProfile.RaceId);
         }
 
         [Test]

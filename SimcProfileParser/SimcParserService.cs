@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Profile;
+using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -121,7 +122,7 @@ namespace SimcProfileParser
 
                     case "race":
                         _logger?.LogDebug($"Trying to set race ({line.Identifier}) with value: {line.Value}");
-                        profile.Race = line.Value.Trim();
+                        TryApplyRace(profile, line);
                         break;
 
                     case "region":
@@ -190,6 +191,43 @@ namespace SimcProfileParser
             _logger?.LogInformation($"Done processing profile in {runtime.ElapsedMilliseconds}ms");
 
             return profile;
+        }
+
+        private void TryApplyRace(SimcParsedProfile profile, SimcParsedLine line)
+        {
+            // Set Race and RaceId
+            profile.Race = line.Value.Trim();
+            var raceId =  (profile.Race.ToLower()) switch
+            {
+                "human" => Race.Human,
+                "orc" => Race.Orc,
+                "dwarf" => Race.Dwarf,
+                "night_elf" => Race.NightElf,
+                "undead" => Race.Undead,
+                "tauren" => Race.Tauren,
+                "gnome" => Race.Gnome,
+                "troll" => Race.Troll,
+                "goblin" => Race.Goblin,
+                "blood_elf" => Race.BloodElf,
+                "draenei" => Race.Draenei,
+                "dark_iron_dwarf" => Race.DarkIronDwarf,
+                "vulpera" => Race.Vulpera,
+                "maghar_orc" => Race.MagharOrc,
+                "mechagnome" => Race.Mechagnome,
+                "worgen" => Race.Worgen,
+                "pandaren" => Race.Pandaren,
+                "pandaren_alliance" => Race.PandarenAlliance,
+                "pandaren_horde" => Race.PandarenHorde,
+                "nightborne" => Race.Nightborne,
+                "highmountain_tauren" => Race.HighmountainTauren,
+                "void_elf" => Race.VoidElf,
+                "lightforged_draenei" => Race.LightforgedDraenei,
+                "zandalari_troll" => Race.ZandalariTroll,
+                "kul_tiran" => Race.KulTiran,
+                _ => Race.NoRace,
+            };
+
+            profile.RaceId = (int)raceId;
         }
 
         /// <summary>
