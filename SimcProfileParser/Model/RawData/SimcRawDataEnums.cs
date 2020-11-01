@@ -423,4 +423,22 @@
         ZandalariTroll,
         KulTiran,
     }
+
+    public enum Class
+    {
+        // From player_e in sc_enums.hpp
+        None = 0,
+        Warrior,
+        Paladin,
+        Hunter,
+        Rogue,
+        Priest,
+        DeathKnight,
+        Shaman,
+        Mage,
+        Warlock,
+        Monk,
+        Druid,
+        DemonHunter,
+    }
 }

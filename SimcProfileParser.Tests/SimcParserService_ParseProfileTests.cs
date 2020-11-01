@@ -254,6 +254,7 @@ namespace SimcProfileParser.Tests
         {
             // Arrange
             var className = "priest";
+            var classId = 5;
 
             // Act
 
@@ -261,6 +262,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(ParsedProfile);
             Assert.IsNotNull(ParsedProfile.Class);
             Assert.AreEqual(className, ParsedProfile.Class);
+            Assert.AreEqual(classId, ParsedProfile.ClassId);
         }
 
         [Test]

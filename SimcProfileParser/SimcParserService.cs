@@ -110,9 +110,14 @@ namespace SimcProfileParser
                     case "druid":
                     case "rogue":
                     case "mage":
+                    case "deathknight":
+                    case "demonhunter":
+                    case "hunter":
+                    case "warlock":
+                    case "warrior":
                         _logger?.LogDebug($"Setting player name for class ({line.Identifier}) with value: {line.Value}");
                         profile.Name = line.Value.Trim().Trim('"');
-                        profile.Class = line.Identifier.Trim();
+                        TryApplyClass(profile, line.Identifier.Trim());
                         break;
 
                     case "level":
@@ -191,6 +196,28 @@ namespace SimcProfileParser
             _logger?.LogInformation($"Done processing profile in {runtime.ElapsedMilliseconds}ms");
 
             return profile;
+        }
+
+        private void TryApplyClass(SimcParsedProfile profile, string classValue)
+        {
+            profile.Class = classValue;
+            var classId = (classValue) switch
+            {
+                "priest" => Class.Priest,
+                "paladin" => Class.Paladin,
+                "monk" => Class.Monk,
+                "shaman" => Class.Shaman,
+                "druid" => Class.Druid,
+                "rogue" => Class.Rogue,
+                "mage" => Class.Mage,
+                "deathknight" => Class.DeathKnight,
+                "demonhunter" => Class.DemonHunter,
+                "hunter" => Class.Hunter,
+                "warlock" => Class.Warlock,
+                "warrior" => Class.Warrior,
+                _ => Class.None
+            };
+            profile.ClassId = (int)classId;
         }
 
         private void TryApplyRace(SimcParsedProfile profile, SimcParsedLine line)
