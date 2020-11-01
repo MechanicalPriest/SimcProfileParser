@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using SimcProfileParser.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser

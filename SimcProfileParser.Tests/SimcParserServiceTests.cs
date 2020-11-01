@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 using Serilog;
 using SimcProfileParser.Interfaces;
-using SimcProfileParser.Model.Profile;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;

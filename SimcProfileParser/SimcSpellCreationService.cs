@@ -3,7 +3,6 @@ using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser
@@ -89,7 +88,7 @@ namespace SimcProfileParser
             };
 
             // Add power costs
-            foreach(var power in spellData.SpellPowers)
+            foreach (var power in spellData.SpellPowers)
             {
                 itemSpell.PowerCosts.Add(power.AuraId, power.PercentCost);
             }
@@ -139,7 +138,7 @@ namespace SimcProfileParser
             // Add the conduit info
             var conduitRanks = await _simcUtilityService.GetSpellConduitRanksAsync(spellData.Id);
 
-            foreach(var rank in conduitRanks)
+            foreach (var rank in conduitRanks)
             {
                 if (itemSpell.ConduitId == 0)
                     itemSpell.ConduitId = rank.ConduitId;

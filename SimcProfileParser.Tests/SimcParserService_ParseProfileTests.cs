@@ -2,14 +2,11 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Serilog;
-using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Profile;
 using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests

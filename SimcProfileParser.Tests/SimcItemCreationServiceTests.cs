@@ -4,7 +4,6 @@ using Serilog;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
-using SimcProfileParser.Model;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 using SimcProfileParser.Model.RawData;
@@ -12,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests

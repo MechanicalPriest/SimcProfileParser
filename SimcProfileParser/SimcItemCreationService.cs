@@ -143,7 +143,7 @@ namespace SimcProfileParser
         {
             var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
 
-            foreach(var effect in rawItemData.ItemEffects)
+            foreach (var effect in rawItemData.ItemEffects)
             {
                 await AddSpellEffectAsync(item, effect);
             }
@@ -402,14 +402,14 @@ namespace SimcProfileParser
         {
             // Try to add effect
             var itemEffect = await _simcUtilityService.GetItemEffectAsync((uint)effectId);
-            
-            if(itemEffect == null)
+
+            if (itemEffect == null)
                 _logger?.LogError($"No item effect found when adding {effectId} to {item.ItemId}");
 
             _logger?.LogError($"Adding item effect {effectId} to {item.ItemId} (SpellId: {itemEffect.SpellId})");
             await AddSpellEffectAsync(item, itemEffect);
 
-            
+
         }
     }
 }

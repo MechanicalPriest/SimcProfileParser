@@ -5,7 +5,6 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -685,7 +684,7 @@ namespace SimcProfileParser.DataSync
                 }
             }
 
-            
+
             foreach (var spell in spells)
             {
                 // Add the spell effects to spells

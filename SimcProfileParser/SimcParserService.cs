@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Profile;
 using SimcProfileParser.Model.RawData;
@@ -210,7 +209,7 @@ namespace SimcProfileParser
             switch ((Class)profile.ClassId)
             {
                 case Class.Priest:
-                    if(profile.Spec == "discipline")
+                    if (profile.Spec == "discipline")
                         specId = Specialisation.PRIEST_DISCIPLINE;
                     if (profile.Spec == "holy")
                         specId = Specialisation.PRIEST_HOLY;
@@ -351,7 +350,7 @@ namespace SimcProfileParser
         {
             // Set Race and RaceId
             profile.Race = line.Value.Trim();
-            var raceId =  (profile.Race.ToLower()) switch
+            var raceId = (profile.Race.ToLower()) switch
             {
                 "human" => Race.Human,
                 "orc" => Race.Orc,
@@ -511,13 +510,13 @@ namespace SimcProfileParser
                 var soulbindName = line.Value.Split(',').FirstOrDefault();
                 if (soulbindName.Length > 0)
                 {
-                    if(soulbindName.Contains(':'))
+                    if (soulbindName.Contains(':'))
                     {
                         var soulbindNameParts = soulbindName.Split(':');
                         result.Name = soulbindNameParts[0];
                         result.SoulbindId = Convert.ToInt32(soulbindNameParts[1]);
                     }
-                    else 
+                    else
                         result.Name = soulbindName;
                 }
                 else
