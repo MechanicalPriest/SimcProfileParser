@@ -164,6 +164,7 @@ namespace SimcProfileParser.Tests
         {
             // Arrange
             var spec = "holy";
+            var specId = 257;
 
             // Act
 
@@ -171,6 +172,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(ParsedProfile);
             Assert.IsNotNull(ParsedProfile.Spec);
             Assert.AreEqual(spec, ParsedProfile.Spec);
+            Assert.AreEqual(specId, ParsedProfile.SpecId);
         }
 
         [Test]

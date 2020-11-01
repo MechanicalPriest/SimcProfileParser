@@ -20,6 +20,7 @@ namespace SimcProfileParser.Model.Profile
         public string Class { get; internal set; }
         public int ClassId { get; internal set; }
         public string Spec { get; internal set; }
+        public int SpecId { get; internal set; }
         public string Name { get; internal set; }
         public int Level { get; internal set; }
         public string Race { get; internal set; }

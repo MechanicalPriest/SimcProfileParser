@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Profile;
 using SimcProfileParser.Model.RawData;
@@ -192,10 +193,136 @@ namespace SimcProfileParser
                 }
             }
 
+            // Call this last in case the class line is after the spec line.
+            TryApplySpecId(profile);
+
             runtime.Stop();
             _logger?.LogInformation($"Done processing profile in {runtime.ElapsedMilliseconds}ms");
 
             return profile;
+        }
+
+        private void TryApplySpecId(SimcParsedProfile profile)
+        {
+            var specId = Specialisation.SPEC_NONE;
+
+            // from specialization_string in sc_const_data.cpp
+            switch ((Class)profile.ClassId)
+            {
+                case Class.Priest:
+                    if(profile.Spec == "discipline")
+                        specId = Specialisation.PRIEST_DISCIPLINE;
+                    if (profile.Spec == "holy")
+                        specId = Specialisation.PRIEST_HOLY;
+                    if (profile.Spec == "shadow")
+                        specId = Specialisation.PRIEST_SHADOW;
+                    break;
+
+                case Class.Warrior:
+                    if (profile.Spec == "arms")
+                        specId = Specialisation.WARRIOR_ARMS;
+                    if (profile.Spec == "fury")
+                        specId = Specialisation.WARRIOR_FURY;
+                    if (profile.Spec == "protection")
+                        specId = Specialisation.WARRIOR_PROTECTION;
+                    break;
+
+                case Class.Paladin:
+                    if (profile.Spec == "holy")
+                        specId = Specialisation.PALADIN_HOLY;
+                    if (profile.Spec == "protection")
+                        specId = Specialisation.PALADIN_PROTECTION;
+                    if (profile.Spec == "retribution")
+                        specId = Specialisation.PALADIN_RETRIBUTION;
+                    break;
+
+                case Class.Hunter:
+                    if (profile.Spec == "beast_mastery")
+                        specId = Specialisation.HUNTER_BEAST_MASTERY;
+                    if (profile.Spec == "marksmanship")
+                        specId = Specialisation.HUNTER_MARKSMANSHIP;
+                    if (profile.Spec == "survival")
+                        specId = Specialisation.HUNTER_SURVIVAL;
+                    break;
+
+                case Class.Rogue:
+                    if (profile.Spec == "assassination")
+                        specId = Specialisation.ROGUE_ASSASSINATION;
+                    if (profile.Spec == "outlaw")
+                        specId = Specialisation.ROGUE_OUTLAW;
+                    if (profile.Spec == "subtlety")
+                        specId = Specialisation.ROGUE_SUBTLETY;
+                    break;
+
+                case Class.DeathKnight:
+                    if (profile.Spec == "blood")
+                        specId = Specialisation.DEATH_KNIGHT_BLOOD;
+                    if (profile.Spec == "frost")
+                        specId = Specialisation.DEATH_KNIGHT_FROST;
+                    if (profile.Spec == "unholy")
+                        specId = Specialisation.DEATH_KNIGHT_UNHOLY;
+                    break;
+
+                case Class.Shaman:
+                    if (profile.Spec == "elemental")
+                        specId = Specialisation.SHAMAN_ELEMENTAL;
+                    if (profile.Spec == "enhancement")
+                        specId = Specialisation.SHAMAN_ENHANCEMENT;
+                    if (profile.Spec == "restoration")
+                        specId = Specialisation.SHAMAN_RESTORATION;
+                    break;
+
+                case Class.Mage:
+                    if (profile.Spec == "arcane")
+                        specId = Specialisation.MAGE_ARCANE;
+                    if (profile.Spec == "fire")
+                        specId = Specialisation.MAGE_FIRE;
+                    if (profile.Spec == "frost")
+                        specId = Specialisation.MAGE_FROST;
+                    break;
+
+                case Class.Warlock:
+                    if (profile.Spec == "affliction")
+                        specId = Specialisation.WARLOCK_AFFLICTION;
+                    if (profile.Spec == "demonology")
+                        specId = Specialisation.WARLOCK_DEMONOLOGY;
+                    if (profile.Spec == "destruction")
+                        specId = Specialisation.WARLOCK_DESTRUCTION;
+                    break;
+
+                case Class.Monk:
+                    if (profile.Spec == "brewmaster")
+                        specId = Specialisation.MONK_BREWMASTER;
+                    if (profile.Spec == "mistweaver")
+                        specId = Specialisation.MONK_MISTWEAVER;
+                    if (profile.Spec == "windwalker")
+                        specId = Specialisation.MONK_WINDWALKER;
+                    break;
+
+                case Class.Druid:
+                    if (profile.Spec == "balance")
+                        specId = Specialisation.DRUID_BALANCE;
+                    if (profile.Spec == "feral")
+                        specId = Specialisation.DRUID_FERAL;
+                    if (profile.Spec == "guardian")
+                        specId = Specialisation.DRUID_GUARDIAN;
+                    if (profile.Spec == "restoration")
+                        specId = Specialisation.DRUID_RESTORATION;
+                    break;
+
+                case Class.DemonHunter:
+                    if (profile.Spec == "havoc")
+                        specId = Specialisation.DEMON_HUNTER_HAVOC;
+                    if (profile.Spec == "vengeance")
+                        specId = Specialisation.DEMON_HUNTER_VENGEANCE;
+                    break;
+
+                case Class.None:
+                default:
+                    break;
+            }
+
+            profile.SpecId = (int)specId;
         }
 
         private void TryApplyClass(SimcParsedProfile profile, string classValue)
