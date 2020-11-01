@@ -63,7 +63,7 @@ namespace SimcProfileParser.Tests
             // Arrange
 
             // Load a data file
-            var testFile = @"RawData" + Path.DirectorySeparatorChar + "Ardaysauk.simc";
+            var testFile = @"RawData" + Path.DirectorySeparatorChar + "Alfouhk.simc";
             var testFileContents = await File.ReadAllLinesAsync(testFile);
             var testFileString = new List<string>(testFileContents);
 

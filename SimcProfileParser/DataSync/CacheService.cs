@@ -44,7 +44,7 @@ namespace SimcProfileParser.DataSync
                 RawFiles = new Dictionary<string, string>()
                 {
                     { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc" },
-                    { "ItemEffect.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
                 }
             });
 
@@ -55,7 +55,7 @@ namespace SimcProfileParser.DataSync
                 RawFiles = new Dictionary<string, string>()
                 {
                     { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc" },
-                    { "ItemEffect.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
                 }
             });
 
