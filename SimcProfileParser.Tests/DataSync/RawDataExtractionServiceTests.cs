@@ -459,5 +459,25 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.AreEqual(120000, firstResult.CooldownDuration, "CooldownDuration");
             Assert.AreEqual(120000, firstResult.CooldownGroupDuration, "CooldownGroupDuration");
         }
+
+        [Test]
+        public void RDE_Generates_GameVersionData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "GameDataVersion.raw", "#define CLIENT_DATA_WOW_VERSION \"9.0.2.36401\"" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateGameDataVersion(incomingRawData);
+            
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("9.0.2.36401", result);
+        }
     }
 }

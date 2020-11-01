@@ -11,5 +11,7 @@ namespace SimcProfileParser.Interfaces
 
         Task<SimcItem> GenerateItemAsync(SimcItemOptions options);
         Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options);
+
+        Task<string> GetGameDataVersionAsync();
     }
 }

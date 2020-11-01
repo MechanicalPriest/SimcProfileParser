@@ -4,6 +4,7 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -109,6 +110,19 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
             Assert.AreEqual(95, spell.ScaleBudget);
+        }
+
+        [Test]
+        public async Task SGS_Gets_Game_Version()
+        {
+            // Arrange
+
+            // Act
+            var version = await _sgs.GetGameDataVersionAsync();
+
+            // Assert
+            Assert.IsNotNull(version);
+            Assert.AreEqual("9.", version.Substring(0, 2));
         }
     }
 }

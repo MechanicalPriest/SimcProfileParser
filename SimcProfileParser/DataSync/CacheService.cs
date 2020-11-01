@@ -178,6 +178,16 @@ namespace SimcProfileParser.DataSync
                     { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
                 }
             });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "GameDataVersion.json",
+                ParsedFileType = SimcParsedFileType.GameDataVersion,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "GameDataVersion.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/client_data_version.inc" }
+                }
+            });
         }
 
         /// <summary>

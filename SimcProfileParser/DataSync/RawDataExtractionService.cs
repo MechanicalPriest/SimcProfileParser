@@ -43,6 +43,7 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.RppmData => GenerateRppmData(incomingRawData),
                 SimcParsedFileType.CovenantData => GenerateConduitRankData(incomingRawData),
                 SimcParsedFileType.ItemEffectData => GenerateItemEffectData(incomingRawData),
+                SimcParsedFileType.GameDataVersion => GenerateGameDataVersion(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -1132,6 +1133,29 @@ namespace SimcProfileParser.DataSync
             }
 
             return conduitRankEntries;
+        }
+
+        internal string GenerateGameDataVersion(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "GameDataVersion.raw").FirstOrDefault().Value;
+
+            var lines = rawData.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var gameDataVersion = "";
+
+            foreach (var line in lines)
+            {
+                var key = "#define CLIENT_DATA_WOW_VERSION ";
+                if (line.StartsWith(key))
+                {
+                    gameDataVersion = line.Substring(key.Length).Trim('"');
+                }
+            }
+
+            return gameDataVersion;
         }
     }
 }

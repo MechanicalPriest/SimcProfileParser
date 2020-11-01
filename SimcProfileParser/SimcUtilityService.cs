@@ -460,5 +460,12 @@ namespace SimcProfileParser
 
             return result;
         }
+
+        public async Task<string> GetClientDataVersionAsync()
+        {
+            var clientDataVersion = await _cacheService.GetParsedFileContentsAsync<string>(SimcParsedFileType.GameDataVersion);
+
+            return clientDataVersion;
+        }
     }
 }

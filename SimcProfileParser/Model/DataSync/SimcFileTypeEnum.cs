@@ -15,6 +15,7 @@
         CurvePoints,
         RppmData,
         CovenantData,
-        ItemEffectData
+        ItemEffectData,
+        GameDataVersion
     }
 }
