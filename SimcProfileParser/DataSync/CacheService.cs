@@ -168,6 +168,16 @@ namespace SimcProfileParser.DataSync
                     { "CovenantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/covenant_data.inc" }
                 }
             });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "ItemEffectData.json",
+                ParsedFileType = SimcParsedFileType.ItemEffectData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                }
+            });
         }
 
         /// <summary>

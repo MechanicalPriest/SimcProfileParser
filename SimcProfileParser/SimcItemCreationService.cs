@@ -143,10 +143,13 @@ namespace SimcProfileParser
         {
             var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
 
-            await AddSpellEffectsAsync(item, rawItemData.ItemEffects);
+            foreach(var effect in rawItemData.ItemEffects)
+            {
+                await AddSpellEffectAsync(item, effect);
+            }
         }
 
-        private async Task AddSpellEffectsAsync(SimcItem item, List<SimcRawItemEffect> itemEffects)
+        private async Task AddSpellEffectAsync(SimcItem item, SimcRawItemEffect effect)
         {
             // Note: there is a similar process inside this method:
             // double spelleffect_data_t::average( const player_t* p, unsigned level ) const
@@ -154,21 +157,18 @@ namespace SimcProfileParser
             // This is for things like racial abilities and uses a simpler formula
             // It does use the spell scaling array values, which we already have.
 
-            foreach (var effect in itemEffects)
+            var effectSpell = await _simcSpellCreationService.GenerateItemSpellAsync(item, effect.SpellId);
+
+            var newEffect = new SimcItemEffect
             {
-                var effectSpell = await _simcSpellCreationService.GenerateItemSpellAsync(item, effect.SpellId);
+                EffectId = effect.Id,
+                CooldownDuration = effect.CooldownDuration,
+                CooldownGroup = effect.CooldownGroup,
+                CooldownGroupDuration = effect.CooldownGroupDuration,
+                Spell = effectSpell
+            };
 
-                var newEffect = new SimcItemEffect
-                {
-                    EffectId = effect.Id,
-                    CooldownDuration = effect.CooldownDuration,
-                    CooldownGroup = effect.CooldownGroup,
-                    CooldownGroupDuration = effect.CooldownGroupDuration,
-                    Spell = effectSpell
-                };
-
-                item.Effects.Add(newEffect);
-            }
+            item.Effects.Add(newEffect);
         }
 
         internal async Task AddGemsAsync(SimcItem item, IList<int> gemIds)
@@ -256,7 +256,7 @@ namespace SimcProfileParser
 
                         case ItemBonusType.ITEM_BONUS_ADD_ITEM_EFFECT:
                             _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding effect {entry.Value1}");
-                            AddItemEffect(item, entry.Value1);
+                            await AddItemEffect(item, entry.Value1);
                             break;
 
                         case ItemBonusType.ITEM_BONUS_SCALING_2:
@@ -398,9 +398,18 @@ namespace SimcProfileParser
             item.ItemLevel += newItemLevel;
         }
 
-        internal void AddItemEffect(SimcItem item, int effectId)
+        internal async Task AddItemEffect(SimcItem item, int effectId)
         {
-            _logger?.LogError($"No item effect found when adding {effectId} to {item.ItemId}");
+            // Try to add effect
+            var itemEffect = await _simcUtilityService.GetItemEffectAsync((uint)effectId);
+            
+            if(itemEffect == null)
+                _logger?.LogError($"No item effect found when adding {effectId} to {item.ItemId}");
+
+            _logger?.LogError($"Adding item effect {effectId} to {item.ItemId} (SpellId: {itemEffect.SpellId})");
+            await AddSpellEffectAsync(item, itemEffect);
+
+            
         }
     }
 }

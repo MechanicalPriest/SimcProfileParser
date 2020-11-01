@@ -451,5 +451,14 @@ namespace SimcProfileParser
 
             return result.SpellId;
         }
+
+        public async Task<SimcRawItemEffect> GetItemEffectAsync(uint itemEffectId)
+        {
+            var itemEffects = await _cacheService.GetParsedFileContentsAsync<List<SimcRawItemEffect>>(SimcParsedFileType.ItemEffectData);
+
+            var result = itemEffects.Where(e => e.Id == itemEffectId).ToList().FirstOrDefault();
+
+            return result;
+        }
     }
 }

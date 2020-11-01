@@ -429,5 +429,35 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.AreEqual(10.000000, firstResult.Value, "Value");
             Assert.AreEqual(0, firstResult.Rank, "Rank");
         }
+
+        [Test]
+        public void RDE_Generates_ItemEffectData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ItemEffect.raw", @"  { 135983,  42292, 184268,   0,   0, 1182,  120000,  120000 }, // PvP Trinket" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateItemEffectData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(135983, firstResult.Id, "Id");
+            Assert.AreEqual(42292, firstResult.SpellId, "Spell Id");
+            Assert.AreEqual(184268, firstResult.ItemId, "Id");
+            Assert.AreEqual(0, firstResult.Index, "Index");
+            Assert.AreEqual(0, firstResult.Type, "Type");
+            Assert.AreEqual(1182, firstResult.CooldownGroup, "CooldownGroup");
+            Assert.AreEqual(120000, firstResult.CooldownDuration, "CooldownDuration");
+            Assert.AreEqual(120000, firstResult.CooldownGroupDuration, "CooldownGroupDuration");
+        }
     }
 }

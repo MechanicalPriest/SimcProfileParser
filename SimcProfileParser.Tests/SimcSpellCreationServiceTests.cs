@@ -167,9 +167,8 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.PowerCosts);
             Assert.LessOrEqual(2, spell.PowerCosts.Count);
-            Assert.LessOrEqual(1.2, spell.PowerCosts.Skip(1).First().Value);
-            Assert.LessOrEqual(137031, spell.PowerCosts.Skip(1).First().Key);
-
+            Assert.AreEqual(0.3, spell.PowerCosts.Skip(1).First().Value);
+            Assert.AreEqual(137031, spell.PowerCosts.Skip(1).First().Key);
         }
 
         [Test]
@@ -188,7 +187,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell.ConduitRanks);
             Assert.AreEqual(270, spell.ConduitId);
             Assert.IsNotNull(firstConduitRank);
-            Assert.AreEqual(10, firstConduitRank.Value);
+            Assert.AreEqual(15, firstConduitRank.Value);
             Assert.AreEqual(0, firstConduitRank.Key);
         }
 
