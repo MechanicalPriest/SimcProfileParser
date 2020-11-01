@@ -27,6 +27,7 @@ namespace SimcProfileParser
             services.TryAddSingleton<ISimcUtilityService, SimcUtilityService>();
             services.TryAddSingleton<ISimcSpellCreationService, SimcSpellCreationService>();
             services.TryAddSingleton<ISimcItemCreationService, SimcItemCreationService>();
+            services.TryAddSingleton<ISimcVersionService, SimcVersionService>();
 
             return services;
         }
