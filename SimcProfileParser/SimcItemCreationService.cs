@@ -235,32 +235,39 @@ namespace SimcProfileParser
                     switch (entry.Type)
                     {
                         case ItemBonusType.ITEM_BONUS_ILEVEL:
-                            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding {entry.Value1} ilvl to {item.ItemLevel} => {item.ItemLevel + entry.Value1}");
+                            if (bonusIds.Contains(6652))
+                            {
+                                _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} SKIPPING adding {entry.Value1} " +
+                                    $"ilvl to {item.ItemLevel} => {item.ItemLevel + entry.Value1} due to presence of bonusId 6652 (bug #68.)");
+                                break; // Bug fix for Simc#5490 (#68) - invalid item scaling on unnatural items
+                            }
+
+                            _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adding {entry.Value1} ilvl to {item.ItemLevel} => {item.ItemLevel + entry.Value1}");
                             AddItemLevel(item, entry.Value1);
                             break;
 
                         case ItemBonusType.ITEM_BONUS_MOD:
-                            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding {entry.Value1} with more alloc: {entry.Value2}");
+                            _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adding {entry.Value1} with more alloc: {entry.Value2}");
                             AddItemMod(item, (ItemModType)entry.Value1, entry.Value2);
                             break;
 
                         case ItemBonusType.ITEM_BONUS_QUALITY:
-                            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adjusting quality from {item.Quality} to {(ItemQuality)entry.Value1} ({entry.Value1})");
+                            _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adjusting quality from {item.Quality} to {(ItemQuality)entry.Value1} ({entry.Value1})");
                             SetItemQuality(item, (ItemQuality)entry.Value1);
                             break;
 
                         case ItemBonusType.ITEM_BONUS_SOCKET:
-                            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding {entry.Value1} sockets of type {entry.Value2}");
+                            _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adding {entry.Value1} sockets of type {entry.Value2}");
                             AddItemSockets(item, entry.Value1, (ItemSocketColor)entry.Value2);
                             break;
 
                         case ItemBonusType.ITEM_BONUS_ADD_ITEM_EFFECT:
-                            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding effect {entry.Value1}");
+                            _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adding effect {entry.Value1}");
                             await AddItemEffect(item, entry.Value1);
                             break;
 
                         case ItemBonusType.ITEM_BONUS_SCALING_2:
-                            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding item scaling {entry.Value4} from {dropLevel}");
+                            _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adding item scaling {entry.Value4} from {dropLevel}");
                             await AddBonusScalingAsync(item, entry.Value4, dropLevel);
                             break;
 
@@ -271,7 +278,7 @@ namespace SimcProfileParser
 
                         default:
                             var entryString = JsonConvert.SerializeObject(entry);
-                            _logger?.LogTrace($"[{item.ItemId}] Unknown bonus entry: {entry.Type} ({bonusId}): {entryString}");
+                            _logger?.LogTrace($"[{item.ItemId}] [{bonusId}:{entry.Type}] Unknown bonus entry: {entry.Type} ({bonusId}): {entryString}");
                             break;
                     }
                 }
@@ -408,8 +415,6 @@ namespace SimcProfileParser
 
             _logger?.LogError($"Adding item effect {effectId} to {item.ItemId} (SpellId: {itemEffect.SpellId})");
             await AddSpellEffectAsync(item, itemEffect);
-
-
         }
     }
 }
