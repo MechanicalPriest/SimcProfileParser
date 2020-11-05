@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.Extensions.Logging;
+using NUnit.Framework;
+using Serilog;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
 using System.Collections.Generic;
@@ -16,7 +18,18 @@ namespace SimcProfileParser.Tests
         [OneTimeSetUp]
         public async Task Init()
         {
-            _sgs = new SimcGenerationService();
+            // Configure Logging
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .Enrich.FromLogContext()
+                .WriteTo.File("logs" + Path.DirectorySeparatorChar + "SimcProfileParser.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+            var loggerFactory = LoggerFactory.Create(builder => builder
+                .AddSerilog()
+                .AddFilter(level => level >= LogLevel.Trace));
+
+            _sgs = new SimcGenerationService(loggerFactory);
 
             var testFile = @"RawData" + Path.DirectorySeparatorChar + "Ardaysauk.simc";
             var testFileContents = await File.ReadAllLinesAsync(testFile);
