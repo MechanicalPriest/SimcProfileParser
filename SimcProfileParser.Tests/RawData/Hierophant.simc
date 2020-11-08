@@ -34,7 +34,7 @@ finger2=,id=178293,bonus_id=6788/1487/6646
 trinket1=,id=178783,bonus_id=6805/40/1472/4785
 trinket2=,id=177157,bonus_id=6938/603,drop_level=50
 main_hand=,id=183435,bonus_id=6795/1507/6646
-off_hand=,id=178478,bonus_id=7150/1507/6646
+off_hand=,id=178478,bonus_id=7150/1507/6646,ilevel=190
 
 ### Gear from Bags
 #

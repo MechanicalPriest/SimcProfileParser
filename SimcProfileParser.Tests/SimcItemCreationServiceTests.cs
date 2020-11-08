@@ -305,8 +305,6 @@ namespace SimcProfileParser.Tests
                 async () => await _ics.CreateItemAsync(parsedData));
         }
 
-
-
         [Test]
         public void ICS_Options_Invalid_ItemId_Throws()
         {
@@ -325,6 +323,31 @@ namespace SimcProfileParser.Tests
             // Assert 
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(
                 async () => await _ics.CreateItemAsync(itemOptions));
+        }
+
+        [Test]
+        public async Task ICS_Ilevel_Forces_Item_Level()
+        {
+            // Arrange
+            var itemOptions = new SimcParsedItem()
+            {
+                Slot = "off_hand",
+                ItemId = 178478,
+                BonusIds = new List<int>()
+                {
+                    7150, 1507, 6646
+                },
+                Equipped = true,
+                ItemLevel = 138
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert 
+            Assert.IsNotNull(item);
+            Assert.AreEqual(178478, item.ItemId);
+            Assert.AreEqual(138, item.ItemLevel);
         }
     }
 }

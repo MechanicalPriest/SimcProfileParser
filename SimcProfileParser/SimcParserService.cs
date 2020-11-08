@@ -720,6 +720,16 @@ namespace SimcProfileParser
 
                         break;
 
+                    case "ilevel":
+                        if (!int.TryParse(kvp[1], out int itemLevel))
+                        {
+                            _logger?.LogWarning($"Unable to get ilevel ({part}) from string {line.RawLine}");
+                            continue;
+                        }
+                        itemResult.ItemLevel = itemLevel;
+
+                        break;
+
                     default:
                         break;
                 }

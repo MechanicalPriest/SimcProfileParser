@@ -9,6 +9,7 @@ namespace SimcProfileParser.Model.Generated
         public string Name { get; internal set; }
 
         public int ItemLevel { get; internal set; }
+        public bool ItemLevelForced { get; internal set; }
         public bool Equipped { get; internal set; }
         public ItemQuality Quality { get; internal set; }
 
@@ -29,6 +30,7 @@ namespace SimcProfileParser.Model.Generated
             Sockets = new List<ItemSocketColor>();
             InventoryType = InventoryType.INVTYPE_NON_EQUIP;
             ItemClass = ItemClass.ITEM_CLASS_MISC; // Not a great default but at least its not used
+            ItemLevelForced = false;
         }
     }
 }
