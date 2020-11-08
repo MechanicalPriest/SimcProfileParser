@@ -39,6 +39,13 @@ namespace SimcProfileParser
                 throw new ArgumentOutOfRangeException(
                     nameof(parsedItemData.ItemId), $"ItemId not found: {parsedItemData.ItemId}");
 
+            // Force item level if provided with ilevel=
+            if(parsedItemData.ItemLevel > 0)
+            {
+                AddItemLevel(item, parsedItemData.ItemLevel - item.ItemLevel);
+                item.ItemLevelForced = true;
+            }
+
             await UpdateItemAsync(item,
                 parsedItemData.BonusIds.ToList(),
                 parsedItemData.GemIds.ToList(),
@@ -235,6 +242,12 @@ namespace SimcProfileParser
                     switch (entry.Type)
                     {
                         case ItemBonusType.ITEM_BONUS_ILEVEL:
+                            if(item.ItemLevelForced)
+                            {
+                                _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} SKIPPING adding {entry.Value1} " +
+                                    $"ilvl to {item.ItemLevel} => {item.ItemLevel + entry.Value1} due to item level being forced through ilevel=");
+                                break;
+                            }
                             if (bonusIds.Contains(6652))
                             {
                                 _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} SKIPPING adding {entry.Value1} " +
@@ -267,6 +280,12 @@ namespace SimcProfileParser
                             break;
 
                         case ItemBonusType.ITEM_BONUS_SCALING_2:
+                            if (item.ItemLevelForced)
+                            {
+                                _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} SKIPPING adding {entry.Value1} " +
+                                    $"ilvl to {item.ItemLevel} => {item.ItemLevel + entry.Value1} due to item level being forced through ilevel=");
+                                break;
+                            }
                             _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adding item scaling {entry.Value4} from {dropLevel}");
                             await AddBonusScalingAsync(item, entry.Value4, dropLevel);
                             break;

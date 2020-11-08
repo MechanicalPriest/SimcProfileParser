@@ -388,5 +388,35 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(expectedItem, actualItem);
 
         }
+
+
+        [Test]
+        public void SPS_Parses_ItemLevelSpecific()
+        {
+            // Arrange
+            // back=,id=178301,enchant_id=6204,bonus_id=6788/1487/6646
+            var sixteenthItem = new SimcParsedItem()
+            {
+                Slot = "off_hand",
+                ItemId = 178478,
+                BonusIds = new List<int>()
+                {
+                    7150, 1507, 6646
+                },
+                Equipped = true,
+                ItemLevel = 190
+            };
+
+            // Act
+            var expectedItem = JsonConvert.SerializeObject(sixteenthItem);
+            var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[15]);
+
+            // Assert
+            Assert.IsNotNull(ParsedProfile);
+            Assert.IsNotNull(ParsedProfile.Items);
+            Assert.NotZero(ParsedProfile.Items.Count);
+            Assert.AreEqual(expectedItem, actualItem);
+
+        }
     }
 }
