@@ -525,7 +525,7 @@ namespace SimcProfileParser.DataSync
                 else
                 {
 
-                    if (!line.Contains('"'))
+                    if (!line.Contains('"') || line.Split(',').Length < 20)
                         continue;
 
                     var nameSegment = line.Substring(0, line.LastIndexOf("\""));
