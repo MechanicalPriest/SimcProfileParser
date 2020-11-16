@@ -226,6 +226,7 @@ namespace SimcProfileParser.DataSync
             // If the file doesn't exist, generate it.
             if (!File.Exists(localPath))
             {
+                _logger?.LogTrace($"File [{localPath}] does not exist, generating it...");
                 await ((ICacheService)this).GenerateParsedFileAsync(fileType);
             }
 
@@ -261,6 +262,7 @@ namespace SimcProfileParser.DataSync
             var parsedData = _rawDataExtractionService.GenerateData(configuration.ParsedFileType, rawData);
             var localPath = Path.Combine(BaseFileDirectory, configuration.LocalParsedFile);
 
+            _logger?.LogTrace($"Saving parsed json data for [{configuration.ParsedFileType}] to [{localPath}]");
             await File.WriteAllTextAsync(localPath, JsonConvert.SerializeObject(parsedData));
         }
 
@@ -284,8 +286,28 @@ namespace SimcProfileParser.DataSync
             if (!File.Exists(localPath))
             {
                 var destinationRawFile = configuration.RawFiles.Where(r => r.Key == localRawFile).FirstOrDefault();
-                await DownloadFileIfChangedAsync(new Uri(destinationRawFile.Value),
+
+                _logger?.LogTrace($"Path does not exist: [{localPath}] - attempting to download file from [{destinationRawFile}].");
+
+                var downloaded = await DownloadFileIfChangedAsync(new Uri(destinationRawFile.Value),
                     new Uri(Path.Combine(BaseFileDirectory, destinationRawFile.Key)));
+
+                if (!downloaded)
+                {
+                    _logger?.LogError($"Unable to download [{destinationRawFile}] to [{localPath}]");
+                    if(Directory.Exists(BaseFileDirectory))
+                    {
+                        _logger?.LogTrace($"Listing directory contents for [{BaseFileDirectory}]");
+                        foreach(var file in Directory.GetFiles(BaseFileDirectory))
+                        {
+                            _logger?.LogTrace($"File: {file}");
+                        }
+                    }
+                    else
+                    {
+                        _logger?.LogError($"Directory does not exist: [{BaseFileDirectory}]");
+                    }
+                }
             }
 
             var data = await File.ReadAllTextAsync(localPath);
@@ -313,8 +335,9 @@ namespace SimcProfileParser.DataSync
             {
                 response = await httpClient.SendAsync(request);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger?.LogError(ex, $"Error downloading {sourceUri} to {destinationUri}");
                 return false;
             }
 
@@ -323,6 +346,11 @@ namespace SimcProfileParser.DataSync
             var eTag = eTagCacheData
                 .Where(e => e.Filename == destinationUri.LocalPath)
                 .FirstOrDefault();
+
+            if (eTag != null)
+                _logger?.LogTrace($"etag for this file is {eTag}");
+            else
+                _logger?.LogTrace($"No etag found for {destinationUri.LocalPath}");
 
             DateTime lastModified = DateTime.UtcNow;
 
@@ -340,8 +368,13 @@ namespace SimcProfileParser.DataSync
             // If the download was successful, save the etag.
             if (downloadResponse)
             {
+                _logger?.LogTrace($"Successfully downloaded {sourceUri} to {destinationUri.LocalPath}");
                 lastModified = File.GetLastWriteTimeUtc(destinationUri.LocalPath);
                 await UpdateCacheDataAsync(destinationUri.LocalPath, response.Headers.ETag.Tag, lastModified);
+            }
+            else
+            {
+                _logger?.LogError($"Failure downloading file.");
             }
 
             return downloadResponse;
@@ -359,8 +392,9 @@ namespace SimcProfileParser.DataSync
 
                 await client.DownloadFileTaskAsync(sourceUri, destinationUri.LocalPath);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger?.LogError(ex, $"Unable to DownloadFileAsync [{sourceUri}] to [{destinationUri}]");
                 return false;
             }
             return true;

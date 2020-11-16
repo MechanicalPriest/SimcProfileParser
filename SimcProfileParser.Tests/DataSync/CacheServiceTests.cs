@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.Extensions.Logging;
+using NUnit.Framework;
+using Serilog;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.DataSync;
@@ -18,10 +20,23 @@ namespace SimcProfileParser.Tests.DataSync
     [TestFixture]
     public class CacheServiceTests
     {
+        private ILoggerFactory _loggerFactory;
+
         [SetUp]
         public void Init()
         {
-            ICacheService cache = new CacheService(null, null);
+            // Configure Logging
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .Enrich.FromLogContext()
+                .WriteTo.File("logs" + Path.DirectorySeparatorChar + "SimcProfileParser.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+           _loggerFactory = LoggerFactory.Create(builder => builder
+                .AddSerilog()
+                .AddFilter(level => level >= LogLevel.Trace));
+
+            ICacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
 
             // Wipe out the directory before testing as a workaround for file access not being abstracted
             if (Directory.Exists(cache.BaseFileDirectory))
@@ -38,7 +53,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Downloads_File()
         {
             // Arrange
-            CacheService cache = new CacheService(null, null);
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
             var configuration = new CacheFileConfiguration()
             {
                 LocalParsedFile = "CombatRatingMultipliers.json",
@@ -63,7 +78,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Cache_Updates()
         {
             // Arrange
-            CacheService cache = new CacheService(null, null);
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
             var filename = "test.txt";
             var eTag = "12345";
             var fileContents = @"[" + Environment.NewLine +
@@ -88,7 +103,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Cache_Reads()
         {
             // Arrange
-            CacheService cache = new CacheService(null, null);
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
             var filename = "test.txt";
             var eTag = "12345";
             var lastModified = new DateTime(1);
@@ -109,7 +124,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Cache_Saves()
         {
             // Arrange
-            CacheService cache = new CacheService(null, null);
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
 
             // Act
             var filename = "test.txt";
