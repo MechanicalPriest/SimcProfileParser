@@ -32,7 +32,7 @@ namespace SimcProfileParser.DataSync
             _cachedFileData = new Dictionary<SimcParsedFileType, object>();
 
             BaseFileDirectory = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory, "SimcProfileParserData");
+                Path.GetTempPath(), "SimcProfileParserData");
 
             _rawDataExtractionService = rawDataExtractionService;
             _logger = logger;
