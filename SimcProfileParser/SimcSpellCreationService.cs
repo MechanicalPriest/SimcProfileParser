@@ -217,7 +217,22 @@ namespace SimcProfileParser
             else if (spellScalingClass == PlayerScaling.PLAYER_NONE)
             {
                 // This is from spelleffect_data_t::average's call to _spell->flags( spell_attribute::SX_SCALE_ILEVEL )
-                _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Spell: {spellData.Id}");
+                // and from bool flags( spell_attribute attr ) const in spell_data.hpp
+                var ilvlScaleAttribute = 354u;
+                int bit = (int)(ilvlScaleAttribute % 32u);
+                var index = ilvlScaleAttribute / 32u;
+                var mask = 1u << bit;
+
+                if (spellData.Attributes.Length > index && 
+                    (spellData.Attributes[index] & mask) != 0)
+                {
+                    var props = await _simcUtilityService.GetRandomPropsAsync(itemLevel);
+                    budget = props.DamageSecondary;
+                }
+                else
+                {
+                    _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Spell: {spellData.Id}");
+                }
             }
 
             var itemSpell = new SimcSpell()

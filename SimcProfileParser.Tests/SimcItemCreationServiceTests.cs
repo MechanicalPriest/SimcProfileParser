@@ -161,6 +161,30 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public async Task ICS_ItemOptions_Correct_iLvl_Heal_EffectScaling()
+        {
+            // Arrange
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 178809,
+                Quality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemLevel = 226
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.IsNotNull(item);
+            Assert.AreEqual(226, item.ItemLevel);
+            Assert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
+            Assert.AreEqual(178809, item.ItemId);
+            // This will make sure the scale value that's being pulled for spells with healing/damage effects is using the right
+            // item level. In this cast it's 226 = 58.
+            Assert.AreEqual(58, item.Effects[0].Spell.ScaleBudget);
+        }
+
+        [Test]
         public async Task ICS_Builds_Trinket_From_ParsedItem_Secondary_Stat_UseEffect()
         {
             // Arrange
