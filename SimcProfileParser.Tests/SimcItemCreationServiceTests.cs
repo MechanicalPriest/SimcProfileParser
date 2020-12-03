@@ -212,12 +212,12 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(item.Effects[0].Spell);
             Assert.AreEqual(336841, item.Effects[0].Spell.SpellId);
             Assert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
-            Assert.AreEqual(6000, item.Effects[0].Spell.Duration);
+            Assert.AreEqual(12000.0d, item.Effects[0].Spell.Duration);
             Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(155, item.Effects[0].Spell.ScaleBudget);
+            Assert.AreEqual(58.0d, item.Effects[0].Spell.ScaleBudget);
             Assert.IsNotNull(item.Effects[0].Spell.Effects);
             Assert.AreEqual(1, item.Effects[0].Spell.Effects.Count);
-            Assert.AreEqual(5.910356, item.Effects[1].Spell.Effects[0].Coefficient);
+            Assert.AreEqual(2.955178d, item.Effects[1].Spell.Effects[0].Coefficient);
         }
 
         [Test]
@@ -263,8 +263,8 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(item.Effects[1].Spell.Effects);
             Assert.AreEqual(2, item.Effects[1].Spell.Effects.Count);
             // Second effect's spells first effect
-            Assert.AreEqual(294.97500600000001d, item.Effects[1].Spell.Effects[0].Coefficient);
-            Assert.AreEqual(455.39999399999999d, item.Effects[1].Spell.Effects[1].Coefficient);
+            Assert.AreEqual(460.97500600000001d, item.Effects[1].Spell.Effects[0].Coefficient);
+            Assert.AreEqual(621.39996299999996d, item.Effects[1].Spell.Effects[1].Coefficient);
         }
 
         [Test]
