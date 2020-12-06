@@ -235,7 +235,7 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "ItemEnchantData.raw", @" { 5425,      0, -1,   1,  40,   0,   0, {   5,   0,   0 }, {    0,    0,    0 }, {     49,      0,      0 }, {  0.0883,  0.0000,  0.0000 }, 190868, ""+$k1 Mastery""  " }
+                { "ItemEnchantData.raw", @"  { 5425,      0, -1,   0,  40, 0, 60,   0,   0, {   5,   0,   0 }, {    0,    0,    0 }, {     49,      0,      0 }, {  0.0883,  0.0000,  0.0000 }, 190868, ""+$k1 Mastery""                      }," }
             };
 
             // Act

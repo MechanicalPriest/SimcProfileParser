@@ -205,6 +205,22 @@ namespace SimcProfileParser
             var combatRatingType = _simcUtilityService.GetCombatRatingMultiplierType(inventoryType);
             var multi = await _simcUtilityService.GetCombatRatingMultiplierAsync(itemLevel, combatRatingType);
 
+            if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE)
+            {
+                // This is some logic that azerite traits used. Seems to be used in some trinket effects too
+                // From azerite_power_t::check_combat_rating_penalty. See #77
+                foreach (var effect in spellData.Effects)
+                {
+                    if (effect.EffectSubType == 189 // 189 == A_MOD_RATING
+                        && effect.Coefficient > 0)
+                    {
+                        _logger?.LogTrace($"Changing scaling type from PLAYER_SPECIAL_SCALE (-1) to PLAYER_SPECIAL_SCALE7 (-7). Spell: {spellData.Id}");
+                        spellScalingClass = PlayerScaling.PLAYER_SPECIAL_SCALE7;
+                        break;
+                    }
+                }
+            }
+
             if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
             {
                 budget *= multi;

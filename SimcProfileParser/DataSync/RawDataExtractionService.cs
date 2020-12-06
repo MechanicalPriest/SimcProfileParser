@@ -905,11 +905,17 @@ namespace SimcProfileParser.DataSync
                 // 4 is max scaling lvl
                 enchant.MaxScalingLevel = Convert.ToUInt32(data[4]);
 
-                // 5 is max scaling lvl
-                enchant.RequiredSkill = Convert.ToUInt32(data[5]);
+                // 5 is min item lvl
+                enchant.MinItemLevel = Convert.ToUInt32(data[5]);
 
-                // 6 is max scaling lvl
-                enchant.RequiredSkillLevel = Convert.ToUInt32(data[6]);
+                // 6 is max item lvl
+                enchant.MaxItemLevel = Convert.ToUInt32(data[6]);
+
+                // 7 is max scaling lvl
+                enchant.RequiredSkill = Convert.ToUInt32(data[7]);
+
+                // 8 is max scaling lvl
+                enchant.RequiredSkillLevel = Convert.ToUInt32(data[8]);
 
                 // 7 8 9 are enchant types (item_enchant)
                 // 10 11 12 are enchant amounts
@@ -919,19 +925,19 @@ namespace SimcProfileParser.DataSync
                 {
                     var subEffect = new SimcRawItemSubEnchantment
                     {
-                        Type = Convert.ToUInt32(data[7 + i]),
-                        Amount = Convert.ToInt32(data[10 + i]),
-                        Property = Convert.ToUInt32(data[13 + i]),
-                        Coefficient = Convert.ToDouble(data[16 + i])
+                        Type = Convert.ToUInt32(data[9 + i]),
+                        Amount = Convert.ToInt32(data[12 + i]),
+                        Property = Convert.ToUInt32(data[15 + i]),
+                        Coefficient = Convert.ToDouble(data[18 + i])
                     };
                     enchant.SubEnchantments.Add(subEffect);
                 }
 
                 // 19 is spellid
-                enchant.SpellId = Convert.ToUInt32(data[19]);
+                enchant.SpellId = Convert.ToUInt32(data[21]);
 
                 // 20 is the name
-                enchant.Name = data[20].Trim('"').Trim();
+                enchant.Name = data[22].Trim('"').Trim();
 
                 enchants.Add(enchant);
             }

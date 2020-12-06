@@ -10,6 +10,8 @@ namespace SimcProfileParser.Model.RawData
         public int ScalingId { get; set; }
         public uint MinScalingLevel { get; set; }
         public uint MaxScalingLevel { get; set; }
+        public uint MinItemLevel { get; set; }
+        public uint MaxItemLevel { get; set; }
         public uint RequiredSkill { get; set; }
         public uint RequiredSkillLevel { get; set; }
         public List<SimcRawItemSubEnchantment> SubEnchantments { get; set; }

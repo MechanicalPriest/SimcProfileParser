@@ -68,6 +68,30 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public async Task SSC_Converts_OneScale_To_SevenScale()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                ItemLevel = 226,
+                SpellId = 344227,
+                ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemInventoryType = InventoryType.INVTYPE_TRINKET
+            };
+
+            // Act
+            var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.Effects);
+            Assert.AreEqual(1, spell.Effects.Count);
+            Assert.AreEqual(203.03347229957581, spell.ScaleBudget);
+            Assert.AreEqual(1.65, spell.Effects[0].Coefficient);
+            Assert.AreEqual(-1, spell.ScalingType);
+        }
+
+        [Test]
         public async Task SSC_Creates_Item_Spell_Raw_Obj()
         {
             // Arrange
