@@ -1,5 +1,9 @@
 ﻿namespace SimcProfileParser.Model.RawData
 {
+    /// <summary>
+    /// Spell Effect Data (SpellEffect.dbc)
+    /// simc: spell_data.hpp - spelleffect_data_t
+    /// </summary>
     class SimcRawSpellEffect
     {
         /// <summary>
@@ -16,6 +20,10 @@
         public uint EffectIndex { get; set; }
         public uint EffectType { get; set; }
         public uint EffectSubType { get; set; }
+        /// <summary>
+        /// Array index for gtSpellScaling.dbc. -1 means the first non-class-specific sub array, and so on, 0 disabled
+        /// </summary>
+        public int ScalingType { get; set; }
         /// <summary>
         /// Effect average spell scaling multiplier
         /// </summary>
