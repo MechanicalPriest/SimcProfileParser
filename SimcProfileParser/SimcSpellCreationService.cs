@@ -46,29 +46,11 @@ namespace SimcProfileParser
         {
             var spellData = await _simcUtilityService.GetRawSpellDataAsync(spellId);
 
-            var spellScalingClass = _simcUtilityService.GetScaleClass(spellData.ScalingType);
-
-            double budget = 0;
-
-            if (spellScalingClass != PlayerScaling.PLAYER_NONE)
-            {
-                // Cap the scaling level if needed
-                if (spellData.MaxScalingLevel > 0)
-                    playerLevel = Math.Min(playerLevel, (uint)spellData.MaxScalingLevel);
-
-                var scaleIndex = _simcUtilityService.GetClassId(spellScalingClass);
-
-                var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, (int)playerLevel);
-
-                budget = scaledValue;
-            }
-
             var itemSpell = new SimcSpell()
             {
                 SpellId = spellData.Id,
                 Name = spellData.Name,
                 School = spellData.School,
-                ScalingType = spellData.ScalingType,
                 MinRange = spellData.MinRange,
                 MaxRange = spellData.MaxRange,
                 Cooldown = spellData.Cooldown,
@@ -83,8 +65,7 @@ namespace SimcProfileParser
                 ProcChance = spellData.ProcChance,
                 InternalCooldown = spellData.InternalCooldown,
                 Rppm = spellData.Rppm,
-                CastTime = spellData.CastTime,
-                ScaleBudget = budget
+                CastTime = spellData.CastTime
             };
 
             // Add power costs
@@ -117,12 +98,32 @@ namespace SimcProfileParser
                 if (spellEffect.TriggerSpellId > 0)
                     triggerSpell = await GeneratePlayerSpellAsync(playerLevel, spellEffect.TriggerSpellId);
 
+                // Get the scale budget
+
+                var spellScalingClass = _simcUtilityService.GetScaleClass(spellEffect.ScalingType);
+
+                double budget = 0;
+
+                if (spellScalingClass != PlayerScaling.PLAYER_NONE)
+                {
+                    // Cap the scaling level if needed
+                    if (spellData.MaxScalingLevel > 0)
+                        playerLevel = Math.Min(playerLevel, (uint)spellData.MaxScalingLevel);
+
+                    var scaleIndex = _simcUtilityService.GetClassId(spellScalingClass);
+
+                    var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, (int)playerLevel);
+
+                    budget = scaledValue;
+                }
+
                 itemSpell.Effects.Add(new SimcSpellEffect()
                 {
                     Id = spellEffect.Id,
                     EffectIndex = spellEffect.EffectIndex,
                     EffectType = spellEffect.EffectType,
                     EffectSubType = spellEffect.EffectSubType,
+                    ScalingType = spellEffect.ScalingType,
                     Coefficient = spellEffect.Coefficient,
                     SpCoefficient = spellEffect.SpCoefficient,
                     Delta = spellEffect.Delta,
@@ -131,7 +132,8 @@ namespace SimcProfileParser
                     RadiusMax = spellEffect.RadiusMax,
                     BaseValue = spellEffect.BaseValue,
                     TriggerSpellId = spellEffect.TriggerSpellId,
-                    TriggerSpell = triggerSpell
+                    TriggerSpell = triggerSpell,
+                    ScaleBudget = budget
                 });
             }
 
@@ -198,65 +200,15 @@ namespace SimcProfileParser
 
             var spellData = await _simcUtilityService.GetRawSpellDataAsync(spellId);
 
-            var budget = await _simcUtilityService.GetItemBudgetAsync(itemLevel, itemQuality, spellData.MaxScalingLevel);
-
-            var spellScalingClass = _simcUtilityService.GetScaleClass(spellData.ScalingType);
-
             var combatRatingType = _simcUtilityService.GetCombatRatingMultiplierType(inventoryType);
             var multi = await _simcUtilityService.GetCombatRatingMultiplierAsync(itemLevel, combatRatingType);
-
-            if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE)
-            {
-                // This is some logic that azerite traits used. Seems to be used in some trinket effects too
-                // From azerite_power_t::check_combat_rating_penalty. See #77
-                foreach (var effect in spellData.Effects)
-                {
-                    if (effect.EffectSubType == 189 // 189 == A_MOD_RATING
-                        && effect.Coefficient > 0)
-                    {
-                        _logger?.LogTrace($"Changing scaling type from PLAYER_SPECIAL_SCALE (-1) to PLAYER_SPECIAL_SCALE7 (-7). Spell: {spellData.Id}");
-                        spellScalingClass = PlayerScaling.PLAYER_SPECIAL_SCALE7;
-                        break;
-                    }
-                }
-            }
-
-            if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
-            {
-                budget *= multi;
-            }
-            else if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE8)
-            {
-                var props = await _simcUtilityService.GetRandomPropsAsync(itemLevel);
-                budget = props.DamageReplaceStat;
-            }
-            else if (spellScalingClass == PlayerScaling.PLAYER_NONE)
-            {
-                // This is from spelleffect_data_t::average's call to _spell->flags( spell_attribute::SX_SCALE_ILEVEL )
-                // and from bool flags( spell_attribute attr ) const in spell_data.hpp
-                var ilvlScaleAttribute = 354u;
-                int bit = (int)(ilvlScaleAttribute % 32u);
-                var index = ilvlScaleAttribute / 32u;
-                var mask = 1u << bit;
-
-                if (spellData.Attributes.Length > index && 
-                    (spellData.Attributes[index] & mask) != 0)
-                {
-                    var props = await _simcUtilityService.GetRandomPropsAsync(itemLevel);
-                    budget = props.DamageSecondary;
-                }
-                else
-                {
-                    _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Spell: {spellData.Id}");
-                }
-            }
 
             var itemSpell = new SimcSpell()
             {
                 SpellId = spellData.Id,
                 Name = spellData.Name,
                 School = spellData.School,
-                ScalingType = spellData.ScalingType,
+                //ScalingType = spellData.ScalingType,
                 MinRange = spellData.MinRange,
                 MaxRange = spellData.MaxRange,
                 Cooldown = spellData.Cooldown,
@@ -272,7 +224,6 @@ namespace SimcProfileParser
                 InternalCooldown = spellData.InternalCooldown,
                 Rppm = spellData.Rppm,
                 CastTime = spellData.CastTime,
-                ScaleBudget = budget,
                 CombatRatingMultiplier = multi
             };
 
@@ -308,12 +259,66 @@ namespace SimcProfileParser
                     triggerSpell = await BuildItemSpellAsync(
                         spellEffect.TriggerSpellId, itemLevel, itemQuality, inventoryType);
 
+                // Get the scale budget
+                // simc: spelleffect_data_t::average - spell_data.cpp
+
+                var budget = await _simcUtilityService.GetItemBudgetAsync(itemLevel, itemQuality, spellData.MaxScalingLevel);
+
+                var spellScalingClass = _simcUtilityService.GetScaleClass(spellEffect.ScalingType);
+
+                if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE)
+                {
+                    // This is some logic that azerite traits used. Seems to be used in some trinket effects too
+                    // From azerite_power_t::check_combat_rating_penalty. See #77
+                    foreach (var effect in spellData.Effects)
+                    {
+                        if (effect.EffectSubType == 189 // 189 == A_MOD_RATING
+                            && effect.Coefficient > 0)
+                        {
+                            _logger?.LogTrace($"Changing scaling type from PLAYER_SPECIAL_SCALE (-1) to PLAYER_SPECIAL_SCALE7 (-7). Spell: {spellData.Id}");
+                            spellScalingClass = PlayerScaling.PLAYER_SPECIAL_SCALE7;
+                            break;
+                        }
+                    }
+                }
+
+                if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE7)
+                {
+                    budget *= multi;
+                }
+                else if (spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE8)
+                {
+                    var props = await _simcUtilityService.GetRandomPropsAsync(itemLevel);
+                    budget = props.DamageReplaceStat;
+                }
+                else if (spellScalingClass == PlayerScaling.PLAYER_NONE || spellScalingClass == PlayerScaling.PLAYER_SPECIAL_SCALE9)
+                {
+                    // This is from spelleffect_data_t::average's call to _spell->flags( spell_attribute::SX_SCALE_ILEVEL )
+                    // and from bool flags( spell_attribute attr ) const in spell_data.hpp
+                    var ilvlScaleAttribute = 354u;
+                    int bit = (int)(ilvlScaleAttribute % 32u);
+                    var index = ilvlScaleAttribute / 32u;
+                    var mask = 1u << bit;
+
+                    if (spellData.Attributes.Length > index &&
+                        (spellData.Attributes[index] & mask) != 0)
+                    {
+                        var props = await _simcUtilityService.GetRandomPropsAsync(itemLevel);
+                        budget = props.DamageSecondary;
+                    }
+                    else
+                    {
+                        _logger?.LogError($"ilvl scaling from spell flags not yet implemented. Spell: {spellData.Id}");
+                    }
+                }
+
                 itemSpell.Effects.Add(new SimcSpellEffect()
                 {
                     Id = spellEffect.Id,
                     EffectIndex = spellEffect.EffectIndex,
                     EffectType = spellEffect.EffectType,
                     EffectSubType = spellEffect.EffectSubType,
+                    ScalingType = spellEffect.ScalingType,
                     Coefficient = spellEffect.Coefficient,
                     SpCoefficient = spellEffect.SpCoefficient,
                     Delta = spellEffect.Delta,
@@ -322,7 +327,8 @@ namespace SimcProfileParser
                     RadiusMax = spellEffect.RadiusMax,
                     BaseValue = spellEffect.BaseValue,
                     TriggerSpellId = spellEffect.TriggerSpellId,
-                    TriggerSpell = triggerSpell
+                    TriggerSpell = triggerSpell,
+                    ScaleBudget = budget
                 });
             }
 

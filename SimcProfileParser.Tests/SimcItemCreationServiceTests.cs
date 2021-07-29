@@ -181,7 +181,7 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(178809, item.ItemId);
             // This will make sure the scale value that's being pulled for spells with healing/damage effects is using the right
             // item level. In this cast it's 226 = 58.
-            Assert.AreEqual(58, item.Effects[0].Spell.ScaleBudget);
+            Assert.AreEqual(64.930999760000006d, item.Effects[0].Spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -214,7 +214,7 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
             Assert.AreEqual(12000.0d, item.Effects[0].Spell.Duration);
             Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(58.0d, item.Effects[0].Spell.ScaleBudget);
+            Assert.AreEqual(64.930999760000006d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             Assert.IsNotNull(item.Effects[0].Spell.Effects);
             Assert.AreEqual(1, item.Effects[0].Spell.Effects.Count);
             Assert.AreEqual(2.955178d, item.Effects[1].Spell.Effects[0].Coefficient);
@@ -253,13 +253,13 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
             Assert.AreEqual(6000, item.Effects[0].Spell.Duration);
             Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(40, item.Effects[0].Spell.ScaleBudget);
+            Assert.AreEqual(64.930999760000006d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             // Second effect
             Assert.AreEqual(135863, item.Effects[1].EffectId);
             Assert.IsNotNull(item.Effects[1].Spell);
             Assert.AreEqual(343538, item.Effects[1].Spell.SpellId);
             Assert.AreEqual(1.3098933696746826, item.Effects[1].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(40, item.Effects[1].Spell.ScaleBudget);
+            Assert.AreEqual(41.071998600000001d, item.Effects[1].Spell.Effects[0].ScaleBudget);
             Assert.IsNotNull(item.Effects[1].Spell.Effects);
             Assert.AreEqual(2, item.Effects[1].Spell.Effects.Count);
             // Second effect's spells first effect
@@ -298,7 +298,7 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(344117, item.Effects[0].Spell.SpellId);
             Assert.AreEqual(1.5, item.Effects[0].Spell.Rppm);
             Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(155, item.Effects[0].Spell.ScaleBudget);
+            Assert.AreEqual(64.930999760000006d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             // First effect's spells first effect trigger spells first effect (lol)
             // This is basically testing that the trigger spell gets linked. This particular spell
             // stores the proc coefficient in the trigger spell and multiplies it by 155.

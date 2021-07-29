@@ -8,7 +8,6 @@ namespace SimcProfileParser.Model.Generated
         public string Name { get; set; }
         public List<SimcSpellEffect> Effects { get; set; }
         public uint School { get; internal set; }
-        public int ScalingType { get; internal set; }
         public double MinRange { get; internal set; }
         public double MaxRange { get; internal set; }
         public uint Cooldown { get; internal set; }
@@ -27,8 +26,9 @@ namespace SimcProfileParser.Model.Generated
         /// <summary>
         /// Calculated field, generated from the associated item or player level scaling
         /// to get the scale budget for the SP coefficient
+        /// MOVED TO SimcSpellEffect
         /// </summary>
-        public double ScaleBudget { get; internal set; }
+        //public double ScaleBudget { get; internal set; }
         /// <summary>
         /// Combat Rating Multiplier, used for Item spells to store an optional multiplier
         /// </summary>

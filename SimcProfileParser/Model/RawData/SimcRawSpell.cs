@@ -2,15 +2,35 @@
 
 namespace SimcProfileParser.Model.RawData
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class SimcRawSpell
     {
         public string Name { get; set; }
         public uint Id { get; set; }
         public uint School { get; set; }
         public double ProjectileSpeed { get; set; }
+        public double ProjectileDelay { get; set; }
+        /// <summary>
+        /// minimum duration for the projectile
+        /// </summary>
+        public double MinimumTravelTime { get; set; }
+        /// <summary>
+        /// Racial mask for the spell
+        /// </summary>
         public ulong RaceMask { get; set; }
+        /// <summary>
+        /// Class mask for spell
+        /// </summary>
         public uint ClassMask { get; set; }
-        public int ScalingType { get; set; }
+        /// <summary>
+        /// NO LONGER IN USE?
+        /// </summary>
+        //public int ScalingType { get; set; }
+        /// <summary>
+        /// Max scaling level(?), 0 == no restrictions, otherwise min( player_level, max_scaling_level )
+        /// </summary>
         public int MaxScalingLevel { get; set; }
 
         public uint SpellLevel { get; set; }

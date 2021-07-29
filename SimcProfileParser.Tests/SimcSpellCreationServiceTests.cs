@@ -62,7 +62,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(40, spell.ScaleBudget);
+            Assert.AreEqual(41.071998600000001d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
@@ -86,9 +86,9 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1, spell.Effects.Count);
-            Assert.AreEqual(203.03347229957581, spell.ScaleBudget);
+            Assert.AreEqual(202.44794180847748d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(1.65, spell.Effects[0].Coefficient);
-            Assert.AreEqual(-1, spell.ScalingType);
+            Assert.AreEqual(-7, spell.Effects[0].ScalingType);
         }
 
         [Test]
@@ -110,9 +110,32 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(40, spell.ScaleBudget);
+            Assert.AreEqual(41.071998600000001d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
+        }
+
+        [Test]
+        public async Task SSC_Creates_Item_Spell_Raw_Obj_9()
+        {
+            // Arrange
+            // Use the First Class Healing Distributor spell 352273
+            var item = new SimcItem()
+            {
+                ItemLevel = 226,
+                Quality = ItemQuality.ITEM_QUALITY_EPIC,
+                InventoryType = InventoryType.INVTYPE_TRINKET
+            };
+
+            // Act
+            var spell = await _spellCreationService.GenerateItemSpellAsync(item, 352273);
+
+            // Assert
+            Assert.IsNotNull(spell);
+            Assert.IsNotNull(spell.Effects);
+            Assert.AreEqual(1, spell.Effects.Count);
+            Assert.AreEqual(64.930999760000006d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(21.946373000000001d, spell.Effects[0].Coefficient);
         }
 
         [Test]
@@ -134,7 +157,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(95, spell.ScaleBudget);
+            Assert.AreEqual(95, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -154,7 +177,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(95, spell.ScaleBudget);
+            Assert.AreEqual(95, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -171,7 +194,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(95, spell.ScaleBudget);
+            Assert.AreEqual(95, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
