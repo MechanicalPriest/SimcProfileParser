@@ -160,6 +160,33 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(1.3098933696746826, item.Effects[0].Spell.CombatRatingMultiplier);
         }
 
+
+
+        /// <summary>
+        /// Test that fixes #81 - recursion when looking up recursive trigger spells/effects
+        /// </summary>
+        /// <returns></returns>
+        [Test]
+        public async Task ICS_ItemOptions_Avoids_Recursion()
+        {
+            // Arrange
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 186423,
+                Quality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemLevel = 226
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.IsNotNull(item);
+            Assert.AreEqual(226, item.ItemLevel);
+            Assert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
+            Assert.AreEqual(186423, item.ItemId);
+        }
+
         [Test]
         public async Task ICS_ItemOptions_Correct_iLvl_Heal_EffectScaling()
         {
