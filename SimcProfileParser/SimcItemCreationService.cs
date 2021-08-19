@@ -224,6 +224,10 @@ namespace SimcProfileParser
 
         internal async Task ProcessBonusIdsAsync(SimcItem item, IList<int> bonusIds, int dropLevel = 0)
         {
+            // Skip loading the bonus IDs if we have none
+            if (bonusIds.Count == 0)
+                return;
+
             var bonuses = await _cacheService.GetParsedFileContentsAsync<List<SimcRawItemBonus>>(SimcParsedFileType.ItemBonusData);
 
             // Go through each of the bonus IDs on the item

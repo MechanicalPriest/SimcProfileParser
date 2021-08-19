@@ -3,6 +3,8 @@ using SimcProfileParser.Interfaces;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser
@@ -174,7 +176,7 @@ namespace SimcProfileParser
         }
 
         internal async Task<SimcSpell> BuildItemSpellAsync(uint spellId, int itemLevel,
-            ItemQuality itemQuality, InventoryType inventoryType)
+            ItemQuality itemQuality, InventoryType inventoryType, List<uint> parentSpellIds = null)
         {
             // From double spelleffect_data_t::average( const item_t* item )
             // Get the item budget from item_database::item_budget
@@ -251,13 +253,21 @@ namespace SimcProfileParser
             }
 
             // Populate the spell effects
+            if (parentSpellIds == null)
+                parentSpellIds = new List<uint>();
+
+            parentSpellIds.Add(spellId);
+
             foreach (var spellEffect in spellData.Effects)
             {
                 // Populate the trigger spell if one exists.
                 SimcSpell triggerSpell = null;
                 if (spellEffect.TriggerSpellId > 0)
-                    triggerSpell = await BuildItemSpellAsync(
-                        spellEffect.TriggerSpellId, itemLevel, itemQuality, inventoryType);
+                {
+                    if(!parentSpellIds.Contains(spellEffect.TriggerSpellId))
+                        triggerSpell = await BuildItemSpellAsync(
+                            spellEffect.TriggerSpellId, itemLevel, itemQuality, inventoryType, parentSpellIds.ToList());
+                }
 
                 // Get the scale budget
                 // simc: spelleffect_data_t::average - spell_data.cpp
