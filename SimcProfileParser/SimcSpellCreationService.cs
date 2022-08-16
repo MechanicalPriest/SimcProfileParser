@@ -202,6 +202,15 @@ namespace SimcProfileParser
 
             var spellData = await _simcUtilityService.GetRawSpellDataAsync(spellId);
 
+            if(spellData == null)
+            {
+                // This can happen sometimes if it's a spell that isn't in use by anything/anyone.
+                // For example +5 fishing bonus on a helm.
+                // TODO: Create a blacklist of known spells that can be skipped to avoid reaching this error.
+                _logger?.LogError($"Unable to find spellId {spellId}.");
+                return default;
+            }
+
             var combatRatingType = _simcUtilityService.GetCombatRatingMultiplierType(inventoryType);
             var multi = await _simcUtilityService.GetCombatRatingMultiplierAsync(itemLevel, combatRatingType);
 

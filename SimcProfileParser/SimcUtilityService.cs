@@ -336,8 +336,11 @@ namespace SimcProfileParser
                 return rawValue;
             }
 
-            _logger?.LogError("Items and mods that don't scale are not yet implemented");
-            throw new NotImplementedException("Items and mods that don't scale are not yet implemented");
+            _logger?.LogError($"Items and mods that don't scale are not yet implemented. modType: {modType}, slotType: {slotType}, statAllocation: {statAllocation}, itemBudget: {itemBudget}");
+
+            // TODO: Some new items have a zero value for stats like stamina.
+            //throw new NotImplementedException("Items and mods that don't scale are not yet implemented");
+            return 0; // Remove this if the exception is re-implemented.
         }
 
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.

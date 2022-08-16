@@ -67,6 +67,29 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
 
+        /// <summary>
+        /// When an itemspell is attempted to be made and there is no spelldata for it, return an empty
+        /// </summary>
+        /// <returns></returns>
+        [Test]
+        public async Task SSC_Fails_Create_Item_Invalid_Spell()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                ItemLevel = 5,
+                SpellId = 7823,
+                ItemQuality = ItemQuality.ITEM_QUALITY_RARE,
+                ItemInventoryType = InventoryType.INVTYPE_HEAD
+            };
+
+            // Act
+            var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
+
+            // Assert
+            Assert.IsNull(spell);
+        }
+
         [Test]
         public async Task SSC_Converts_OneScale_To_SevenScale()
         {
