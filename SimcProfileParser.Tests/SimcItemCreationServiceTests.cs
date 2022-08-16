@@ -268,6 +268,7 @@ namespace SimcProfileParser.Tests
 
             // Act
             var item = await _ics.CreateItemAsync(parsedData);
+            item = await _ics.CreateItemAsync(parsedData);
 
             // Assert
             Assert.IsNotNull(item);
