@@ -16,20 +16,14 @@ jobs:
           dotnet-version: | 
             3.1.x
             6.0.x
-
+      # Build    
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build the libraries
+        run: dotnet build --configuration Release SimcProfileParser/SimcProfileParser.csproj
+      # Package
+      - name: Package the libraries
+        run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release SimcProfileParser/SimcProfileParser.csproj -o .
       # Publish
       - name: Publish on version change
-        id: publish_nuget
-        uses: brandedoutcast/publish-nuget@v2
-        with:
-          # Filepath of the project to be packaged, relative to root of repository
-          PROJECT_FILE_PATH: SimcProfileParser/SimcProfileParser.csproj
-          
-          # NuGet package id, used for version detection & defaults to project name
-          PACKAGE_NAME: SimcProfileParser
-
-          # API key to authenticate with NuGet server
-          NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
-
-          # Flag to toggle pushing symbols along with nuget package to the server, disabled by default
-          INCLUDE_SYMBOLS: true
+        run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
