@@ -10,7 +10,7 @@
     <RepositoryUrl>https://github.com/MechanicalPriest/SimcProfileParser</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/MechanicalPriest/SimcProfileParser</PackageProjectUrl>
-    <Copyright>Copyright © Mechanical Priest 2020</Copyright>
+    <Copyright>Copyright © Mechanical Priest 2022</Copyright>
     <Description>A library to parse the simc WoW addon results into usable objects.</Description>
     <Summary>A library to parse the simc WoW addon results into usable objects.</Summary>
     <PackageTags>simc warcraft</PackageTags>
