@@ -316,6 +316,13 @@ namespace SimcProfileParser
                         specId = Specialisation.DEMON_HUNTER_VENGEANCE;
                     break;
 
+                case Class.Evoker:
+                    if (profile.Spec == "devastation")
+                        specId = Specialisation.EVOKER_DEVASTATION;
+                    if (profile.Spec == "preservation")
+                        specId = Specialisation.EVOKER_PRESERVATION;
+                    break;
+
                 case Class.None:
                 default:
                     break;
@@ -341,6 +348,7 @@ namespace SimcProfileParser
                 "hunter" => Class.Hunter,
                 "warlock" => Class.Warlock,
                 "warrior" => Class.Warrior,
+                "evoker" => Class.Evoker,
                 _ => Class.None
             };
             profile.ClassId = (int)classId;

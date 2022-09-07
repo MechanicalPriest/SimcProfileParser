@@ -54,6 +54,7 @@ namespace SimcProfileParser.Tests.DataSync
         {
             // Arrange
             CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+
             var configuration = new CacheFileConfiguration()
             {
                 LocalParsedFile = "CombatRatingMultipliers.json",
