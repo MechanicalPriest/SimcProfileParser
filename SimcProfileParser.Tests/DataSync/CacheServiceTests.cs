@@ -54,13 +54,14 @@ namespace SimcProfileParser.Tests.DataSync
         {
             // Arrange
             CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+
             var configuration = new CacheFileConfiguration()
             {
                 LocalParsedFile = "CombatRatingMultipliers.json",
                 ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_scale_data.inc" }
+                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/sc_scale_data.inc" }
                 }
             };
             var filePath = Path.Combine(cache.BaseFileDirectory, "ScaleData.raw");

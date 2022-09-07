@@ -337,6 +337,7 @@
         DEATH_KNIGHT,
         DEMON_HUNTER,
         DRUID,
+        EVOKER,
         HUNTER,
         MAGE,
         MONK,
@@ -441,6 +442,7 @@
         Monk,
         Druid,
         DemonHunter,
+        Evoker,
     }
 
     enum Specialisation
@@ -487,5 +489,7 @@
         DRUID_RESTORATION = 105,
         DEMON_HUNTER_HAVOC = 577,
         DEMON_HUNTER_VENGEANCE = 581,
-    };
+        EVOKER_DEVASTATION = 1467,
+        EVOKER_PRESERVATION = 1468,
+    }
 }

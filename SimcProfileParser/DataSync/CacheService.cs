@@ -43,8 +43,8 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemDataNew,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc" },
-                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                    { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/item_data.inc" },
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/item_effect.inc" }
                 }
             });
 
@@ -54,8 +54,8 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemDataOld,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_data.inc" },
-                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                    { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/item_data.inc" },
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/item_effect.inc" }
                 }
             });
 
@@ -65,7 +65,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_scale_data.inc" }
+                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/sc_scale_data.inc" }
                 }
             });
 
@@ -75,7 +75,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.StaminaMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_scale_data.inc" }
+                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/sc_scale_data.inc" }
                 }
             });
 
@@ -85,7 +85,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.RandomPropPoints,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "RandomPropPoints.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/rand_prop_points.inc" }
+                    { "RandomPropPoints.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/rand_prop_points.inc" }
                 }
             });
 
@@ -95,7 +95,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.SpellData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "SpellData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_spell_data.inc" }
+                    { "SpellData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/sc_spell_data.inc" }
                 }
             });
 
@@ -105,7 +105,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemBonusData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemBonusData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_bonus.inc" }
+                    { "ItemBonusData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/item_bonus.inc" }
                 }
             });
 
@@ -115,7 +115,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.GemData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "GemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/gem_data.inc" }
+                    { "GemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/gem_data.inc" }
                 }
             });
 
@@ -125,7 +125,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemEnchantData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemEnchantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/spell_item_enchantment.inc" }
+                    { "ItemEnchantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/spell_item_enchantment.inc" }
                 }
             });
 
@@ -135,7 +135,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.SpellScaleMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/sc_scale_data.inc" }
+                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/sc_scale_data.inc" }
                 }
             });
 
@@ -145,7 +145,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CurvePoints,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "CurveData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_scaling.inc" }
+                    { "CurveData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/item_scaling.inc" }
                 }
             });
 
@@ -155,7 +155,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.RppmData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "RppmData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/real_ppm_data.inc" }
+                    { "RppmData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/real_ppm_data.inc" }
                 }
             });
 
@@ -165,7 +165,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CovenantData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "CovenantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/covenant_data.inc" }
+                    { "CovenantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/covenant_data.inc" }
                 }
             });
 
@@ -175,7 +175,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemEffectData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/item_effect.inc" }
+                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/item_effect.inc" }
                 }
             });
 
@@ -185,7 +185,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.GameDataVersion,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "GameDataVersion.raw", "https://raw.githubusercontent.com/simulationcraft/simc/shadowlands/engine/dbc/generated/client_data_version.inc" }
+                    { "GameDataVersion.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/client_data_version.inc" }
                 }
             });
         }

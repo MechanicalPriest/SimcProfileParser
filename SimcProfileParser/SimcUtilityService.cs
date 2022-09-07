@@ -209,7 +209,8 @@ namespace SimcProfileParser
 
         public int GetClassId(PlayerScaling scaleType)
         {
-            // from util::class_id
+            // from util::class_id in util.cpp
+            // These numbers come from the location of each in the array.
             return scaleType switch
             {
                 PlayerScaling.WARRIOR => 1,
@@ -224,14 +225,16 @@ namespace SimcProfileParser
                 PlayerScaling.MONK => 10,
                 PlayerScaling.DRUID => 11,
                 PlayerScaling.DEMON_HUNTER => 12,
-                PlayerScaling.PLAYER_SPECIAL_SCALE => 13,
-                PlayerScaling.PLAYER_SPECIAL_SCALE2 => 14,
-                PlayerScaling.PLAYER_SPECIAL_SCALE3 => 15,
-                PlayerScaling.PLAYER_SPECIAL_SCALE4 => 16,
-                PlayerScaling.PLAYER_SPECIAL_SCALE5 => 17,
-                PlayerScaling.PLAYER_SPECIAL_SCALE6 => 18,
-                PlayerScaling.PLAYER_SPECIAL_SCALE7 => 13,
-                PlayerScaling.PLAYER_SPECIAL_SCALE8 => 19,
+                PlayerScaling.EVOKER => 13,
+                PlayerScaling.PLAYER_SPECIAL_SCALE => 14,
+                PlayerScaling.PLAYER_SPECIAL_SCALE2 => 15,
+                PlayerScaling.PLAYER_SPECIAL_SCALE3 => 16,
+                PlayerScaling.PLAYER_SPECIAL_SCALE4 => 17,
+                PlayerScaling.PLAYER_SPECIAL_SCALE5 => 18,
+                PlayerScaling.PLAYER_SPECIAL_SCALE6 => 19,
+                PlayerScaling.PLAYER_SPECIAL_SCALE7 => 14,
+                PlayerScaling.PLAYER_SPECIAL_SCALE8 => 20,
+                PlayerScaling.PLAYER_SPECIAL_SCALE9 => 20,
                 _ => 0,
             };
         }

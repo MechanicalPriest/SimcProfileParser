@@ -963,13 +963,15 @@ namespace SimcProfileParser.DataSync
         {
             var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
 
-            double[][] spellScalingTable = new double[20][];
-            for (int i = 0; i < 20; i++)
+            var numSpellScalingTables = 21;
+
+            double[][] spellScalingTable = new double[numSpellScalingTables][];
+            for (int i = 0; i < numSpellScalingTables; i++)
             {
-                spellScalingTable[i] = new double[60];
+                spellScalingTable[i] = new double[70];
             }
 
-            string key = "__spell_scaling[][60] = {";
+            string key = "__spell_scaling[][70] = {";
 
             int start = rawData.IndexOf(key) + key.Length;
             int end = rawData.IndexOf("};", start);

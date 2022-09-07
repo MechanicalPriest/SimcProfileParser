@@ -205,7 +205,7 @@ namespace SimcProfileParser
                     // enchant breakdown from item_database::item_enchantment_effect_stats
                     // from dbc_t::spell_scaling
                     // TODO: Pull the players level through to here
-                    var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, 60);
+                    var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, 70);
 
                     //// Grab the stat this gem increases
                     var stat = (ItemModType)enchantmentProperties.SubEnchantments[0].Property;

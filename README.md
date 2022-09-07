@@ -68,7 +68,7 @@ ISimcGenerationService sgs = new SimcGenerationService();
 
 var lines = new List<string>()
 {
-    "level=60",
+    "level760",
     "main_hand=,id=178473,bonus_id=6774/1504/6646"
 };
 
@@ -137,7 +137,7 @@ ISimcGenerationService sgs = new SimcGenerationService();
 var spellOptions = new SimcSpellOptions()
 {
     SpellId = 274740,
-    PlayerLevel = 60
+    PlayerLevel = 70
 };
 
 var spell = await sgs.GenerateSpellAsync(spellOptions);

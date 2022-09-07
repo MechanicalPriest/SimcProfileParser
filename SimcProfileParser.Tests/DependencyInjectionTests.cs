@@ -50,7 +50,7 @@ namespace SimcProfileParser.Tests
             var spellOptions = new SimcSpellOptions()
             {
                 SpellId = 274740,
-                PlayerLevel = 60
+                PlayerLevel = 70
             };
 
             var spell = await _simcGenerationService.GenerateSpellAsync(spellOptions);

@@ -260,7 +260,7 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "ScaleData.raw", @"static constexpr double __spell_scaling[][60] = {
+                { "ScaleData.raw", @"static constexpr double __spell_scaling[][70] = {
   {
     1,	0,	0,	0,	0,	//    5
   },
@@ -329,8 +329,8 @@ namespace SimcProfileParser.Tests.DataSync
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(20, result.Length);
-            Assert.AreEqual(60, result[0].Length);
+            Assert.AreEqual(21, result.Length);
+            Assert.AreEqual(70, result[0].Length);
             Assert.AreEqual(1d, result[0][0]);
             Assert.AreEqual(2d, result[1][0]);
             Assert.AreEqual(3d, result[2][0]);
