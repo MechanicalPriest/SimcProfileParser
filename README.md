@@ -68,7 +68,7 @@ ISimcGenerationService sgs = new SimcGenerationService();
 
 var lines = new List<string>()
 {
-    "level760",
+    "level=70",
     "main_hand=,id=178473,bonus_id=6774/1504/6646"
 };
 
