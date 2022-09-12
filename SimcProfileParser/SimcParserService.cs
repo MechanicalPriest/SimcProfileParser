@@ -150,8 +150,8 @@ namespace SimcProfileParser
                         TryApplyProfessions(profile, line);
                         break;
 
-                    case "talents":
-                        _logger?.LogDebug($"Trying to parse talents ({line.Identifier}) with value: {line.Value}");
+                    case "class_talents":
+                        _logger?.LogDebug($"Trying to parse class talents ({line.Identifier}) with value: {line.Value}");
                         TryApplyTalents(profile, line.Value);
                         break;
 
@@ -492,12 +492,25 @@ namespace SimcProfileParser
         {
             if (valueString.Length > 0)
             {
-                var talents = new List<int>();
+                var talents = new List<SimcParsedTalent>();
 
-                foreach (var talent in valueString.ToArray())
+                var talentParts = valueString.Split('/');
+
+                foreach(var talentPart in talentParts)
                 {
-                    if (int.TryParse(talent.ToString(), out int parsedTalent))
-                        talents.Add(parsedTalent);
+                    if(talentPart.Contains(':'))
+                    {
+                        var talentSplit = talentPart.Split(':');
+                        talents.Add(new SimcParsedTalent()
+                        {
+                            TalentId = Convert.ToInt32(talentSplit[0]),
+                            Rank = Convert.ToInt32(talentSplit[1])
+                        });
+                    }
+                    else
+                    {
+                        _logger?.LogWarning($"Unable to parse talent: {talentPart}");
+                    }
                 }
 
                 profile.Talents = talents;

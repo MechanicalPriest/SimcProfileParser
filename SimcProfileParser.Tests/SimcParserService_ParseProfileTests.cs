@@ -233,19 +233,18 @@ namespace SimcProfileParser.Tests
         public void SPS_Parses_Talents()
         {
             // Arrange
-            // 116:1/78:1/82:1/84:1/101:1/69:1/73:1/67:1/66:1
-            var talents = new List<int>()
-            {
-                2, 1, 2, 2, 1, 2, 2
-            };
-
+            
             // Act
 
             // Assert
             Assert.IsNotNull(ParsedProfile);
             Assert.IsNotNull(ParsedProfile.Talents);
             Assert.NotZero(ParsedProfile.Talents.Count);
-            Assert.AreEqual(talents, ParsedProfile.Talents);
+            Assert.AreEqual(43, ParsedProfile.Talents.Count);
+            Assert.AreEqual(92811, ParsedProfile.Talents[0].TalentId);
+            Assert.AreEqual(1, ParsedProfile.Talents[0].Rank);
+            Assert.AreEqual(92812, ParsedProfile.Talents[1].TalentId);
+            Assert.AreEqual(2, ParsedProfile.Talents[1].Rank);
         }
 
         [Test]
