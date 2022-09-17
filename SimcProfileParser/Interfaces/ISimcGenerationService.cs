@@ -13,5 +13,7 @@ namespace SimcProfileParser.Interfaces
         Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options);
 
         Task<string> GetGameDataVersionAsync();
+        // TODO: Make this public once implemented.
+        //Task<List<SimcTalent>> GetAvailableTalentsAsync(int classId, int specId);
     }
 }

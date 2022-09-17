@@ -29,5 +29,7 @@ namespace SimcProfileParser.Interfaces
         Task<List<SimcRawSpellConduitRankEntry>> GetSpellConduitRanksAsync(uint spellId);
         Task<uint> GetSpellConduitSpellIdAsync(uint conduitId);
         Task<SimcRawItemEffect> GetItemEffectAsync(uint itemEffectId);
+        Task<SimcRawTrait> GetTraitDataAsync(int traitEntryId);
+        Task<List<SimcRawTrait>> GetTraitsByClassSpecAsync(int classId, int specId);
     }
 }

@@ -16,6 +16,7 @@
         RppmData,
         CovenantData,
         ItemEffectData,
-        GameDataVersion
+        GameDataVersion,
+        TraitData
     }
 }

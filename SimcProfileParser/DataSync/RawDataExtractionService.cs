@@ -43,6 +43,7 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.CovenantData => GenerateConduitRankData(incomingRawData),
                 SimcParsedFileType.ItemEffectData => GenerateItemEffectData(incomingRawData),
                 SimcParsedFileType.GameDataVersion => GenerateGameDataVersion(incomingRawData),
+                SimcParsedFileType.TraitData => GenerateTraitData(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -1173,6 +1174,107 @@ namespace SimcProfileParser.DataSync
             }
 
             return gameDataVersion;
+        }
+
+        internal List<SimcRawTrait> GenerateTraitData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "TraitData.raw").FirstOrDefault().Value;
+
+            // Split the raw data to only be the parts we want.
+            string key = "__trait_data_data { {";
+
+            int start = rawData.IndexOf(key) + key.Length;
+            int end = rawData.IndexOf("} };", start);
+
+            var dataChunk = rawData[start..end];
+
+            var lines = dataChunk.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+
+            var traitEntries = new List<SimcRawTrait>();
+
+            foreach (var line in lines)
+            {
+                // Split the data up
+                var data = line.Split(',');
+
+                // Only process valid lines
+                if (data.Count() != 22)
+                    continue;
+
+                var nameSegment = line.Substring(0, line.LastIndexOf("\""));
+
+                var trait = new SimcRawTrait();
+
+                // Clean the data up
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                }
+
+                // 0 is tree index
+                trait.TreeIndex = Convert.ToUInt32(data[0]);
+
+                // 1 is class id
+                trait.ClassId = Convert.ToUInt32(data[1]);
+
+                // 2 is trait node entry id
+                trait.TraitNodeEntryId = Convert.ToUInt32(data[2]);
+
+                // 3 is node id
+                trait.NodeId = Convert.ToUInt32(data[3]);
+
+                // 4 is max ranks
+                trait.MaxRanks = Convert.ToUInt32(data[4]);
+
+                // 5 is required points
+                trait.RequiredPoints = Convert.ToUInt32(data[5]);
+
+                // 6 is trait definition id
+                trait.TraitDefinitionId = Convert.ToUInt32(data[6]);
+
+                // 7 is spell id
+                trait.SpellId = Convert.ToUInt32(data[7]);
+
+                // 8 is override spell id
+                trait.SpellOverrideId = Convert.ToUInt32(data[8]);
+
+                // 9 is row
+                trait.Row = Convert.ToInt32(data[9]);
+
+                // 10 is column
+                trait.Column = Convert.ToInt32(data[10]);
+
+                // 11 is selection index
+                trait.SelectionIndex = Convert.ToInt32(data[11]);
+
+                // 12 is name
+                trait.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
+
+                // 13 14 15 16 are all spec IDs
+                trait.SpecId = new uint[4]
+                {
+                Convert.ToUInt32(data[13]),
+                Convert.ToUInt32(data[14]),
+                Convert.ToUInt32(data[15]),
+                Convert.ToUInt32(data[16])
+                };
+
+                // 17 18 19 20 are all spec starter IDs
+                trait.SpecStarterId = new uint[4]
+                {
+                Convert.ToUInt32(data[17]),
+                Convert.ToUInt32(data[18]),
+                Convert.ToUInt32(data[19]),
+                Convert.ToUInt32(data[20])
+                };
+
+                traitEntries.Add(trait);
+            }
+
+            return traitEntries;
         }
     }
 }
