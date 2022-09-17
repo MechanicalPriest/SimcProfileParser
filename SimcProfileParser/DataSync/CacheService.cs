@@ -188,6 +188,16 @@ namespace SimcProfileParser.DataSync
                     { "GameDataVersion.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/client_data_version.inc" }
                 }
             });
+
+            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "TraitData.json",
+                ParsedFileType = SimcParsedFileType.TraitData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "TraitData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/dragonflight/engine/dbc/generated/trait_data.inc" }
+                }
+            });
         }
 
         /// <summary>

@@ -473,5 +473,20 @@ namespace SimcProfileParser
 
             return clientDataVersion;
         }
+
+        public async Task<SimcRawTrait> GetTraitDataAsync(int traitEntryId)
+        {
+            var talents = await _cacheService.GetParsedFileContentsAsync<List<SimcRawTrait>>(SimcParsedFileType.TraitData);
+
+            var result = talents.Where(e => e.TraitNodeEntryId == traitEntryId).ToList().FirstOrDefault();
+
+            return result;
+        }
+
+        public Task<List<SimcRawTrait>> GetTraitsByClassSpecAsync(int classId, int specId)
+        {
+            // TODO: Implement this. (Make it 'async')
+            throw new NotImplementedException();
+        }
     }
 }

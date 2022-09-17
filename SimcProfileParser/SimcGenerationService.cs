@@ -18,22 +18,25 @@ namespace SimcProfileParser
         private readonly ISimcItemCreationService _simcItemCreationService;
         private readonly ISimcSpellCreationService _simcSpellCreationService;
         private readonly ISimcVersionService _simcVersionService;
+        private readonly ISimcTalentService _simcTalentService;
 
         public SimcGenerationService(ILogger<SimcGenerationService> logger,
             ISimcParserService simcParserService,
             ISimcItemCreationService simcItemCreationService,
             ISimcSpellCreationService simcSpellCreationService,
-            ISimcVersionService simcVersionService)
+            ISimcVersionService simcVersionService,
+            ISimcTalentService simcTalentService)
         {
             _logger = logger;
             _simcParserService = simcParserService;
             _simcItemCreationService = simcItemCreationService;
             _simcSpellCreationService = simcSpellCreationService;
             _simcVersionService = simcVersionService;
+            _simcTalentService = simcTalentService;
         }
 
         public SimcGenerationService(ILoggerFactory loggerFactory)
-            : this(loggerFactory.CreateLogger<SimcGenerationService>(), null, null, null, null)
+            : this(loggerFactory.CreateLogger<SimcGenerationService>(), null, null, null, null, null)
         {
             var dataExtractionService = new RawDataExtractionService(
                 loggerFactory.CreateLogger<RawDataExtractionService>());
@@ -61,6 +64,11 @@ namespace SimcProfileParser
                 loggerFactory.CreateLogger<SimcVersionService>());
 
             _simcSpellCreationService = spellCreationService;
+
+            _simcTalentService = new SimcTalentService(
+                utilityService,
+                loggerFactory.CreateLogger<SimcTalentService>());
+
         }
 
         public SimcGenerationService()
@@ -111,6 +119,14 @@ namespace SimcProfileParser
                     conduit.SpellId = await _simcSpellCreationService
                         .GetSpellIdFromConduitIdAsync((uint)conduit.ConduitId);
                 }
+            }
+
+            // Populate the details for each talent
+            foreach(var talent in newProfile.ParsedProfile.Talents)
+            {
+                var newTalent = await _simcTalentService.GetTalentDataAsync(talent.TalentId, talent.Rank);
+                if (newTalent != null)
+                    newProfile.Talents.Add(newTalent);
             }
 
             return newProfile;
@@ -178,6 +194,11 @@ namespace SimcProfileParser
         public async Task<string> GetGameDataVersionAsync()
         {
             return await _simcVersionService.GetGameDataVersionAsync();
+        }
+
+        public async Task<List<SimcTalent>> GetAvailableTalentsAsync(int classId, int specId)
+        {
+            return await _simcTalentService.GetAvailableTalentsAsync(classId, specId);
         }
     }
 }

@@ -475,5 +475,48 @@ namespace SimcProfileParser.Tests.DataSync
             Assert.IsNotNull(result);
             Assert.AreEqual("9.0.2.36401", result);
         }
+
+        [Test]
+        public void RDE_Generates_TraitData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "TraitData.raw", "__trait_data_data { {\r\n" +
+                @"  { 1,  1,  98326, 77889, 1,  8, 103328, 384090,  57755,  5,  7, 200,                     ""Titanic Throw"", {   71,    0,    0,    0 }, {    0,    0,    0,    0 } },\r\n" +
+                "} };"
+                }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateTraitData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count);
+            Assert.IsNotNull(firstResult);
+            Assert.AreEqual(1, firstResult.TreeIndex);
+            Assert.AreEqual(1, firstResult.ClassId);
+            Assert.AreEqual(98326, firstResult.TraitNodeEntryId);
+            Assert.AreEqual(77889, firstResult.NodeId);
+            Assert.AreEqual(1, firstResult.MaxRanks);
+            Assert.AreEqual(8, firstResult.RequiredPoints);
+            Assert.AreEqual(103328, firstResult.TraitDefinitionId);
+            Assert.AreEqual(384090, firstResult.SpellId);
+            Assert.AreEqual(57755, firstResult.SpellOverrideId);
+            Assert.AreEqual(5, firstResult.Row);
+            Assert.AreEqual(7, firstResult.Column);
+            Assert.AreEqual(200, firstResult.SelectionIndex);
+            Assert.AreEqual("Titanic Throw", firstResult.Name);
+            Assert.IsNotNull(firstResult.SpecId);
+            Assert.AreEqual(4, firstResult.SpecId.Count());
+            Assert.AreEqual(71, firstResult.SpecId[0]);
+            Assert.AreEqual(4, firstResult.SpecStarterId.Count());
+            Assert.AreEqual(0, firstResult.SpecStarterId[0]);
+        }
     }
 }
