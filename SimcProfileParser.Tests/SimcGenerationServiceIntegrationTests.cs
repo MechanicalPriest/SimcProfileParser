@@ -57,10 +57,10 @@ namespace SimcProfileParser.Tests
             Assert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits.Count);
             Assert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits[0].SpellId);
             Assert.IsNotNull(profile.Talents);
-            Assert.AreEqual(50, profile.Talents.Count);
-            Assert.AreEqual(98837, profile.Talents[0].TraitEntryId);
-            Assert.AreEqual(200128, profile.Talents[0].SpellId);
-            Assert.AreEqual("Trail of Light", profile.Talents[0].Name);
+            Assert.AreEqual(0, profile.Talents.Count);
+            Assert.AreEqual(103775, profile.Talents[0].TraitEntryId);
+            Assert.AreEqual(2050, profile.Talents[0].SpellId);
+            Assert.AreEqual("Holy Word: Serenity", profile.Talents[0].Name);
             Assert.AreEqual(1, profile.Talents[0].Rank);
             return;
         }
@@ -102,7 +102,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(67.768745420000002d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(66.840187069999999d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
