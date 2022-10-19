@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests
@@ -158,6 +159,33 @@ namespace SimcProfileParser.Tests
             // This will make sure the scale value that's being pulled for spells is using the right
             // item level. In this cast it's 226 = 1.3098933696746826.
             Assert.AreEqual(1.2341647148132324d, item.Effects[0].Spell.CombatRatingMultiplier);
+        }
+
+        [Test]
+        public async Task ICS_Creates_Item_Crafted_Stats()
+        {
+            // Arrange
+            // Hopebreakers Badge
+            // trinket1=,id=177813,bonus_id=6907/6652/603/7215,drop_level=50
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 193516,
+                Quality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemLevel = 392,
+                BonusIds = new List<int>() { 8836, 8840, 8902, 8801, 8793 },
+                CraftedStatIds = new List<int>() { 36, 40 }
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.IsNotNull(item);
+            Assert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
+            Assert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_INTELLECT).Any(), Is.True);
+            Assert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_STAMINA).Any(), Is.True);
+            Assert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_HASTE_RATING).Any(), Is.True);
+            Assert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_VERSATILITY_RATING).Any(), Is.True);
         }
 
 

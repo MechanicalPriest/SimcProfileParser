@@ -9,6 +9,7 @@ namespace SimcProfileParser.Model.Generated
         public int ItemLevel { get; set; }
         public IList<int> BonusIds { get; set; }
         public IList<int> GemIds { get; set; }
+        public IList<int> CraftedStatIds { get; set; }
         public ItemQuality Quality { get; set; }
         public int DropLevel { get; set; }
 
@@ -16,6 +17,7 @@ namespace SimcProfileParser.Model.Generated
         {
             BonusIds = new List<int>();
             GemIds = new List<int>();
+            CraftedStatIds = new List<int>();
             Quality = ItemQuality.ITEM_QUALITY_NONE;
         }
     }

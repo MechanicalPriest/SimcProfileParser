@@ -10,6 +10,7 @@ namespace SimcProfileParser.Model.Profile
         public int EnchantId { get; internal set; }
         public IReadOnlyCollection<int> GemIds { get; internal set; }
         public IReadOnlyCollection<int> BonusIds { get; internal set; }
+        public IReadOnlyCollection<int> CraftedStatIds { get; internal set; }
         public int Context { get; internal set; }
         public int DropLevel { get; internal set; }
         public bool Equipped { get; internal set; }
@@ -18,6 +19,7 @@ namespace SimcProfileParser.Model.Profile
         {
             GemIds = new List<int>();
             BonusIds = new List<int>();
+            CraftedStatIds = new List<int>();
         }
     }
 }

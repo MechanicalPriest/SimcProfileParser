@@ -58,10 +58,10 @@ namespace SimcProfileParser.Tests
             Assert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits[0].SpellId);
             Assert.IsNotNull(profile.Talents);
             Assert.AreEqual(0, profile.Talents.Count);
-            Assert.AreEqual(103775, profile.Talents[0].TraitEntryId);
-            Assert.AreEqual(2050, profile.Talents[0].SpellId);
-            Assert.AreEqual("Holy Word: Serenity", profile.Talents[0].Name);
-            Assert.AreEqual(1, profile.Talents[0].Rank);
+            //Assert.AreEqual(103775, profile.Talents[0].TraitEntryId);
+            //Assert.AreEqual(2050, profile.Talents[0].SpellId);
+            //Assert.AreEqual("Holy Word: Serenity", profile.Talents[0].Name);
+            //Assert.AreEqual(1, profile.Talents[0].Rank);
             return;
         }
 
