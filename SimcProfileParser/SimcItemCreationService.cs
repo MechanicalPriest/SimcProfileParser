@@ -49,6 +49,7 @@ namespace SimcProfileParser
             await UpdateItemAsync(item,
                 parsedItemData.BonusIds.ToList(),
                 parsedItemData.GemIds.ToList(),
+                parsedItemData.CraftedStatIds.ToList(),
                 parsedItemData.DropLevel);
 
             await UpdateItemEffects(item);
@@ -75,6 +76,7 @@ namespace SimcProfileParser
             await UpdateItemAsync(item,
                 itemOptions.BonusIds,
                 itemOptions.GemIds,
+                itemOptions.CraftedStatIds,
                 itemOptions.DropLevel);
 
             await UpdateItemEffects(item);
@@ -124,7 +126,7 @@ namespace SimcProfileParser
         /// <param name="bonusIds">Bonus IDs to apply</param>
         /// <param name="gemIds">Gem IDs to apply</param>
         internal async Task UpdateItemAsync(SimcItem item,
-            IList<int> bonusIds, IList<int> gemIds, int dropLevel)
+            IList<int> bonusIds, IList<int> gemIds, IList<int> craftedStatIds, int dropLevel)
         {
             var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
 
@@ -144,6 +146,19 @@ namespace SimcProfileParser
             }
 
             await AddGemsAsync(item, gemIds);
+
+            ProcessCraftedIds(item, craftedStatIds);
+        }
+
+        private void ProcessCraftedIds(SimcItem item, IList<int> craftedStatIds)
+        {
+            foreach(var mod in item.Mods)
+            {
+                if(craftedStatIds.Count > 0 && mod.Type == ItemModType.ITEM_MOD_BONUS_STAT_1)
+                    mod.Type = (ItemModType)craftedStatIds[0];
+                else if (craftedStatIds.Count > 1 && mod.Type == ItemModType.ITEM_MOD_BONUS_STAT_2)
+                    mod.Type = (ItemModType)craftedStatIds[1];
+            }
         }
 
         internal async Task UpdateItemEffects(SimcItem item)

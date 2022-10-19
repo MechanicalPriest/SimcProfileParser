@@ -417,5 +417,39 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(expectedItem, actualItem);
 
         }
+
+
+        [Test]
+        public void SPS_Parses_CraftedItemStats()
+        {
+            // Arrange
+            // back=,id=178301,enchant_id=6204,bonus_id=6788/1487/6646
+            var seventhItem = new SimcParsedItem()
+            {
+                Slot = "waist",
+                ItemId = 193516,
+                BonusIds = new List<int>()
+                {
+                    8836, 8840, 8902, 8801, 8793
+                },
+                CraftedStatIds = new List<int>()
+                {
+                    36, 40
+                },
+                Equipped = true,
+                ItemLevel = 392
+            };
+
+            // Act
+            var expectedItem = JsonConvert.SerializeObject(seventhItem);
+            var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[7]);
+
+            // Assert
+            Assert.IsNotNull(ParsedProfile);
+            Assert.IsNotNull(ParsedProfile.Items);
+            Assert.NotZero(ParsedProfile.Items.Count);
+            Assert.AreEqual(expectedItem, actualItem);
+
+        }
     }
 }

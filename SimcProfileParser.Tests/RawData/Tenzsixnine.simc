@@ -1,0 +1,177 @@
+﻿# Tenzsixnine - Holy - 2022-10-19 14:16 - us/Valdrakken
+# SimC Addon 10.0.0-alpha-07
+# WoW 10.0.2.46144, TOC 100002
+# Requires SimulationCraft 1000-01 or newer
+
+priest="Tenzsixnine"
+level=70
+race=blood_elf
+region=us
+server=valdrakken
+role=attack
+professions=tailoring=85/
+spec=holy
+
+class_talents=103736:1/103737:1/103740:2/103741:1/103743:1/103746:1/103748:2/103749:1/103750:2/103751:1/103752:1/103754:1/103755:1/103757:1/103764:2/103765:1/103766:1/103767:1/103768:1/103770:2/103773:1/103774:1/103775:1/103779:1/103780:1/103821:1/103822:1/103823:2/103825:1/103826:2/103831:1/103833:2/103835:1/103836:2/103842:1/103844:1/103846:1/103847:2/103850:1/103851:1/103853:1/103856:1/103858:1/103860:1/103861:2/103865:1/103866:1/103871:1/103872:1/103873:1
+
+
+head=,id=153923,bonus_id=8942/3219
+neck=,id=153925,bonus_id=8942/3219
+shoulder=,id=153931,bonus_id=8942/3219
+back=,id=153920,bonus_id=8942/3219
+chest=,id=153929,bonus_id=8942/3219
+wrist=,id=153933,bonus_id=8942/3219
+hands=,id=153922,bonus_id=8942/3219
+waist=,id=193516,bonus_id=8836/8840/8902/8800/8795,crafted_stats=40/36
+legs=,id=153924,bonus_id=8942/3219
+feet=,id=153921,bonus_id=8942/3219
+finger1=,id=153928,bonus_id=8942/3219
+finger2=,id=153927,bonus_id=8942/3219
+trinket1=,id=153926,bonus_id=8942/3219
+trinket2=,id=153930,bonus_id=8942/3219
+main_hand=,id=153934,bonus_id=8942/3219
+
+### Gear from Bags
+#
+# Draconic Hierophant's Archcowl (389)
+# head=,id=200327,bonus_id=1463/8767
+#
+# Wildercloth Fishing Cap (328)
+# head=,id=193529,bonus_id=8841/8842/8806
+#
+# Draconic Hierophant's Wisdom (389)
+# shoulder=,id=200329,bonus_id=1463/8767
+#
+# Surveyor's Tailored Cloak (316)
+# back=,id=193500,bonus_id=8837/8838/4785/8802,crafted_stats=36/32
+#
+# Draconic Hierophant's Drape (389)
+# back=,id=200332,bonus_id=1472/8767
+#
+# Surveyor's Cloth Robe (310)
+# chest=,id=193515,bonus_id=8837/8838/4785/8800,crafted_stats=40/49
+#
+# Draconic Hierophant's Vestment (389)
+# chest=,id=200324,bonus_id=1466/8767
+#
+# Surveyor's Cloth Robe (316)
+# chest=,id=193515,bonus_id=8837/8838/4785/8802,crafted_stats=32/36
+#
+# Draconic Hierophant's Wristbands (389)
+# wrist=,id=200331,bonus_id=1472/8767
+#
+# Surveyor's Cloth Bands (313)
+# wrist=,id=193497,bonus_id=8837/8838/4785/8801,crafted_stats=40/32
+#
+# Draconic Hierophant's Grips (389)
+# hands=,id=200326,bonus_id=1466/8767
+#
+# Surveyor's Seasoned Gloves (343)
+# hands=,id=201938,bonus_id=8851/8852/8802,crafted_stats=40/49
+#
+# Draconic Hierophant's Sash (389)
+# waist=,id=200330,bonus_id=1472/8767
+#
+# Surveyor's Seasoned Cord (343)
+# waist=,id=201940,bonus_id=8851/8852/8802,crafted_stats=36/40
+#
+# Communal Cord (340)
+# waist=,id=153932,bonus_id=8942/3219
+#
+# Surveyor's Seasoned Pants (343)
+# legs=,id=201939,bonus_id=8851/8852/8802,crafted_stats=49/40
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=49/36
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=49/40
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=32/40
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=36/32
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=32/40
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=32/36
+#
+# Surveyor's Seasoned Pants (343)
+# legs=,id=201939,bonus_id=8851/8852/8802,crafted_stats=36/40
+#
+# Surveyor's Seasoned Pants (343)
+# legs=,id=201939,bonus_id=8851/8852/8802,crafted_stats=36/32
+#
+# Draconic Hierophant's Britches (389)
+# legs=,id=200328,bonus_id=1472/8767
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=32/36
+#
+# Surveyor's Seasoned Pants (343)
+# legs=,id=201939,bonus_id=8851/8852/8802,crafted_stats=40/32
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=32/40
+#
+# Surveyor's Seasoned Pants (382)
+# legs=,id=201939,bonus_id=8851/8852/8802/8850,crafted_stats=36/40
+#
+# Draconic Hierophant's Slippers (389)
+# feet=,id=200325,bonus_id=1472/8767
+#
+# Surveyor's Cloth Treads (310)
+# feet=,id=193498,bonus_id=8837/8838/4785/8800,crafted_stats=32/49
+#
+# Crimson Aspirant's Insignia of Alacrity (366)
+# trinket1=,id=201451,bonus_id=8989/8990/1498/8766
+#
+# Communal Idol of Destruction (340)
+# trinket1=,id=153915,bonus_id=8942/3219
+#
+# Communal Stone of Destruction (340)
+# trinket1=,id=153918,bonus_id=8942/3219
+#
+# Crimson Aspirant's Badge of Ferocity (366)
+# trinket1=,id=201449,bonus_id=8989/8990/1498/8766
+#
+# Communal Idol of Wisdom (340)
+# trinket1=,id=153926,bonus_id=8942/3219
+#
+# Communal Stone of Wisdom (340)
+# trinket1=,id=153930,bonus_id=8942/3219
+#
+# Communal Idol of Wisdom (340)
+# trinket1=,id=153926,bonus_id=8942/3219
+#
+# Communal Idol of Destruction (340)
+# trinket1=,id=153915,bonus_id=8942/3219
+#
+# Communal Stone of Destruction (340)
+# trinket1=,id=153918,bonus_id=8942/3219
+#
+# Communal Stone of Wisdom (340)
+# trinket1=,id=153930,bonus_id=8942/3219
+#
+# Communal Stave (340)
+# main_hand=,id=153944,bonus_id=8942/3219
+#
+# Communal Staff (340)
+# main_hand=,id=153934,bonus_id=8942/3219
+#
+# Communal Wand (340)
+# main_hand=,id=153919,bonus_id=8942/3219
+#
+# Communal Staff (340)
+# main_hand=,id=153934,bonus_id=8942/3219
+#
+# Communal Wand (340)
+# main_hand=,id=153919,bonus_id=8942/3219
+#
+# Communal Stave (340)
+# main_hand=,id=153944,bonus_id=8942/3219
+
+# Checksum: 4a1710ca
