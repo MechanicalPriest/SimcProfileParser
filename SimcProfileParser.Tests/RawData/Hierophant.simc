@@ -28,7 +28,7 @@ back=,id=178301,enchant_id=6204,bonus_id=6788/1487/6646
 chest=,id=181399,bonus_id=6652/1564/5878/6646
 wrist=,id=181426,bonus_id=6652/7193/1564/5878/6646
 hands=,id=175862,bonus_id=6781/1487/6646
-waist=,id=178822,bonus_id=6808/1521/6646
+waist=vibrant_wildercloth_girdle,id=193516,bonus_id=8836/8840/8902/8801/8793,ilevel=392,crafted_stats=36/40
 legs=,id=173246,bonus_id=6716/1487/6984/6647/6649
 feet=,id=175857,bonus_id=6781/1487/6646
 finger1=,id=175879,bonus_id=6788/1487/6646

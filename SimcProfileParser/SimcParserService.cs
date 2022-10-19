@@ -751,6 +751,23 @@ namespace SimcProfileParser
 
                         break;
 
+                    case "crafted_stats":
+                        var statIds = kvp[1].Split('/');
+                        var statIdResult = new List<int>();
+
+                        foreach (var stat in statIds)
+                        {
+                            if (string.IsNullOrEmpty(stat.Trim()))
+                                continue;
+
+                            if (int.TryParse(stat, out int statId))
+                                statIdResult.Add(statId);
+                        }
+
+                        itemResult.CraftedStatIds = statIdResult;
+
+                        break;
+
                     default:
                         break;
                 }
