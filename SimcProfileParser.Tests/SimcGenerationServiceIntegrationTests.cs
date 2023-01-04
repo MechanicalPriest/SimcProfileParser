@@ -102,7 +102,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(66.840187069999999d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(60.763805390000002d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
@@ -125,7 +125,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(81.258441970000007d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(94.811015159999997d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]

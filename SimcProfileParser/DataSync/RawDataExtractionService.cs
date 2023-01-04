@@ -574,7 +574,7 @@ namespace SimcProfileParser.DataSync
                     // 7 is a hex class mask
                     uint.TryParse(data[7].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out uint classMask);
-                    spell.RaceMask = classMask;
+                    spell.ClassMask = classMask;
 
                     // 8 is max scaling level
                     spell.MaxScalingLevel = Convert.ToInt32(data[8]);
@@ -643,10 +643,14 @@ namespace SimcProfileParser.DataSync
                     spell.EquippedClass = Convert.ToUInt32(data[29]);
 
                     // 30 is eq class inventory type mask
-                    spell.EquippedInventoryTypeMask = Convert.ToUInt32(data[30]);
+                    _ = uint.TryParse(data[30].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber, null, out uint eqEquipmentInventoryType);
+                    spell.EquippedInventoryTypeMask = eqEquipmentInventoryType;
 
                     // 31 is eq class subclass mask
-                    spell.EquippedSubclassMask = Convert.ToUInt32(data[31]);
+                    _ = uint.TryParse(data[31].Replace("0x", ""),
+                        System.Globalization.NumberStyles.HexNumber, null, out uint eqEquippedSubclass);
+                    spell.EquippedSubclassMask = eqEquippedSubclass;
 
                     // 32 is cast time
                     spell.CastTime = Convert.ToInt32(data[32]);

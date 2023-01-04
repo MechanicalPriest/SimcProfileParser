@@ -271,7 +271,7 @@ namespace SimcProfileParser
                             {
                                 _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} SKIPPING adding {entry.Value1} " +
                                     $"ilvl to {item.ItemLevel} => {item.ItemLevel + entry.Value1} due to presence of bonusId 6652 (bug #68.)");
-                                break; // Bug fix for Simc#5490 (#68) - invalid item scaling on unnatural items
+                                //break; // Bug fix for Simc#5490 (#68) - invalid item scaling on unnatural items
                             }
 
                             _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adding {entry.Value1} ilvl to {item.ItemLevel} => {item.ItemLevel + entry.Value1}");

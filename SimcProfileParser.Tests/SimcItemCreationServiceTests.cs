@@ -236,7 +236,7 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(178809, item.ItemId);
             // This will make sure the scale value that's being pulled for spells with healing/damage effects is using the right
             // item level. In this cast it's 226 = 58.
-            Assert.AreEqual(99.69001007d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(90.627281190000005d, item.Effects[0].Spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -269,7 +269,7 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
             Assert.AreEqual(12000.0d, item.Effects[0].Spell.Duration);
             Assert.AreEqual(1.2341647148132324d, item.Effects[0].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(99.69001007d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(90.627281190000005d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             Assert.IsNotNull(item.Effects[0].Spell.Effects);
             Assert.AreEqual(1, item.Effects[0].Spell.Effects.Count);
             Assert.AreEqual(2.955178d, item.Effects[1].Spell.Effects[0].Coefficient);
@@ -309,13 +309,13 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
             Assert.AreEqual(6000, item.Effects[0].Spell.Duration);
             Assert.AreEqual(1.2341647148132324d, item.Effects[0].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(99.69001007d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(90.627281190000005d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             // Second effect
             Assert.AreEqual(135863, item.Effects[1].EffectId);
             Assert.IsNotNull(item.Effects[1].Spell);
             Assert.AreEqual(343538, item.Effects[1].Spell.SpellId);
             Assert.AreEqual(1.2341647148132324d, item.Effects[1].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(66.840187069999999d, item.Effects[1].Spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(60.763805390000002d, item.Effects[1].Spell.Effects[0].ScaleBudget);
             Assert.IsNotNull(item.Effects[1].Spell.Effects);
             Assert.AreEqual(2, item.Effects[1].Spell.Effects.Count);
             // Second effect's spells first effect
@@ -354,7 +354,7 @@ namespace SimcProfileParser.Tests
             Assert.AreEqual(344117, item.Effects[0].Spell.SpellId);
             Assert.AreEqual(1.5, item.Effects[0].Spell.Rppm);
             Assert.AreEqual(1.2341647148132324d, item.Effects[0].Spell.CombatRatingMultiplier);
-            Assert.AreEqual(99.69001007d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(90.627281190000005d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             // First effect's spells first effect trigger spells first effect (lol)
             // This is basically testing that the trigger spell gets linked. This particular spell
             // stores the proc coefficient in the trigger spell and multiplies it by 155.
@@ -428,6 +428,58 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(item);
             Assert.AreEqual(178478, item.ItemId);
             Assert.AreEqual(138, item.ItemLevel);
+        }
+
+        [Test]
+        public async Task ICS_Creates_Premade_Ilvl_Scaling()
+        {
+            // Arrange
+            var itemOptions = new SimcParsedItem()
+            {
+                Slot = "trinket1",
+                ItemId = 193748,
+                BonusIds = new List<int>()
+                {
+                    8967, 7977, 6652, 1617, 8767
+                },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert 
+            Assert.IsNotNull(item);
+            Assert.AreEqual(193748, item.ItemId);
+            Assert.AreEqual(395, item.ItemLevel);
+            Assert.AreEqual(1, item.Mods.Count);
+            Assert.AreEqual(482, item.Mods[0].StatRating);
+        }
+
+        [Test]
+        public async Task ICS_Creates_Premade_Ilvl_Scaling_HealEffect()
+        {
+            // Arrange
+            var itemOptions = new SimcParsedItem()
+            {
+                Slot = "trinket1",
+                ItemId = 194307,
+                BonusIds = new List<int>()
+                {
+                    7979, 6652, 6652, 8767
+                },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert 
+            Assert.IsNotNull(item);
+            Assert.AreEqual(194307, item.ItemId);
+            Assert.AreEqual(398, item.ItemLevel);
+            Assert.AreEqual(1, item.Mods.Count);
+            Assert.AreEqual(382, item.Mods[0].StatRating);
         }
     }
 }
