@@ -631,7 +631,7 @@ namespace SimcProfileParser.DataSync
                     spell.ProcCharges = Convert.ToInt32(data[25]);
 
                     // 26 is proc chance
-                    spell.ProcFlags = Convert.ToUInt32(data[26]);
+                    spell.ProcFlags = Convert.ToUInt64(data[26]);
 
                     // 27 is icd
                     spell.InternalCooldown = Convert.ToUInt32(data[27]);
