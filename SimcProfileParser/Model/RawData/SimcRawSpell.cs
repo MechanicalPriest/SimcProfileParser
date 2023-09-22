@@ -56,7 +56,7 @@ namespace SimcProfileParser.Model.RawData
         public uint MaxStack { get; set; }
         public uint ProcChance { get; set; }
         public int ProcCharges { get; set; }
-        public uint ProcFlags { get; set; }
+        public ulong ProcFlags { get; set; }
         public uint InternalCooldown { get; set; }
         public double Rppm { get; set; }
 

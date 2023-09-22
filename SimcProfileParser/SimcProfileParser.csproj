@@ -3,14 +3,14 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.3.1</Version>
+    <Version>1.4.1</Version>
     <Authors>Mechanical Priest</Authors>
     <Company>Mechanical Priest</Company>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/MechanicalPriest/SimcProfileParser</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/MechanicalPriest/SimcProfileParser</PackageProjectUrl>
-    <Copyright>Copyright © Mechanical Priest 2022</Copyright>
+    <Copyright>Copyright © Mechanical Priest 2023</Copyright>
     <Description>A library to parse the simc WoW addon results into usable objects.</Description>
     <Summary>A library to parse the simc WoW addon results into usable objects.</Summary>
     <PackageTags>simc warcraft</PackageTags>
@@ -18,8 +18,8 @@
     <Title>Simc Profile Parser</Title>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <AssemblyVersion>1.3.1</AssemblyVersion>
-    <FileVersion>1.3.1</FileVersion>
+    <AssemblyVersion>1.4.1</AssemblyVersion>
+    <FileVersion>1.4.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
