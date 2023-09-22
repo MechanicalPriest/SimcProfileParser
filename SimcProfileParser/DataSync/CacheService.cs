@@ -227,16 +227,15 @@ namespace SimcProfileParser.DataSync
                 }
             }
 
-            var configuration = _registeredFiles.Where(f => f.ParsedFileType == fileType).FirstOrDefault();
-            var localPath = new Uri(Path.Combine(BaseFileDirectory, configuration.LocalParsedFile)).LocalPath;
+            var configuration = _registeredFiles.Where(f => f.ParsedFileType == fileType).FirstOrDefault()
+                ?? throw new ArgumentOutOfRangeException(nameof(fileType), "Supplied fileType has not been registered.");
 
-            if (configuration == null)
-                throw new ArgumentOutOfRangeException("Supplied fileType has not been registered.");
+            var localPath = new Uri(Path.Combine(BaseFileDirectory, configuration.LocalParsedFile)).LocalPath;
 
             // If the file doesn't exist, generate it.
             if (!File.Exists(localPath))
             {
-                _logger?.LogTrace($"File [{localPath}] does not exist, generating it...");
+                _logger?.LogTrace("File [{localPath}] does not exist, generating it...", localPath);
                 await ((ICacheService)this).GenerateParsedFileAsync(fileType);
             }
 
@@ -255,10 +254,8 @@ namespace SimcProfileParser.DataSync
         /// <param name="fileType">Type of file to generate data for</param>
         async Task ICacheService.GenerateParsedFileAsync(SimcParsedFileType fileType)
         {
-            var configuration = _registeredFiles.Where(f => f.ParsedFileType == fileType).FirstOrDefault();
-
-            if (configuration == null)
-                throw new ArgumentOutOfRangeException("Supplied fileType has not been registered.");
+            var configuration = _registeredFiles.Where(f => f.ParsedFileType == fileType).FirstOrDefault() 
+                ?? throw new ArgumentOutOfRangeException(nameof(fileType), "Supplied fileType has not been registered.");
 
             // Gather together all the raw data the extraction service needs to run its process
             var rawData = new Dictionary<string, string>();
@@ -272,7 +269,7 @@ namespace SimcProfileParser.DataSync
             var parsedData = _rawDataExtractionService.GenerateData(configuration.ParsedFileType, rawData);
             var localPath = Path.Combine(BaseFileDirectory, configuration.LocalParsedFile);
 
-            _logger?.LogTrace($"Saving parsed json data for [{configuration.ParsedFileType}] to [{localPath}]");
+            _logger?.LogTrace("Saving parsed json data for [{configuration.ParsedFileType}] to [{localPath}]", configuration.ParsedFileType, localPath);
             await File.WriteAllTextAsync(localPath, JsonConvert.SerializeObject(parsedData));
         }
 
@@ -297,25 +294,25 @@ namespace SimcProfileParser.DataSync
             {
                 var destinationRawFile = configuration.RawFiles.Where(r => r.Key == localRawFile).FirstOrDefault();
 
-                _logger?.LogTrace($"Path does not exist: [{localPath}] - attempting to download file from [{destinationRawFile}].");
+                _logger?.LogTrace("Path does not exist: [{localPath}] - attempting to download file from [{destinationRawFile}].", localPath, destinationRawFile);
 
                 var downloaded = await DownloadFileIfChangedAsync(new Uri(destinationRawFile.Value),
                     new Uri(Path.Combine(BaseFileDirectory, destinationRawFile.Key)));
 
                 if (!downloaded)
                 {
-                    _logger?.LogError($"Unable to download [{destinationRawFile}] to [{localPath}]");
+                    _logger?.LogError("Unable to download [{destinationRawFile}] to [{localPath}]", destinationRawFile, localPath);
                     if(Directory.Exists(BaseFileDirectory))
                     {
-                        _logger?.LogTrace($"Listing directory contents for [{BaseFileDirectory}]");
+                        _logger?.LogTrace("Listing directory contents for [{BaseFileDirectory}]", BaseFileDirectory);
                         foreach(var file in Directory.GetFiles(BaseFileDirectory))
                         {
-                            _logger?.LogTrace($"File: {file}");
+                            _logger?.LogTrace("File: {file}", file);
                         }
                     }
                     else
                     {
-                        _logger?.LogError($"Directory does not exist: [{BaseFileDirectory}]");
+                        _logger?.LogError("Directory does not exist: [{BaseFileDirectory}]", BaseFileDirectory);
                     }
                 }
             }
@@ -333,10 +330,10 @@ namespace SimcProfileParser.DataSync
         /// <returns></returns>
         internal async Task<bool> DownloadFileIfChangedAsync(Uri sourceUri, Uri destinationUri)
         {
-            HttpClient httpClient = new HttpClient();
+            using HttpClient httpClient = new();
 
             HttpRequestMessage request =
-               new HttpRequestMessage(HttpMethod.Head,
+               new(HttpMethod.Head,
                   sourceUri);
 
             HttpResponseMessage response;
@@ -347,7 +344,7 @@ namespace SimcProfileParser.DataSync
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, $"Error downloading {sourceUri} to {destinationUri}");
+                _logger?.LogError(ex, "Error downloading {sourceUri} to {destinationUri}", sourceUri, destinationUri);
                 return false;
             }
 
@@ -358,9 +355,9 @@ namespace SimcProfileParser.DataSync
                 .FirstOrDefault();
 
             if (eTag != null)
-                _logger?.LogTrace($"etag for this file is {eTag}");
+                _logger?.LogTrace("etag for this file is {eTag}", eTag);
             else
-                _logger?.LogTrace($"No etag found for {destinationUri.LocalPath}");
+                _logger?.LogTrace("No etag found for {destinationUri.LocalPath}", destinationUri.LocalPath);
 
             DateTime lastModified = DateTime.UtcNow;
 
@@ -370,7 +367,7 @@ namespace SimcProfileParser.DataSync
             // Check if we need to download it or not.
             if (eTag != null && // If there is an etag
                 response.Headers.ETag.Tag == eTag.ETag && // and they match
-                eTag.LastModified == lastModified) // and the last modified's match
+                eTag.LastModified == lastModified) // and the last modified match
                 return true; // Then we don't need to download it.
 
             var downloadResponse = await DownloadFileAsync(sourceUri, destinationUri);
@@ -378,13 +375,13 @@ namespace SimcProfileParser.DataSync
             // If the download was successful, save the etag.
             if (downloadResponse)
             {
-                _logger?.LogTrace($"Successfully downloaded {sourceUri} to {destinationUri.LocalPath}");
+                _logger?.LogTrace("Successfully downloaded {sourceUri} to {destinationUri.LocalPath}", sourceUri, destinationUri.LocalPath);
                 lastModified = File.GetLastWriteTimeUtc(destinationUri.LocalPath);
                 await UpdateCacheDataAsync(destinationUri.LocalPath, response.Headers.ETag.Tag, lastModified);
             }
             else
             {
-                _logger?.LogError($"Failure downloading file.");
+                _logger?.LogError("Failure downloading file.");
             }
 
             return downloadResponse;
@@ -392,7 +389,7 @@ namespace SimcProfileParser.DataSync
 
         internal async Task<bool> DownloadFileAsync(Uri sourceUri, Uri destinationUri)
         {
-            WebClient client = new WebClient();
+            using HttpClient client = new();
 
             try
             {
@@ -400,11 +397,17 @@ namespace SimcProfileParser.DataSync
                 if (!Directory.Exists(baseDirectory.OriginalString))
                     Directory.CreateDirectory(baseDirectory.OriginalString);
 
-                await client.DownloadFileTaskAsync(sourceUri, destinationUri.LocalPath);
+                using var s = await client.GetStreamAsync(sourceUri);
+
+                if (File.Exists(destinationUri.LocalPath))
+                    File.Delete(destinationUri.LocalPath);
+
+                using var fs = new FileStream(destinationUri.LocalPath, FileMode.CreateNew);
+                await s.CopyToAsync(fs);
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, $"Unable to DownloadFileAsync [{sourceUri}] to [{destinationUri}]");
+                _logger?.LogError(ex, "Unable to DownloadFileAsync [{sourceUri}] to [{destinationUri}]", sourceUri, destinationUri);
                 return false;
             }
             return true;
@@ -413,7 +416,7 @@ namespace SimcProfileParser.DataSync
         #region eTag Cache
 
         private readonly string _etagCacheDataFile = "FileDownloadCache.json";
-        protected List<FileETag> _eTagCacheData = new List<FileETag>();
+        protected List<FileETag> _eTagCacheData = new();
 
         /// <summary>
         /// Update the cache with an entry
