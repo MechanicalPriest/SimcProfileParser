@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.4.1</Version>
+    <Version>1.5.0</Version>
     <Authors>Mechanical Priest</Authors>
     <Company>Mechanical Priest</Company>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
@@ -18,8 +18,8 @@
     <Title>Simc Profile Parser</Title>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <AssemblyVersion>1.4.1</AssemblyVersion>
-    <FileVersion>1.4.1</FileVersion>
+    <AssemblyVersion>1.5.0</AssemblyVersion>
+    <FileVersion>1.5.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
