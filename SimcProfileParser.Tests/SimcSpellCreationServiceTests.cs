@@ -62,7 +62,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(60.763805390000002d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
@@ -109,7 +109,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1, spell.Effects.Count);
-            Assert.AreEqual(189.95515439618612d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(125.98769760131836d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(1.65, spell.Effects[0].Coefficient);
             Assert.AreEqual(-7, spell.Effects[0].ScalingType);
         }
@@ -133,7 +133,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(60.763805390000002d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
@@ -157,7 +157,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1, spell.Effects.Count);
-            Assert.AreEqual(90.627281190000005d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
             Assert.AreEqual(21.946373000000001d, spell.Effects[0].Coefficient);
         }
 
@@ -169,7 +169,7 @@ namespace SimcProfileParser.Tests
             var spellOptions = new SimcSpellOptions()
             {
                 SpellId = 274740,
-                PlayerLevel = 60
+                PlayerLevel = 80
             };
 
             // Act
@@ -180,7 +180,7 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(94.811015159999997d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(3828.969615d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -190,7 +190,7 @@ namespace SimcProfileParser.Tests
             var spellOptions = new SimcSpellOptions()
             {
                 SpellId = 274740,
-                PlayerLevel = 60
+                PlayerLevel = 80
             };
 
             // Act
@@ -200,14 +200,14 @@ namespace SimcProfileParser.Tests
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
             Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(94.811015159999997d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(3828.969615d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
         public async Task SSC_Creates_Player_Spell_Raw()
         {
             // Arrange
-            var playerLevel = 60u;
+            var playerLevel = 70u;
             var spellId = 274740u;
 
             // Act
@@ -216,8 +216,8 @@ namespace SimcProfileParser.Tests
             // Assert
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(94.811015159999997d, spell.Effects[0].ScaleBudget);
+            Assert.AreEqual(1.3200000000000001d, spell.Effects[0].Coefficient);
+            Assert.AreEqual(453.3443671d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace SimcProfileParser.Tests
         public async Task SSC_Creates_Player_Spell_WithConduitRanks()
         {
             // Arrange
-            var playerLevel = 60u;
+            var playerLevel = 80u;
             var spellId = 340609u;
 
             // Act
