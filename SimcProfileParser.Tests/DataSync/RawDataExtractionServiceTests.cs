@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SimcProfileParser.DataSync;
+using SimcProfileParser.Model.RawData;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -142,16 +143,16 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "SpellData.raw", "{ \"Flash Heal\"                        ,   2061, 2, " +
-                "0.000000, 0.000000, 0.000000, 0x0000000000000000, 0x00000010, 0, 3, 0, 0, " +
-                "0.000000, 40.000000,       0, 1500, 0, 0, 0,    0, 1, 0, 0, 0, 0, 0, 0, 0, " +
-                "0.000000, 0, 0, 0, 1500, { 65536, 0, 524288, 0, 0, 0, 0, 0, 16781312, 0, 0, " +
-                "0, 0, 1, 0 }, { 2048, 0, 0, 1073741824 }, 6, 0x80000000,  0,   0,  0, 0, 0, " +
-                "0, 0, 1, 1, 1, 2 }, /* 613 */\r\n" +
-                "{    613,   2061,  0,  10,   0, 0, 0.000000, 0.050000, 0.000000, 2.030000, " +
-                "0.000000, 0, 0.000000, 0.000000,      0.0000, 0, 0, { 0, 0, 0, 0 }, 0, " +
-                "1.000000, 0.000000, 0.000000,  0,   0, 21, 0, 1.000000, 1.150000, 0, 0 },\r\n" +
-                "  {    154,   2061,       0,   0,     0,    0, 0,   3.600,   0.000,   0.000 }," }
+                { "SpellData.raw", "{ \"Flash Heal\"                        ,   2061, 2, 0.000000, " +
+                "0.000000, 0.000000, 0x0000000000000000, 0x00000010, 0, 3, 0, 0, 0.000000, 40.000000," +
+                "       0, 1500, 0, 0, 0,    0, 1, 0, 0, 0, 0, 0, 0x0000000000000000, 0, 0.000000,  " +
+                "0, 0x00000000, 0x00000000, 1500, { 65536, 0, 524288, 0, 0, 0, 0, 0, 16781312, 0, 0, " +
+                "0, 0, 1, 0 }, { 2048, 0, 0, 1073741824 }, 6, 0x88000000, 0,   0,  0, 0, 0, 0, 0, 1, " +
+                "4, 1, 7 }, /* 613 */\r\n" +
+                "{     613,   2061,  0,  10,   0, 0, 0x00000000, 0.000000, 0.050000, 0.000000, 3.410400, " +
+                "0.000000, 0, 0.000000, 0.000000,      0.0000, 0, 0, { 0, 0, 0, 0 }, 0, 1.000000, 0.000000, " +
+                "0.000000, 0,   0, 21, 0, 1.000000, 1.000000, 0, 0 },\r\n" +
+                "  {    154,   2061,  137031,   0,     0,    0, 0,   3.600,   0.000,   0.000 }," }
             };
 
             // Act
@@ -260,7 +261,7 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "ScaleData.raw", @"static constexpr double __spell_scaling[][70] = {
+                { "ScaleData.raw", @"static constexpr double __spell_scaling[][80] = {
   {
     1,	0,	0,	0,	0,	//    5
   },
@@ -330,7 +331,7 @@ namespace SimcProfileParser.Tests.DataSync
             // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(21, result.Length);
-            Assert.AreEqual(70, result[0].Length);
+            Assert.AreEqual(80, result[0].Length);
             Assert.AreEqual(1d, result[0][0]);
             Assert.AreEqual(2d, result[1][0]);
             Assert.AreEqual(3d, result[2][0]);

@@ -46,6 +46,7 @@ namespace SimcProfileParser
                             return 3;
                     }
                 case ItemClass.ITEM_CLASS_ARMOR:
+                    // Armor Handling is now done by slot
                     switch (itemInventoryType)
                     {
                         case InventoryType.INVTYPE_HEAD:
@@ -307,7 +308,7 @@ namespace SimcProfileParser
             {
                 // Not yet implemented
                 var socketPenalty = 0.0d;
-                int rawValue = (int)(statAllocation * itemBudget * 0.0001d - socketPenalty + 0.5d);
+                double rawValue = statAllocation * itemBudget * 0.0001d - socketPenalty;
 
                 if (GetIsCombatRating(modType))
                 {
@@ -319,7 +320,7 @@ namespace SimcProfileParser
                             item.ItemLevel, combatRatingType);
 
                         if (combatRatingMultiplier != 0)
-                            rawValue = (int)(rawValue * combatRatingMultiplier);
+                            rawValue = rawValue * combatRatingMultiplier;
                     }
                 }
                 else if (modType == ItemModType.ITEM_MOD_STAMINA)
@@ -332,11 +333,11 @@ namespace SimcProfileParser
                             item.ItemLevel, staminaRatingType);
 
                         if (staminaRatingMultiplier != 0)
-                            rawValue = (int)(rawValue * staminaRatingMultiplier);
+                            rawValue = rawValue * staminaRatingMultiplier;
                     }
                 }
 
-                return rawValue;
+                return (int)Math.Round(rawValue);
             }
 
             _logger?.LogError($"Items and mods that don't scale are not yet implemented. modType: {modType}, slotType: {slotType}, statAllocation: {statAllocation}, itemBudget: {itemBudget}");
