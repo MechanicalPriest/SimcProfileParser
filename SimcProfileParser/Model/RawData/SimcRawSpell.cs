@@ -32,6 +32,11 @@ namespace SimcProfileParser.Model.RawData
         /// Max scaling level(?), 0 == no restrictions, otherwise min( player_level, max_scaling_level )
         /// </summary>
         public int MaxScalingLevel { get; set; }
+        public int MinScalingLevel { get; set; }
+        /// <summary>
+        /// forces ilevel scaling at this ilevel for this item, overriding spell attributes
+        /// </summary>
+        public int ScaleFromILevel { get; set; }
 
         public uint SpellLevel { get; set; }
         public uint MaxLevel { get; set; }
@@ -43,9 +48,11 @@ namespace SimcProfileParser.Model.RawData
         public uint Cooldown { get; set; }
         public uint Gcd { get; set; }
         public uint CategoryCooldown { get; set; }
+        public uint CategoryFlags { get; set; }
 
         public uint Charges { get; set; }
         public uint ChargeCooldown { get; set; }
+        public uint CategoryTypeMask { get; set; }
 
         public uint Category { get; set; }
         public uint DamageClass { get; set; }
