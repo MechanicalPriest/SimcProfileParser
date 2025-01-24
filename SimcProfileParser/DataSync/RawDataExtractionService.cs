@@ -577,123 +577,139 @@ namespace SimcProfileParser.DataSync
                     // 8 is max scaling level
                     spell.MaxScalingLevel = Convert.ToInt32(data[8]);
 
-                    // 9 is spell level
-                    spell.SpellLevel = Convert.ToUInt32(data[9]);
+                    // 9 is the min scaling level
+                    spell.MinScalingLevel = Convert.ToInt32(data[9]);
 
-                    // 10 is max level
-                    spell.MaxLevel = Convert.ToUInt32(data[10]);
+                    // 10 forces ilevel scaling at this ilevel for this item, overriding spell attributes
+                    spell.ScaleFromILevel = Convert.ToInt32(data[10]);
 
-                    // 11 is required max level
-                    spell.RequireMaxLevel = Convert.ToUInt32(data[11]);
+                    // 11 is spell level
+                    spell.SpellLevel = Convert.ToUInt32(data[11]);
 
-                    // 12 is minimum range
-                    spell.MinRange = ToDoubleClean(data[12]);
+                    // 12 is max level
+                    spell.MaxLevel = Convert.ToUInt32(data[12]);
 
-                    // 13 is maximum range
-                    spell.MaxRange = ToDoubleClean(data[13]);
+                    // 13 is required max level
+                    spell.RequireMaxLevel = Convert.ToUInt32(data[13]);
 
-                    // 14 is cooldown
-                    spell.Cooldown = Convert.ToUInt32(data[14]);
+                    // 14 is minimum range
+                    spell.MinRange = ToDoubleClean(data[14]);
 
-                    // 15 is gcd
-                    spell.Gcd = Convert.ToUInt32(data[15]);
+                    // 15 is maximum range
+                    spell.MaxRange = ToDoubleClean(data[15]);
 
-                    // 16 is category cd
-                    spell.CategoryCooldown = Convert.ToUInt32(data[16]);
+                    // 16 is cooldown
+                    spell.Cooldown = Convert.ToUInt32(data[16]);
 
-                    // 17 is charges
-                    spell.Charges = Convert.ToUInt32(data[17]);
+                    // 17 is gcd
+                    spell.Gcd = Convert.ToUInt32(data[17]);
 
-                    // 18 is charges cd
-                    spell.ChargeCooldown = Convert.ToUInt32(data[18]);
+                    // 18 is category cd
+                    spell.CategoryCooldown = Convert.ToUInt32(data[18]);
 
-                    // 19 is category
-                    spell.Category = Convert.ToUInt32(data[19]);
+                    // 19 is category flags
+                    spell.CategoryFlags = Convert.ToUInt32(data[19]);
 
-                    // 20 is dmg class
-                    spell.DamageClass = Convert.ToUInt32(data[20]);
+                    // 20 is charges
+                    spell.Charges = Convert.ToUInt32(data[20]);
 
-                    // 21 is max targets
-                    spell.MaxTargets = Convert.ToInt32(data[21]);
+                    // 21 is charges cd
+                    spell.ChargeCooldown = Convert.ToUInt32(data[21]);
 
-                    // 22 is Duration
-                    spell.Duration = ToDoubleClean(data[22]);
+                    // 22 is category type mask
+                    spell.CategoryTypeMask = Convert.ToUInt32(data[22]);
 
-                    // 23 is max stacks
-                    spell.MaxStack = Convert.ToUInt32(data[23]);
+                    // 23 is category
+                    spell.Category = Convert.ToUInt32(data[23]);
 
-                    // 24 is proc chance
-                    spell.ProcChance = Convert.ToUInt32(data[24]);
+                    // 24 is dmg class
+                    spell.DamageClass = Convert.ToUInt32(data[24]);
 
-                    // 25 is proc charges
-                    spell.ProcCharges = Convert.ToInt32(data[25]);
+                    // 25 is max targets
+                    spell.MaxTargets = Convert.ToInt32(data[25]);
 
-                    // 26 is proc flags
-                    ulong.TryParse(data[26].Replace("0x", ""),
+                    // 26 is Duration
+                    spell.Duration = ToDoubleClean(data[26]);
+
+                    // 27 is max stacks
+                    spell.MaxStack = Convert.ToUInt32(data[27]);
+
+                    // 28 is proc chance
+                    spell.ProcChance = Convert.ToUInt32(data[28]);
+
+                    // 29 is proc charges
+                    spell.ProcCharges = Convert.ToInt32(data[29]);
+
+                    // 30 is proc flags
+                    ulong.TryParse(data[30].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out ulong procFlags);
                     spell.ProcFlags = procFlags;
 
-                    // 27 is icd
-                    spell.InternalCooldown = Convert.ToUInt32(data[27]);
+                    // 31 is icd
+                    spell.InternalCooldown = Convert.ToUInt32(data[31]);
 
-                    // 28 is rppm
-                    spell.Rppm = ToDoubleClean(data[28]);
+                    // 32 is rppm
+                    spell.Rppm = ToDoubleClean(data[32]);
 
-                    // 29 is eq class
-                    spell.EquippedClass = Convert.ToUInt32(data[29]);
+                    // 33 is eq class
+                    spell.EquippedClass = Convert.ToUInt32(data[33]);
 
-                    // 30 is eq class inventory type mask
-                    _ = uint.TryParse(data[30].Replace("0x", ""),
+                    // 34 is eq class inventory type mask
+                    _ = uint.TryParse(data[34].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out uint eqEquipmentInventoryType);
                     spell.EquippedInventoryTypeMask = eqEquipmentInventoryType;
 
-                    // 31 is eq class subclass mask
-                    _ = uint.TryParse(data[31].Replace("0x", ""),
+                    // 35 is eq class subclass mask
+                    _ = uint.TryParse(data[35].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out uint eqEquippedSubclass);
                     spell.EquippedSubclassMask = eqEquippedSubclass;
 
-                    // 32 is cast time
-                    spell.CastTime = Convert.ToInt32(data[32]);
+                    // 36 is cast time
+                    spell.CastTime = Convert.ToInt32(data[36]);
 
-                    // 33 - 47. Next up is something of length NUM_SPELL_FLAGS = 15
+                    // 37 - 51. Next up is something of length NUM_SPELL_FLAGS = 15
                     spell.Attributes = new uint[15];
                     for (var i = 0; i < spell.Attributes.Length; i++)
                     {
-                        spell.Attributes[i] = Convert.ToUInt32(data[i + 33]);
+                        spell.Attributes[i] = Convert.ToUInt32(data[i + 37]);
                     }
 
-                    // 48 - 51. Next up is something of length NUM_CLASS_FAMILY_FLAGS = 4
+                    // 52 - 55. Next up is something of length NUM_CLASS_FAMILY_FLAGS = 4
                     spell.ClassFlags = new uint[4];
                     for (var i = 0; i < spell.ClassFlags.Length; i++)
                     {
-                        spell.ClassFlags[i] = Convert.ToUInt32(data[i + 48]);
+                        spell.ClassFlags[i] = Convert.ToUInt32(data[i + 52]);
                     }
 
-                    // 52 is class flags family
-                    spell.ClassFlagsFamily = Convert.ToUInt32(data[52]);
+                    // 56 is class flags family
+                    spell.ClassFlagsFamily = Convert.ToUInt32(data[56]);
 
-                    // 53 is stance mask
-                    uint.TryParse(data[53].Replace("0x", ""),
+                    // 57-58 is aura interrupt flags, skip these
+
+                    // 59-60 is channel interrupt flags, skip these
+
+                    // 61 is stance mask
+                    uint.TryParse(data[61].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out uint stanceMask);
                     spell.StanceMask = stanceMask;
 
-                    // 54 is mechanic
-                    spell.Mechanic = Convert.ToUInt32(data[54]);
+                    // 62 is mechanic
+                    spell.Mechanic = Convert.ToUInt32(data[62]);
 
-                    // 55 is az power id
-                    spell.PowerId = Convert.ToUInt32(data[55]);
+                    // 63 is az power id
+                    spell.PowerId = Convert.ToUInt32(data[63]);
 
-                    // 56 is essence id
-                    spell.EssenceId = Convert.ToUInt32(data[56]);
+                    // 64 is essence id
+                    spell.EssenceId = Convert.ToUInt32(data[64]);
 
                     // We don't have a practical use for the counts metadata
-                    // 56 is effects count
+                    // 65 is effects count
 
-                    // 57 is power count
+                    // 66 is power count
 
-                    // 58 is driver count
+                    // 67 is driver count
 
-                    // 59 is label count
+                    // 68 is label count
 
                     spells.Add(spell);
                 }

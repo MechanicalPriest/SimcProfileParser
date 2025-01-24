@@ -123,8 +123,7 @@ namespace SimcProfileParser.Tests
             // Assert
             Assert.IsNotNull(spell);
             Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
-            Assert.AreEqual(1.32, spell.Effects[0].Coefficient);
+            Assert.AreEqual(1.716, spell.Effects[0].Coefficient);
             Assert.AreEqual(258.2211327d, spell.Effects[0].ScaleBudget);
         }
 
