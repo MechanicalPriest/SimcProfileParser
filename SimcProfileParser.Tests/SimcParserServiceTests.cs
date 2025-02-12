@@ -50,7 +50,7 @@ namespace SimcProfileParser.Tests
             var result = SimcParser.ParseProfileAsync(TestFileString);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.That(result, Is.Not.Null);
         }
 
         [Test]

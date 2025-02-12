@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Serilog;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
@@ -45,19 +46,19 @@ namespace SimcProfileParser.Tests
             var profile = await _sgs.GenerateProfileAsync(_profileString);
 
             // Assert
-            Assert.IsNotNull(profile, "Profile not null");
-            Assert.IsNotNull(profile.ParsedProfile, "Parsed profile not null");
-            Assert.IsNotNull(profile.ParsedProfile.Name);
-            Assert.NotZero(profile.ParsedProfile.Level);
-            Assert.NotZero(profile.GeneratedItems.Count);
-            Assert.IsTrue(profile.GeneratedItems[0].Equipped);
-            Assert.NotZero(profile.ParsedProfile.Conduits.Count);
-            Assert.NotZero(profile.ParsedProfile.Conduits[0].SpellId);
-            Assert.NotZero(profile.ParsedProfile.Soulbinds.Count);
-            Assert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits.Count);
-            Assert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits[0].SpellId);
-            Assert.IsNotNull(profile.Talents);
-            Assert.AreEqual(0, profile.Talents.Count);
+            ClassicAssert.IsNotNull(profile, "Profile not null");
+            ClassicAssert.IsNotNull(profile.ParsedProfile, "Parsed profile not null");
+            ClassicAssert.IsNotNull(profile.ParsedProfile.Name);
+            ClassicAssert.NotZero(profile.ParsedProfile.Level);
+            ClassicAssert.NotZero(profile.GeneratedItems.Count);
+            ClassicAssert.IsTrue(profile.GeneratedItems[0].Equipped);
+            ClassicAssert.NotZero(profile.ParsedProfile.Conduits.Count);
+            ClassicAssert.NotZero(profile.ParsedProfile.Conduits[0].SpellId);
+            ClassicAssert.NotZero(profile.ParsedProfile.Soulbinds.Count);
+            ClassicAssert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits.Count);
+            ClassicAssert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits[0].SpellId);
+            ClassicAssert.IsNotNull(profile.Talents);
+            ClassicAssert.AreEqual(0, profile.Talents.Count);
             //Assert.AreEqual(103775, profile.Talents[0].TraitEntryId);
             //Assert.AreEqual(2050, profile.Talents[0].SpellId);
             //Assert.AreEqual("Holy Word: Serenity", profile.Talents[0].Name);
@@ -80,7 +81,7 @@ namespace SimcProfileParser.Tests
             var item = await _sgs.GenerateItemAsync(itemOptions);
 
             // Assert
-            Assert.IsNotNull(item);
+            ClassicAssert.IsNotNull(item);
         }
 
         [Test]
@@ -99,12 +100,12 @@ namespace SimcProfileParser.Tests
             var spell = await _sgs.GenerateSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
-            Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
-            Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(2, spell.Effects.Count);
+            ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
 
         [Test]
@@ -121,10 +122,10 @@ namespace SimcProfileParser.Tests
             var spell = await _sgs.GenerateSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(1.716, spell.Effects[0].Coefficient);
-            Assert.AreEqual(258.2211327d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(1.716, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(258.2211327d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -136,8 +137,8 @@ namespace SimcProfileParser.Tests
             var version = await _sgs.GetGameDataVersionAsync();
 
             // Assert
-            Assert.IsNotNull(version);
-            Assert.AreEqual("11.", version.Substring(0, 3));
+            ClassicAssert.IsNotNull(version);
+            ClassicAssert.AreEqual("11.", version.Substring(0, 3));
         }
     }
 }

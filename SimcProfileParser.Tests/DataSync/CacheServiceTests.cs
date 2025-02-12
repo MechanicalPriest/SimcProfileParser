@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Serilog;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces.DataSync;
@@ -72,7 +73,7 @@ namespace SimcProfileParser.Tests.DataSync
             // Assert
             DirectoryAssert.Exists(cache.BaseFileDirectory);
             FileAssert.Exists(filePath);
-            Assert.NotNull(data);
+            ClassicAssert.NotNull(data);
         }
 
         [Test]
@@ -97,7 +98,7 @@ namespace SimcProfileParser.Tests.DataSync
 
             // Assert
             FileAssert.Exists(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
-            Assert.AreEqual(fileContents, data);
+            ClassicAssert.AreEqual(fileContents, data);
         }
 
         [Test]
@@ -114,11 +115,11 @@ namespace SimcProfileParser.Tests.DataSync
             var cacheData = await cache.GetCacheDataAsync();
 
             // Assert
-            Assert.IsNotNull(cacheData);
-            Assert.NotZero(cacheData.Count);
-            Assert.AreEqual(filename, cacheData.FirstOrDefault().Filename);
-            Assert.AreEqual(eTag, cacheData.FirstOrDefault().ETag);
-            Assert.AreEqual(lastModified, cacheData.FirstOrDefault().LastModified);
+            ClassicAssert.IsNotNull(cacheData);
+            ClassicAssert.NotZero(cacheData.Count);
+            ClassicAssert.AreEqual(filename, cacheData.FirstOrDefault().Filename);
+            ClassicAssert.AreEqual(eTag, cacheData.FirstOrDefault().ETag);
+            ClassicAssert.AreEqual(lastModified, cacheData.FirstOrDefault().LastModified);
         }
 
         [Test]
@@ -153,9 +154,9 @@ namespace SimcProfileParser.Tests.DataSync
 
 
             // Assert
-            Assert.IsNotNull(data);
+            ClassicAssert.IsNotNull(data);
             FileAssert.Exists(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
-            Assert.AreEqual(fileContents, data);
+            ClassicAssert.AreEqual(fileContents, data);
         }
     }
 }
