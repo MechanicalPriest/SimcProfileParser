@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: | 
-          6.0.x
+          8.0.x
     - name: Install dependencies
       run: dotnet restore
     - name: Build .NET Core
@@ -25,7 +25,7 @@ jobs:
     - name: Test .NET Core
       run: dotnet test --no-restore --verbosity normal --logger:nunit
     - name: Publish Test Results
-      uses: MirrorNG/nunit-reporter@v1.0.9
+      uses: MirrorNG/nunit-reporter@v1.1.0
       if: always()
       with:
         path: SimcProfileParser.Tests/TestResults/*.xml
