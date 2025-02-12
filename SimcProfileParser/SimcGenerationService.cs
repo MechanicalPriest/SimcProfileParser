@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
+using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 using System;
@@ -19,13 +20,15 @@ namespace SimcProfileParser
         private readonly ISimcSpellCreationService _simcSpellCreationService;
         private readonly ISimcVersionService _simcVersionService;
         private readonly ISimcTalentService _simcTalentService;
+        private readonly ICacheService _cacheService;
 
         public SimcGenerationService(ILogger<SimcGenerationService> logger,
             ISimcParserService simcParserService,
             ISimcItemCreationService simcItemCreationService,
             ISimcSpellCreationService simcSpellCreationService,
             ISimcVersionService simcVersionService,
-            ISimcTalentService simcTalentService)
+            ISimcTalentService simcTalentService,
+            ICacheService cacheService)
         {
             _logger = logger;
             _simcParserService = simcParserService;
@@ -33,17 +36,20 @@ namespace SimcProfileParser
             _simcSpellCreationService = simcSpellCreationService;
             _simcVersionService = simcVersionService;
             _simcTalentService = simcTalentService;
+            _cacheService = cacheService;
         }
 
         public SimcGenerationService(ILoggerFactory loggerFactory)
-            : this(loggerFactory.CreateLogger<SimcGenerationService>(), null, null, null, null, null)
+            : this(loggerFactory.CreateLogger<SimcGenerationService>(), null, null, null, null, null, null)
         {
             var dataExtractionService = new RawDataExtractionService(
                 loggerFactory.CreateLogger<RawDataExtractionService>());
-            var cacheService = new CacheService(dataExtractionService,
+
+            _cacheService = new CacheService(dataExtractionService,
                 loggerFactory.CreateLogger<CacheService>());
+
             var utilityService = new SimcUtilityService(
-                cacheService,
+                _cacheService,
                 loggerFactory.CreateLogger<SimcUtilityService>());
 
             var spellCreationService = new SimcSpellCreationService(
@@ -54,7 +60,7 @@ namespace SimcProfileParser
                 loggerFactory.CreateLogger<SimcParserService>());
 
             _simcItemCreationService = new SimcItemCreationService(
-                cacheService,
+                _cacheService,
                 spellCreationService,
                 utilityService,
                 loggerFactory.CreateLogger<SimcItemCreationService>());
@@ -199,6 +205,24 @@ namespace SimcProfileParser
         public async Task<List<SimcTalent>> GetAvailableTalentsAsync(int classId, int specId)
         {
             return await _simcTalentService.GetAvailableTalentsAsync(classId, specId);
+        }
+
+        /// <summary>
+        /// Set the flag to use PTR data for data extraction
+        /// </summary>
+        public bool UsePtrData
+        {
+            get => _cacheService.UsePtrData;
+            set => _cacheService.SetUsePtrData(value);
+        }
+
+        /// <summary>
+        /// Set the github branch name to use for data extraction
+        /// </summary>
+        public string UseBranchName
+        {
+            get => _cacheService.UseBranchName;
+            set => _cacheService.SetUseBranchName(value);
         }
     }
 }
