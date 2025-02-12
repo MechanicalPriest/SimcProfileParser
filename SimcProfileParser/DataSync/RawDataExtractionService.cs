@@ -1182,10 +1182,18 @@ namespace SimcProfileParser.DataSync
 
             foreach (var line in lines)
             {
-                var key = "#define CLIENT_DATA_WOW_VERSION ";
-                if (line.StartsWith(key))
+                var key_live = "#define CLIENT_DATA_WOW_VERSION ";
+                if (line.Contains(key_live))
                 {
-                    gameDataVersion = line.Substring(key.Length).Trim('"');
+                    gameDataVersion = line.Substring(key_live.Length).Trim('"');
+                    break;
+                }
+
+                var key_ptr = "#define PTR_CLIENT_DATA_WOW_VERSION ";
+                if (line.Contains(key_ptr))
+                {
+                    gameDataVersion = line.Substring(key_ptr.Length).Trim('"');
+                    break;
                 }
             }
 

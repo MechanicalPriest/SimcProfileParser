@@ -15,7 +15,7 @@ namespace SimcProfileParser.Tests.DataSync
 {
     /// <summary>
     /// TODO: Create better tests for the CacheService by abstracting the File/Web access components.
-    /// Then test that this service does what it should, and seperately test the file/web work 
+    /// Then test that this service does what it should, and separately test the file/web work 
     /// just once instead of for each overall test - unit-testify it rather than integration test.
     /// </summary>
     [TestFixture]
@@ -157,6 +157,35 @@ namespace SimcProfileParser.Tests.DataSync
             ClassicAssert.IsNotNull(data);
             FileAssert.Exists(Path.Combine(cache.BaseFileDirectory, "FileDownloadCache.json"));
             ClassicAssert.AreEqual(fileContents, data);
+        }
+
+        [Test]
+        public void CS_Respects_Ptr_Flag()
+        {
+            // Arrange
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            cache.SetUsePtrData(true);
+            cache.SetUseBranchName("test_branch");
+
+            // Act
+            var url = cache._getUrl("test");
+
+            // Assert
+            Assert.That(url, Is.EqualTo("https://raw.githubusercontent.com/simulationcraft/simc/test_branch/engine/dbc/generated/test_ptr.inc"));
+        }
+
+        [Test]
+        public void CS_Ptr_Defaults_Off()
+        {
+            // Arrange
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            cache.SetUseBranchName("test_branch");
+
+            // Act
+            var url = cache._getUrl("test");
+
+            // Assert
+            Assert.That(url, Is.EqualTo("https://raw.githubusercontent.com/simulationcraft/simc/test_branch/engine/dbc/generated/test.inc"));
         }
     }
 }

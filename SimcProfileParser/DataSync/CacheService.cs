@@ -25,7 +25,7 @@ namespace SimcProfileParser.DataSync
 
         private bool _usePtrData = false;
         private string _useBranchName = "thewarwithin";
-        private string _getUrl(string fileName) => "https://raw.githubusercontent.com/simulationcraft/simc/"
+        internal string _getUrl(string fileName) => "https://raw.githubusercontent.com/simulationcraft/simc/"
                 + _useBranchName + "/engine/dbc/generated/"
                 + fileName
                 + (_usePtrData ? "_ptr" : "")
