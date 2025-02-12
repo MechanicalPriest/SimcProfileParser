@@ -138,11 +138,6 @@ namespace SimcProfileParser
             return newProfile;
         }
 
-        /// <summary>
-        /// Helper method to generate a SimcProfile based on the contents of an entire profile string
-        /// </summary>
-        /// <param name="profileString"></param>
-        /// <returns></returns>
         public async Task<SimcProfile> GenerateProfileAsync(string profileString)
         {
             if (string.IsNullOrEmpty(profileString))
@@ -207,18 +202,12 @@ namespace SimcProfileParser
             return await _simcTalentService.GetAvailableTalentsAsync(classId, specId);
         }
 
-        /// <summary>
-        /// Set the flag to use PTR data for data extraction
-        /// </summary>
         public bool UsePtrData
         {
             get => _cacheService.UsePtrData;
             set => _cacheService.SetUsePtrData(value);
         }
 
-        /// <summary>
-        /// Set the github branch name to use for data extraction
-        /// </summary>
         public string UseBranchName
         {
             get => _cacheService.UseBranchName;
