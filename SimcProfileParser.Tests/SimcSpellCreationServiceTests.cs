@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Serilog;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces.DataSync;
@@ -59,12 +60,12 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
-            Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
-            Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(2, spell.Effects.Count);
+            ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNull(spell);
+            ClassicAssert.IsNull(spell);
         }
 
         [Test]
@@ -106,12 +107,12 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(1, spell.Effects.Count);
-            Assert.AreEqual(125.98769760131836d, spell.Effects[0].ScaleBudget);
-            Assert.AreEqual(1.65, spell.Effects[0].Coefficient);
-            Assert.AreEqual(-7, spell.Effects[0].ScalingType);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(1, spell.Effects.Count);
+            ClassicAssert.AreEqual(125.98769760131836d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.65, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(-7, spell.Effects[0].ScalingType);
         }
 
         [Test]
@@ -130,12 +131,12 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GenerateItemSpellAsync(item, 343538);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(2, spell.Effects.Count);
-            Assert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
-            Assert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
-            Assert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(2, spell.Effects.Count);
+            ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
 
         [Test]
@@ -154,11 +155,11 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GenerateItemSpellAsync(item, 352273);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(1, spell.Effects.Count);
-            Assert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
-            Assert.AreEqual(21.946373000000001d, spell.Effects[0].Coefficient);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(1, spell.Effects.Count);
+            ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(21.946373000000001d, spell.Effects[0].Coefficient);
         }
 
         [Test]
@@ -176,10 +177,10 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(1.716d, spell.Effects[0].Coefficient);
-            Assert.AreEqual(3828.969615d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(1.716d, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(3828.969615d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -196,10 +197,10 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(1.716d, spell.Effects[0].Coefficient);
-            Assert.AreEqual(3828.969615d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(1.716d, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(3828.969615d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -213,10 +214,10 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GeneratePlayerSpellAsync(playerLevel, spellId);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.Effects);
-            Assert.AreEqual(1.716d, spell.Effects[0].Coefficient);
-            Assert.AreEqual(453.3443671d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(1.716d, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(453.3443671d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -230,11 +231,11 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GeneratePlayerSpellAsync(playerLevel, spellId);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.PowerCosts);
-            Assert.LessOrEqual(2, spell.PowerCosts.Count);
-            Assert.AreEqual(0.3, spell.PowerCosts.Skip(1).First().Value);
-            Assert.AreEqual(137031, spell.PowerCosts.Skip(1).First().Key);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.PowerCosts);
+            ClassicAssert.LessOrEqual(2, spell.PowerCosts.Count);
+            ClassicAssert.AreEqual(0.3, spell.PowerCosts.Skip(1).First().Value);
+            ClassicAssert.AreEqual(137031, spell.PowerCosts.Skip(1).First().Key);
         }
 
         [Test]
@@ -249,12 +250,12 @@ namespace SimcProfileParser.Tests
             var firstConduitRank = spell.ConduitRanks.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.ConduitRanks);
-            Assert.AreEqual(270, spell.ConduitId);
-            Assert.IsNotNull(firstConduitRank);
-            Assert.AreEqual(15, firstConduitRank.Value);
-            Assert.AreEqual(0, firstConduitRank.Key);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.ConduitRanks);
+            ClassicAssert.AreEqual(270, spell.ConduitId);
+            ClassicAssert.IsNotNull(firstConduitRank);
+            ClassicAssert.AreEqual(15, firstConduitRank.Value);
+            ClassicAssert.AreEqual(0, firstConduitRank.Key);
         }
 
         [Test]
@@ -273,14 +274,14 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.RppmModifiers);
-            Assert.AreEqual(7, spell.RppmModifiers.Count);
-            Assert.AreEqual(339343, spell.RppmModifiers[4].SpellId);
-            Assert.IsFalse(spell.RppmModifiers[4].RppmIsHasted);
-            Assert.IsTrue(spell.RppmModifiers[4].RppmIsSpecModified);
-            Assert.AreEqual(257, spell.RppmModifiers[4].RppmSpec);
-            Assert.AreEqual(-0.5000, spell.RppmModifiers[4].RppmCoefficient);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.RppmModifiers);
+            ClassicAssert.AreEqual(7, spell.RppmModifiers.Count);
+            ClassicAssert.AreEqual(339343, spell.RppmModifiers[4].SpellId);
+            ClassicAssert.IsFalse(spell.RppmModifiers[4].RppmIsHasted);
+            ClassicAssert.IsTrue(spell.RppmModifiers[4].RppmIsSpecModified);
+            ClassicAssert.AreEqual(257, spell.RppmModifiers[4].RppmSpec);
+            ClassicAssert.AreEqual(-0.5000, spell.RppmModifiers[4].RppmCoefficient);
         }
 
         [Test]
@@ -299,14 +300,14 @@ namespace SimcProfileParser.Tests
             var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
 
             // Assert
-            Assert.IsNotNull(spell);
-            Assert.IsNotNull(spell.RppmModifiers);
-            Assert.AreEqual(1, spell.RppmModifiers.Count);
-            Assert.AreEqual(339547, spell.RppmModifiers[0].SpellId);
-            Assert.IsTrue(spell.RppmModifiers[0].RppmIsHasted);
-            Assert.IsFalse(spell.RppmModifiers[0].RppmIsSpecModified);
-            Assert.AreEqual(0, spell.RppmModifiers[0].RppmSpec);
-            Assert.AreEqual(1, spell.RppmModifiers[0].RppmCoefficient);
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.RppmModifiers);
+            ClassicAssert.AreEqual(1, spell.RppmModifiers.Count);
+            ClassicAssert.AreEqual(339547, spell.RppmModifiers[0].SpellId);
+            ClassicAssert.IsTrue(spell.RppmModifiers[0].RppmIsHasted);
+            ClassicAssert.IsFalse(spell.RppmModifiers[0].RppmIsSpecModified);
+            ClassicAssert.AreEqual(0, spell.RppmModifiers[0].RppmSpec);
+            ClassicAssert.AreEqual(1, spell.RppmModifiers[0].RppmCoefficient);
         }
     }
 }

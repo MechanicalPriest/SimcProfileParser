@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.7.0</Version>
+    <Version>1.7.1</Version>
     <Authors>Mechanical Priest</Authors>
     <Company>Mechanical Priest</Company>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
@@ -18,8 +18,9 @@
     <Title>Simc Profile Parser</Title>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <AssemblyVersion>1.7.0</AssemblyVersion>
-    <FileVersion>1.7.0</FileVersion>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+    <AssemblyVersion>1.7.1</AssemblyVersion>
+    <FileVersion>1.7.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +28,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+	<None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>

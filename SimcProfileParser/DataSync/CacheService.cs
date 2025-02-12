@@ -23,6 +23,14 @@ namespace SimcProfileParser.DataSync
         protected readonly IRawDataExtractionService _rawDataExtractionService;
         protected readonly ILogger<CacheService> _logger;
 
+        private bool _usePtrData = false;
+        private string _useBranchName = "thewarwithin";
+        private string _getUrl(string fileName) => "https://raw.githubusercontent.com/simulationcraft/simc/"
+                + _useBranchName + "/engine/dbc/generated/"
+                + fileName
+                + (_usePtrData ? "_ptr" : "")
+                + ".inc";
+
         public IReadOnlyCollection<CacheFileConfiguration> RegisteredFiles => new ReadOnlyCollection<CacheFileConfiguration>(_registeredFiles);
 
         public CacheService(IRawDataExtractionService rawDataExtractionService,
@@ -43,8 +51,8 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemDataNew,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/item_data.inc" },
-                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/item_effect.inc" }
+                    { "ItemData.raw", _getUrl("item_data") },
+                    { "ItemEffectData.raw", _getUrl("item_effect") }
                 }
             });
 
@@ -54,8 +62,8 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemDataOld,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/item_data.inc" },
-                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/item_effect.inc" }
+                    { "ItemData.raw", _getUrl("item_data") },
+                    { "ItemEffectData.raw", _getUrl("item_effect") }
                 }
             });
 
@@ -65,7 +73,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/sc_scale_data.inc" }
+                    { "ScaleData.raw", _getUrl("sc_scale_data") }
                 }
             });
 
@@ -75,7 +83,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.StaminaMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/sc_scale_data.inc" }
+                    { "ScaleData.raw", _getUrl("sc_scale_data") }
                 }
             });
 
@@ -85,7 +93,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.RandomPropPoints,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "RandomPropPoints.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/rand_prop_points.inc" }
+                    { "RandomPropPoints.raw", _getUrl("rand_prop_points") }
                 }
             });
 
@@ -95,7 +103,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.SpellData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "SpellData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/sc_spell_data.inc" }
+                    { "SpellData.raw", _getUrl("sc_spell_data") }
                 }
             });
 
@@ -105,7 +113,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemBonusData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemBonusData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/item_bonus.inc" }
+                    { "ItemBonusData.raw", _getUrl("item_bonus") }
                 }
             });
 
@@ -115,7 +123,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.GemData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "GemData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/gem_data.inc" }
+                    { "GemData.raw", _getUrl("gem_data") }
                 }
             });
 
@@ -125,7 +133,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemEnchantData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemEnchantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/spell_item_enchantment.inc" }
+                    { "ItemEnchantData.raw", _getUrl("spell_item_enchantment") }
                 }
             });
 
@@ -135,7 +143,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.SpellScaleMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/sc_scale_data.inc" }
+                    { "ScaleData.raw", _getUrl("sc_scale_data") }
                 }
             });
 
@@ -145,7 +153,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CurvePoints,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "CurveData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/item_scaling.inc" }
+                    { "CurveData.raw", _getUrl("item_scaling") }
                 }
             });
 
@@ -155,7 +163,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.RppmData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "RppmData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/real_ppm_data.inc" }
+                    { "RppmData.raw", _getUrl("real_ppm_data") }
                 }
             });
 
@@ -165,7 +173,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CovenantData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "CovenantData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/covenant_data.inc" }
+                    { "CovenantData.raw", _getUrl("covenant_data") }
                 }
             });
 
@@ -175,7 +183,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemEffectData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemEffectData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/item_effect.inc" }
+                    { "ItemEffectData.raw", _getUrl("item_effect") }
                 }
             });
 
@@ -185,7 +193,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.GameDataVersion,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "GameDataVersion.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/client_data_version.inc" }
+                    { "GameDataVersion.raw", _getUrl("client_data_version") }
                 }
             });
 
@@ -195,7 +203,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.TraitData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "TraitData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/trait_data.inc" }
+                    { "TraitData.raw", _getUrl("trait_data") }
                 }
             });
         }
@@ -484,5 +492,24 @@ namespace SimcProfileParser.DataSync
         }
 
         #endregion
+
+        /// <summary>
+        /// Get the flag used PTR data for data extraction
+        /// </summary>
+        public bool UsePtrData { get => _usePtrData; }
+
+        public void SetUsePtrData(bool usePtrData)
+        {
+            _usePtrData = usePtrData;
+        }
+
+        /// <summary>
+        /// Get the github branch name used for data extraction
+        /// </summary>
+        public string UseBranchName { get => _useBranchName; }
+        public void SetUseBranchName(string branchName)
+        {
+            _useBranchName = branchName;
+        }
     }
 }

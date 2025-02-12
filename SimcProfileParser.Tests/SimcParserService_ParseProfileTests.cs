@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Serilog;
 using SimcProfileParser.Model.Profile;
 using SimcProfileParser.Model.RawData;
@@ -51,9 +52,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.SimcAddonVersion);
-            Assert.AreEqual(version, ParsedProfile.SimcAddonVersion);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.SimcAddonVersion);
+            ClassicAssert.AreEqual(version, ParsedProfile.SimcAddonVersion);
         }
 
         [Test]
@@ -65,9 +66,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.CollectionDate);
-            Assert.AreEqual(parsedDateTime, ParsedProfile.CollectionDate);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.CollectionDate);
+            ClassicAssert.AreEqual(parsedDateTime, ParsedProfile.CollectionDate);
         }
 
         [Test]
@@ -79,9 +80,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Name);
-            Assert.AreEqual(charName, ParsedProfile.Name);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Name);
+            ClassicAssert.AreEqual(charName, ParsedProfile.Name);
         }
 
         [Test]
@@ -93,9 +94,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Level);
-            Assert.AreEqual(level, ParsedProfile.Level);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Level);
+            ClassicAssert.AreEqual(level, ParsedProfile.Level);
         }
 
         [Test]
@@ -108,10 +109,10 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Race);
-            Assert.AreEqual(race, ParsedProfile.Race);
-            Assert.AreEqual(raceId, ParsedProfile.RaceId);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Race);
+            ClassicAssert.AreEqual(race, ParsedProfile.Race);
+            ClassicAssert.AreEqual(raceId, ParsedProfile.RaceId);
         }
 
         [Test]
@@ -123,9 +124,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Region);
-            Assert.AreEqual(region, ParsedProfile.Region);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Region);
+            ClassicAssert.AreEqual(region, ParsedProfile.Region);
         }
 
         [Test]
@@ -137,9 +138,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Server);
-            Assert.AreEqual(server, ParsedProfile.Server);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Server);
+            ClassicAssert.AreEqual(server, ParsedProfile.Server);
         }
 
         [Test]
@@ -151,9 +152,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Role);
-            Assert.AreEqual(role, ParsedProfile.Role);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Role);
+            ClassicAssert.AreEqual(role, ParsedProfile.Role);
         }
 
         [Test]
@@ -166,10 +167,10 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Spec);
-            Assert.AreEqual(spec, ParsedProfile.Spec);
-            Assert.AreEqual(specId, ParsedProfile.SpecId);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Spec);
+            ClassicAssert.AreEqual(spec, ParsedProfile.Spec);
+            ClassicAssert.AreEqual(specId, ParsedProfile.SpecId);
         }
 
         [Test]
@@ -181,9 +182,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Renown);
-            Assert.AreEqual(renown, ParsedProfile.Renown);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Renown);
+            ClassicAssert.AreEqual(renown, ParsedProfile.Renown);
         }
 
         [Test]
@@ -195,9 +196,9 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Covenant);
-            Assert.AreEqual(covenant, ParsedProfile.Covenant);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Covenant);
+            ClassicAssert.AreEqual(covenant, ParsedProfile.Covenant);
         }
 
         [Test]
@@ -223,10 +224,10 @@ namespace SimcProfileParser.Tests
             var actualConduits = JsonConvert.SerializeObject(ParsedProfile.Conduits);
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Conduits);
-            Assert.NotZero(ParsedProfile.Conduits.Count);
-            Assert.AreEqual(expectedConduits, actualConduits);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Conduits);
+            ClassicAssert.NotZero(ParsedProfile.Conduits.Count);
+            ClassicAssert.AreEqual(expectedConduits, actualConduits);
         }
 
         [Test]
@@ -237,14 +238,14 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Talents);
-            Assert.NotZero(ParsedProfile.Talents.Count);
-            Assert.AreEqual(43, ParsedProfile.Talents.Count);
-            Assert.AreEqual(92811, ParsedProfile.Talents[0].TalentId);
-            Assert.AreEqual(1, ParsedProfile.Talents[0].Rank);
-            Assert.AreEqual(92812, ParsedProfile.Talents[1].TalentId);
-            Assert.AreEqual(2, ParsedProfile.Talents[1].Rank);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Talents);
+            ClassicAssert.NotZero(ParsedProfile.Talents.Count);
+            ClassicAssert.AreEqual(43, ParsedProfile.Talents.Count);
+            ClassicAssert.AreEqual(92811, ParsedProfile.Talents[0].TalentId);
+            ClassicAssert.AreEqual(1, ParsedProfile.Talents[0].Rank);
+            ClassicAssert.AreEqual(92812, ParsedProfile.Talents[1].TalentId);
+            ClassicAssert.AreEqual(2, ParsedProfile.Talents[1].Rank);
         }
 
         [Test]
@@ -257,10 +258,10 @@ namespace SimcProfileParser.Tests
             // Act
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Class);
-            Assert.AreEqual(className, ParsedProfile.Class);
-            Assert.AreEqual(classId, ParsedProfile.ClassId);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Class);
+            ClassicAssert.AreEqual(className, ParsedProfile.Class);
+            ClassicAssert.AreEqual(classId, ParsedProfile.ClassId);
         }
 
         [Test]
@@ -321,10 +322,10 @@ namespace SimcProfileParser.Tests
             var actualSoulbinds = JsonConvert.SerializeObject(ParsedProfile.Soulbinds);
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Soulbinds);
-            Assert.NotZero(ParsedProfile.Soulbinds.Count);
-            Assert.AreEqual(expectedSoulbinds, actualSoulbinds);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Soulbinds);
+            ClassicAssert.NotZero(ParsedProfile.Soulbinds.Count);
+            ClassicAssert.AreEqual(expectedSoulbinds, actualSoulbinds);
         }
 
 
@@ -352,10 +353,10 @@ namespace SimcProfileParser.Tests
             var actualProfessions = JsonConvert.SerializeObject(ParsedProfile.Professions);
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Professions);
-            Assert.NotZero(ParsedProfile.Professions.Count);
-            Assert.AreEqual(expectedProfessions, actualProfessions);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Professions);
+            ClassicAssert.NotZero(ParsedProfile.Professions.Count);
+            ClassicAssert.AreEqual(expectedProfessions, actualProfessions);
         }
 
 
@@ -381,10 +382,10 @@ namespace SimcProfileParser.Tests
             var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[3]);
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Items);
-            Assert.NotZero(ParsedProfile.Items.Count);
-            Assert.AreEqual(expectedItem, actualItem);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Items);
+            ClassicAssert.NotZero(ParsedProfile.Items.Count);
+            ClassicAssert.AreEqual(expectedItem, actualItem);
 
         }
 
@@ -411,10 +412,10 @@ namespace SimcProfileParser.Tests
             var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[15]);
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Items);
-            Assert.NotZero(ParsedProfile.Items.Count);
-            Assert.AreEqual(expectedItem, actualItem);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Items);
+            ClassicAssert.NotZero(ParsedProfile.Items.Count);
+            ClassicAssert.AreEqual(expectedItem, actualItem);
 
         }
 
@@ -445,10 +446,10 @@ namespace SimcProfileParser.Tests
             var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[7]);
 
             // Assert
-            Assert.IsNotNull(ParsedProfile);
-            Assert.IsNotNull(ParsedProfile.Items);
-            Assert.NotZero(ParsedProfile.Items.Count);
-            Assert.AreEqual(expectedItem, actualItem);
+            ClassicAssert.IsNotNull(ParsedProfile);
+            ClassicAssert.IsNotNull(ParsedProfile.Items);
+            ClassicAssert.NotZero(ParsedProfile.Items.Count);
+            ClassicAssert.AreEqual(expectedItem, actualItem);
 
         }
     }

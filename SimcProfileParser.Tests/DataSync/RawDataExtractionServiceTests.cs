@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Model.RawData;
 using System.Collections.Generic;
@@ -25,17 +26,17 @@ namespace SimcProfileParser.Tests.DataSync
             var result = rawDataExtractionService.GenerateCombatRatingMultipliers(incomingRawData);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Length);
-            Assert.AreEqual(1300, result[0].Length);
-            Assert.AreEqual(0.1f, result[0][0]);
-            Assert.AreEqual(0.2f, result[0][1]);
-            Assert.AreEqual(0.3f, result[1][0]);
-            Assert.AreEqual(0.4f, result[1][1]);
-            Assert.AreEqual(0.5f, result[2][0]);
-            Assert.AreEqual(0.6f, result[2][1]);
-            Assert.AreEqual(0.7f, result[3][0]);
-            Assert.AreEqual(0.8f, result[3][1]);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(4, result.Length);
+            ClassicAssert.AreEqual(1300, result[0].Length);
+            ClassicAssert.AreEqual(0.1f, result[0][0]);
+            ClassicAssert.AreEqual(0.2f, result[0][1]);
+            ClassicAssert.AreEqual(0.3f, result[1][0]);
+            ClassicAssert.AreEqual(0.4f, result[1][1]);
+            ClassicAssert.AreEqual(0.5f, result[2][0]);
+            ClassicAssert.AreEqual(0.6f, result[2][1]);
+            ClassicAssert.AreEqual(0.7f, result[3][0]);
+            ClassicAssert.AreEqual(0.8f, result[3][1]);
         }
 
         [Test]
@@ -54,17 +55,17 @@ namespace SimcProfileParser.Tests.DataSync
             var result = rawDataExtractionService.GenerateStaminaMultipliers(incomingRawData);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Length);
-            Assert.AreEqual(1300, result[0].Length);
-            Assert.AreEqual(0.1f, result[0][0]);
-            Assert.AreEqual(0.2f, result[0][1]);
-            Assert.AreEqual(0.3f, result[1][0]);
-            Assert.AreEqual(0.4f, result[1][1]);
-            Assert.AreEqual(0.5f, result[2][0]);
-            Assert.AreEqual(0.6f, result[2][1]);
-            Assert.AreEqual(0.7f, result[3][0]);
-            Assert.AreEqual(0.8f, result[3][1]);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(4, result.Length);
+            ClassicAssert.AreEqual(1300, result[0].Length);
+            ClassicAssert.AreEqual(0.1f, result[0][0]);
+            ClassicAssert.AreEqual(0.2f, result[0][1]);
+            ClassicAssert.AreEqual(0.3f, result[1][0]);
+            ClassicAssert.AreEqual(0.4f, result[1][1]);
+            ClassicAssert.AreEqual(0.5f, result[2][0]);
+            ClassicAssert.AreEqual(0.6f, result[2][1]);
+            ClassicAssert.AreEqual(0.7f, result[3][0]);
+            ClassicAssert.AreEqual(0.8f, result[3][1]);
         }
 
         [Test]
@@ -88,16 +89,16 @@ namespace SimcProfileParser.Tests.DataSync
 
             // Assert
             // TODO: Add tests for each field of each item in a new test class? Against known items with valid values
-            Assert.IsNotNull(result);
-            Assert.NotZero(result.Count);
-            Assert.NotZero(result.FirstOrDefault().ItemMods.Count);
-            Assert.NotZero(result.FirstOrDefault().ItemEffects.Count);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.NotZero(result.Count);
+            ClassicAssert.NotZero(result.FirstOrDefault().ItemMods.Count);
+            ClassicAssert.NotZero(result.FirstOrDefault().ItemEffects.Count);
 
-            Assert.IsNotNull(resultTooHigh);
-            Assert.Zero(resultTooHigh.Count);
+            ClassicAssert.IsNotNull(resultTooHigh);
+            ClassicAssert.Zero(resultTooHigh.Count);
 
-            Assert.IsNotNull(resultTooLow);
-            Assert.Zero(resultTooLow.Count);
+            ClassicAssert.IsNotNull(resultTooLow);
+            ClassicAssert.Zero(resultTooLow.Count);
         }
 
         [Test]
@@ -117,21 +118,21 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(220, firstResult.ItemLevel);
-            Assert.AreEqual(38, firstResult.DamageReplaceStat);
-            Assert.AreEqual(53, firstResult.DamageSecondary);
-            Assert.AreEqual(5, firstResult.Epic.Length);
-            Assert.AreEqual(146, firstResult.Epic[0]);
-            Assert.AreEqual(73, firstResult.Epic[4]);
-            Assert.AreEqual(5, firstResult.Rare.Length);
-            Assert.AreEqual(147, firstResult.Rare[0]);
-            Assert.AreEqual(74, firstResult.Rare[4]);
-            Assert.AreEqual(5, firstResult.Uncommon.Length);
-            Assert.AreEqual(148, firstResult.Uncommon[0]);
-            Assert.AreEqual(75, firstResult.Uncommon[4]);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(220, firstResult.ItemLevel);
+            ClassicAssert.AreEqual(38, firstResult.DamageReplaceStat);
+            ClassicAssert.AreEqual(53, firstResult.DamageSecondary);
+            ClassicAssert.AreEqual(5, firstResult.Epic.Length);
+            ClassicAssert.AreEqual(146, firstResult.Epic[0]);
+            ClassicAssert.AreEqual(73, firstResult.Epic[4]);
+            ClassicAssert.AreEqual(5, firstResult.Rare.Length);
+            ClassicAssert.AreEqual(147, firstResult.Rare[0]);
+            ClassicAssert.AreEqual(74, firstResult.Rare[4]);
+            ClassicAssert.AreEqual(5, firstResult.Uncommon.Length);
+            ClassicAssert.AreEqual(148, firstResult.Uncommon[0]);
+            ClassicAssert.AreEqual(75, firstResult.Uncommon[4]);
         }
 
         [Test]
@@ -161,17 +162,17 @@ namespace SimcProfileParser.Tests.DataSync
 
             // Assert
             // TODO: Add tests for each field of each spell in a new test class? Against known items with valid values
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual("Flash Heal", firstResult.Name);
-            Assert.AreEqual(2061, firstResult.Id);
-            Assert.IsNotNull(firstResult.Effects);
-            Assert.NotZero(firstResult.Effects.Count);
-            Assert.AreEqual(613, firstResult.Effects[0].Id);
-            Assert.IsNotNull(firstResult.SpellPowers);
-            Assert.AreEqual(1, firstResult.SpellPowers.Count);
-            Assert.AreEqual(154, firstResult.SpellPowers[0].Id);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual("Flash Heal", firstResult.Name);
+            ClassicAssert.AreEqual(2061, firstResult.Id);
+            ClassicAssert.IsNotNull(firstResult.Effects);
+            ClassicAssert.NotZero(firstResult.Effects.Count);
+            ClassicAssert.AreEqual(613, firstResult.Effects[0].Id);
+            ClassicAssert.IsNotNull(firstResult.SpellPowers);
+            ClassicAssert.AreEqual(1, firstResult.SpellPowers.Count);
+            ClassicAssert.AreEqual(154, firstResult.SpellPowers[0].Id);
         }
 
         [Test]
@@ -191,17 +192,17 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(12070, firstResult.Id);
-            Assert.AreEqual(6432, firstResult.BonusId);
-            Assert.AreEqual(13, (int)firstResult.Type);
-            Assert.AreEqual(1737, firstResult.Value1);
-            Assert.AreEqual(1, firstResult.Value2);
-            Assert.AreEqual(424, firstResult.Value3);
-            Assert.AreEqual(14309, firstResult.Value4);
-            Assert.AreEqual(0, firstResult.Index);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(12070, firstResult.Id);
+            ClassicAssert.AreEqual(6432, firstResult.BonusId);
+            ClassicAssert.AreEqual(13, (int)firstResult.Type);
+            ClassicAssert.AreEqual(1737, firstResult.Value1);
+            ClassicAssert.AreEqual(1, firstResult.Value2);
+            ClassicAssert.AreEqual(424, firstResult.Value3);
+            ClassicAssert.AreEqual(14309, firstResult.Value4);
+            ClassicAssert.AreEqual(0, firstResult.Index);
         }
 
         [Test]
@@ -221,12 +222,12 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(62, firstResult.Id);
-            Assert.AreEqual(2706, firstResult.EnchantId);
-            Assert.AreEqual(12, firstResult.Colour);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(62, firstResult.Id);
+            ClassicAssert.AreEqual(2706, firstResult.EnchantId);
+            ClassicAssert.AreEqual(12, firstResult.Colour);
         }
 
         [Test]
@@ -246,10 +247,10 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(5425, firstResult.Id);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(5425, firstResult.Id);
         }
 
         [Test]
@@ -329,19 +330,19 @@ namespace SimcProfileParser.Tests.DataSync
             var result = rawDataExtractionService.GenerateSpellScalingMultipliers(incomingRawData);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(21, result.Length);
-            Assert.AreEqual(80, result[0].Length);
-            Assert.AreEqual(1d, result[0][0]);
-            Assert.AreEqual(2d, result[1][0]);
-            Assert.AreEqual(3d, result[2][0]);
-            Assert.AreEqual(4d, result[3][0]);
-            Assert.AreEqual(5d, result[4][1]);
-            Assert.AreEqual(6d, result[5][2]);
-            Assert.AreEqual(7d, result[6][3]);
-            Assert.AreEqual(8d, result[7][4]);
-            Assert.AreEqual(9d, result[8][0]);
-            Assert.AreEqual(0.143964076d, result[19][4]);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(21, result.Length);
+            ClassicAssert.AreEqual(80, result[0].Length);
+            ClassicAssert.AreEqual(1d, result[0][0]);
+            ClassicAssert.AreEqual(2d, result[1][0]);
+            ClassicAssert.AreEqual(3d, result[2][0]);
+            ClassicAssert.AreEqual(4d, result[3][0]);
+            ClassicAssert.AreEqual(5d, result[4][1]);
+            ClassicAssert.AreEqual(6d, result[5][2]);
+            ClassicAssert.AreEqual(7d, result[6][3]);
+            ClassicAssert.AreEqual(8d, result[7][4]);
+            ClassicAssert.AreEqual(9d, result[8][0]);
+            ClassicAssert.AreEqual(0.143964076d, result[19][4]);
         }
 
         [Test]
@@ -361,15 +362,15 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(5481, firstResult.CurveId, "Curve Id");
-            Assert.AreEqual(2, firstResult.Index, "Index");
-            Assert.AreEqual(0.79273f, firstResult.Primary1, "Primary 1");
-            Assert.AreEqual(-42.35294f, firstResult.Primary2, "Primary 2");
-            Assert.AreEqual(0.79273f, firstResult.Secondary1, "Secondary 1");
-            Assert.AreEqual(-42.35294f, firstResult.Secondary2, "Secondary 2");
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(5481, firstResult.CurveId, "Curve Id");
+            ClassicAssert.AreEqual(2, firstResult.Index, "Index");
+            ClassicAssert.AreEqual(0.79273f, firstResult.Primary1, "Primary 1");
+            ClassicAssert.AreEqual(-42.35294f, firstResult.Primary2, "Primary 2");
+            ClassicAssert.AreEqual(0.79273f, firstResult.Secondary1, "Secondary 1");
+            ClassicAssert.AreEqual(-42.35294f, firstResult.Secondary2, "Secondary 2");
         }
 
         [Test]
@@ -389,13 +390,13 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(339343, firstResult.SpellId, "Spell Id");
-            Assert.AreEqual(257, firstResult.Type, "Type");
-            Assert.AreEqual(4, (int)firstResult.ModifierType, "ModifierType");
-            Assert.AreEqual(-0.5000, firstResult.Coefficient, "Coefficient");
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(339343, firstResult.SpellId, "Spell Id");
+            ClassicAssert.AreEqual(257, firstResult.Type, "Type");
+            ClassicAssert.AreEqual(4, (int)firstResult.ModifierType, "ModifierType");
+            ClassicAssert.AreEqual(-0.5000, firstResult.Coefficient, "Coefficient");
         }
 
         [Test]
@@ -418,13 +419,13 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(337078, firstResult.SpellId, "Spell Id");
-            Assert.AreEqual(41, firstResult.ConduitId, "Conduit Id");
-            Assert.AreEqual(10.000000, firstResult.Value, "Value");
-            Assert.AreEqual(0, firstResult.Rank, "Rank");
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(2, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(337078, firstResult.SpellId, "Spell Id");
+            ClassicAssert.AreEqual(41, firstResult.ConduitId, "Conduit Id");
+            ClassicAssert.AreEqual(10.000000, firstResult.Value, "Value");
+            ClassicAssert.AreEqual(0, firstResult.Rank, "Rank");
         }
 
         [Test]
@@ -444,17 +445,17 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(135983, firstResult.Id, "Id");
-            Assert.AreEqual(42292, firstResult.SpellId, "Spell Id");
-            Assert.AreEqual(184268, firstResult.ItemId, "Id");
-            Assert.AreEqual(0, firstResult.Index, "Index");
-            Assert.AreEqual(0, firstResult.Type, "Type");
-            Assert.AreEqual(1182, firstResult.CooldownGroup, "CooldownGroup");
-            Assert.AreEqual(120000, firstResult.CooldownDuration, "CooldownDuration");
-            Assert.AreEqual(120000, firstResult.CooldownGroupDuration, "CooldownGroupDuration");
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(135983, firstResult.Id, "Id");
+            ClassicAssert.AreEqual(42292, firstResult.SpellId, "Spell Id");
+            ClassicAssert.AreEqual(184268, firstResult.ItemId, "Id");
+            ClassicAssert.AreEqual(0, firstResult.Index, "Index");
+            ClassicAssert.AreEqual(0, firstResult.Type, "Type");
+            ClassicAssert.AreEqual(1182, firstResult.CooldownGroup, "CooldownGroup");
+            ClassicAssert.AreEqual(120000, firstResult.CooldownDuration, "CooldownDuration");
+            ClassicAssert.AreEqual(120000, firstResult.CooldownGroupDuration, "CooldownGroupDuration");
         }
 
         [Test]
@@ -473,8 +474,8 @@ namespace SimcProfileParser.Tests.DataSync
             var result = rawDataExtractionService.GenerateGameDataVersion(incomingRawData);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual("9.0.2.36401", result);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual("9.0.2.36401", result);
         }
 
         [Test]
@@ -497,27 +498,27 @@ namespace SimcProfileParser.Tests.DataSync
             var firstResult = result.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Count);
-            Assert.IsNotNull(firstResult);
-            Assert.AreEqual(1, firstResult.TreeIndex);
-            Assert.AreEqual(1, firstResult.ClassId);
-            Assert.AreEqual(98326, firstResult.TraitNodeEntryId);
-            Assert.AreEqual(77889, firstResult.NodeId);
-            Assert.AreEqual(1, firstResult.MaxRanks);
-            Assert.AreEqual(8, firstResult.RequiredPoints);
-            Assert.AreEqual(103328, firstResult.TraitDefinitionId);
-            Assert.AreEqual(384090, firstResult.SpellId);
-            Assert.AreEqual(57755, firstResult.SpellOverrideId);
-            Assert.AreEqual(5, firstResult.Row);
-            Assert.AreEqual(7, firstResult.Column);
-            Assert.AreEqual(200, firstResult.SelectionIndex);
-            Assert.AreEqual("Titanic Throw", firstResult.Name);
-            Assert.IsNotNull(firstResult.SpecId);
-            Assert.AreEqual(4, firstResult.SpecId.Count());
-            Assert.AreEqual(71, firstResult.SpecId[0]);
-            Assert.AreEqual(4, firstResult.SpecStarterId.Count());
-            Assert.AreEqual(0, firstResult.SpecStarterId[0]);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual(1, result.Count);
+            ClassicAssert.IsNotNull(firstResult);
+            ClassicAssert.AreEqual(1, firstResult.TreeIndex);
+            ClassicAssert.AreEqual(1, firstResult.ClassId);
+            ClassicAssert.AreEqual(98326, firstResult.TraitNodeEntryId);
+            ClassicAssert.AreEqual(77889, firstResult.NodeId);
+            ClassicAssert.AreEqual(1, firstResult.MaxRanks);
+            ClassicAssert.AreEqual(8, firstResult.RequiredPoints);
+            ClassicAssert.AreEqual(103328, firstResult.TraitDefinitionId);
+            ClassicAssert.AreEqual(384090, firstResult.SpellId);
+            ClassicAssert.AreEqual(57755, firstResult.SpellOverrideId);
+            ClassicAssert.AreEqual(5, firstResult.Row);
+            ClassicAssert.AreEqual(7, firstResult.Column);
+            ClassicAssert.AreEqual(200, firstResult.SelectionIndex);
+            ClassicAssert.AreEqual("Titanic Throw", firstResult.Name);
+            ClassicAssert.IsNotNull(firstResult.SpecId);
+            ClassicAssert.AreEqual(4, firstResult.SpecId.Count());
+            ClassicAssert.AreEqual(71, firstResult.SpecId[0]);
+            ClassicAssert.AreEqual(4, firstResult.SpecStarterId.Count());
+            ClassicAssert.AreEqual(0, firstResult.SpecStarterId[0]);
         }
     }
 }

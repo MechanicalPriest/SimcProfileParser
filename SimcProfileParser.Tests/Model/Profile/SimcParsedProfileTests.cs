@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using SimcProfileParser.Model.Profile;
 
 namespace SimcProfileParser.Tests.Model.Profile
@@ -13,10 +14,10 @@ namespace SimcProfileParser.Tests.Model.Profile
             var spp = new SimcParsedProfile();
 
             // Assert
-            Assert.IsNotNull(spp.Soulbinds);
-            Assert.IsNotNull(spp.Conduits);
-            Assert.IsNotNull(spp.Professions);
-            Assert.IsNotNull(spp.Items);
+            ClassicAssert.IsNotNull(spp.Soulbinds);
+            ClassicAssert.IsNotNull(spp.Conduits);
+            ClassicAssert.IsNotNull(spp.Professions);
+            ClassicAssert.IsNotNull(spp.Items);
         }
 
         [Test]
@@ -24,7 +25,7 @@ namespace SimcProfileParser.Tests.Model.Profile
         {
 
             // TODO: Populate an spp and test each collection for editing its items
-            // Assert.Throws(Type exceptionType, TestDelegate code);
+            // ClassicAssert.Throws(Type exceptionType, TestDelegate code);
         }
 
     }

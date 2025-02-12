@@ -17,6 +17,7 @@ namespace SimcProfileParser.Interfaces.DataSync
         /// Collection of already registered file configurations
         /// </summary>
         IReadOnlyCollection<CacheFileConfiguration> RegisteredFiles { get; }
+
         /// <summary>
         /// Register a configuration representing a parsed json file and its raw sources
         /// </summary>
@@ -36,5 +37,24 @@ namespace SimcProfileParser.Interfaces.DataSync
         /// </summary>
         /// <param name="fileType">The type of file this should generate</param>
         Task GenerateParsedFileAsync(SimcParsedFileType fileType);
+
+        /// <summary>
+        /// Set to TRUE to use PTR data for data extraction
+        /// </summary>
+        bool UsePtrData { get; }
+        /// <summary>
+        /// Set the flag to use PTR data for data extraction
+        /// </summary>
+        /// <param name="usePtrData">TUE for using PTR data</param>
+        void SetUsePtrData(bool usePtrData);
+        /// <summary>
+        /// The github branch name to use for data extraction
+        /// </summary>
+        string UseBranchName { get; }
+        /// <summary>
+        /// Set the github branch name to use for data extraction
+        /// </summary>
+        /// <param name="branchName">e.g. thewarwithin</param>
+        void SetUseBranchName(string branchName);
     }
 }
