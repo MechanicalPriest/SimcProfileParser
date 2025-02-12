@@ -62,7 +62,7 @@ namespace SimcProfileParser.Tests.DataSync
                 ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", "https://raw.githubusercontent.com/simulationcraft/simc/thewarwithin/engine/dbc/generated/sc_scale_data.inc" }
+                    { "ScaleData.raw", "sc_scale_data" }
                 }
             };
             var filePath = Path.Combine(cache.BaseFileDirectory, "ScaleData.raw");
@@ -74,6 +74,63 @@ namespace SimcProfileParser.Tests.DataSync
             DirectoryAssert.Exists(cache.BaseFileDirectory);
             FileAssert.Exists(filePath);
             ClassicAssert.NotNull(data);
+        }
+
+        [Test]
+        /// Integration test of sorts. Checking the file download works.
+        public async Task CS_Downloads_Ptr_File()
+        {
+            // Arrange
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            cache.SetUsePtrData(true);
+
+            var configuration = new CacheFileConfiguration()
+            {
+                LocalParsedFile = "CombatRatingMultipliers.json",
+                ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ScaleData.raw", "sc_scale_data" }
+                }
+            };
+            var filePath = Path.Combine(cache.BaseFileDirectory, "ScaleData.raw");
+
+            // Act
+            var data = await cache.GetRawFileContentsAsync(configuration, "ScaleData.raw");
+
+            // Assert
+            DirectoryAssert.Exists(cache.BaseFileDirectory);
+            FileAssert.Exists(filePath);
+            ClassicAssert.NotNull(data);
+        }
+
+        [Test]
+        /// Integration test of sorts. Checking the file download fails properly.
+        public void CS_Download_Fails_Bad_Filename()
+        {
+            // Arrange
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            cache.SetUsePtrData(true);
+
+            var configuration = new CacheFileConfiguration()
+            {
+                LocalParsedFile = "FakeFileTest.json",
+                ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "FakeFileTest.raw", "fake_filename" }
+                }
+            };
+            var filePath = Path.Combine(cache.BaseFileDirectory, "FakeFileTest.raw");
+
+            // Act
+            async Task testDelegate()
+            {
+                var data = await cache.GetRawFileContentsAsync(configuration, "FakeFileTest.raw");
+            }
+
+            // Assert
+            var ex = Assert.ThrowsAsync<FileNotFoundException>(testDelegate);
         }
 
         [Test]

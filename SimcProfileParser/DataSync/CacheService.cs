@@ -51,8 +51,8 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemDataNew,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemData.raw", _getUrl("item_data") },
-                    { "ItemEffectData.raw", _getUrl("item_effect") }
+                    { "ItemData.raw", "item_data" },
+                    { "ItemEffectData.raw", "item_effect" }
                 }
             });
 
@@ -62,8 +62,8 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemDataOld,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemData.raw", _getUrl("item_data") },
-                    { "ItemEffectData.raw", _getUrl("item_effect") }
+                    { "ItemData.raw", "item_data" },
+                    { "ItemEffectData.raw", "item_effect" }
                 }
             });
 
@@ -73,7 +73,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", _getUrl("sc_scale_data") }
+                    { "ScaleData.raw", "sc_scale_data" }
                 }
             });
 
@@ -83,7 +83,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.StaminaMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", _getUrl("sc_scale_data") }
+                    { "ScaleData.raw", "sc_scale_data" }
                 }
             });
 
@@ -93,7 +93,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.RandomPropPoints,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "RandomPropPoints.raw", _getUrl("rand_prop_points") }
+                    { "RandomPropPoints.raw", "rand_prop_points" }
                 }
             });
 
@@ -103,7 +103,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.SpellData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "SpellData.raw", _getUrl("sc_spell_data") }
+                    { "SpellData.raw", "sc_spell_data" }
                 }
             });
 
@@ -113,7 +113,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemBonusData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemBonusData.raw", _getUrl("item_bonus") }
+                    { "ItemBonusData.raw", "item_bonus" }
                 }
             });
 
@@ -123,7 +123,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.GemData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "GemData.raw", _getUrl("gem_data") }
+                    { "GemData.raw", "gem_data" }
                 }
             });
 
@@ -133,7 +133,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemEnchantData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemEnchantData.raw", _getUrl("spell_item_enchantment") }
+                    { "ItemEnchantData.raw", "spell_item_enchantment" }
                 }
             });
 
@@ -143,7 +143,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.SpellScaleMultipliers,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ScaleData.raw", _getUrl("sc_scale_data") }
+                    { "ScaleData.raw", "sc_scale_data" }
                 }
             });
 
@@ -153,7 +153,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CurvePoints,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "CurveData.raw", _getUrl("item_scaling") }
+                    { "CurveData.raw", "item_scaling" }
                 }
             });
 
@@ -163,7 +163,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.RppmData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "RppmData.raw", _getUrl("real_ppm_data") }
+                    { "RppmData.raw", "real_ppm_data" }
                 }
             });
 
@@ -173,7 +173,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.CovenantData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "CovenantData.raw", _getUrl("covenant_data") }
+                    { "CovenantData.raw", "covenant_data" }
                 }
             });
 
@@ -183,7 +183,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.ItemEffectData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "ItemEffectData.raw", _getUrl("item_effect") }
+                    { "ItemEffectData.raw", "item_effect" }
                 }
             });
 
@@ -193,7 +193,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.GameDataVersion,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "GameDataVersion.raw", _getUrl("client_data_version") }
+                    { "GameDataVersion.raw", "client_data_version" }
                 }
             });
 
@@ -203,7 +203,7 @@ namespace SimcProfileParser.DataSync
                 ParsedFileType = SimcParsedFileType.TraitData,
                 RawFiles = new Dictionary<string, string>()
                 {
-                    { "TraitData.raw", _getUrl("trait_data") }
+                    { "TraitData.raw", "trait_data" }
                 }
             });
         }
@@ -304,7 +304,7 @@ namespace SimcProfileParser.DataSync
 
                 _logger?.LogTrace("Path does not exist: [{localPath}] - attempting to download file from [{destinationRawFile}].", localPath, destinationRawFile);
 
-                var downloaded = await DownloadFileIfChangedAsync(new Uri(destinationRawFile.Value),
+                var downloaded = await DownloadFileIfChangedAsync(new Uri(_getUrl(destinationRawFile.Value)),
                     new Uri(Path.Combine(BaseFileDirectory, destinationRawFile.Key)));
 
                 if (!downloaded)
