@@ -238,7 +238,7 @@ namespace SimcProfileParser.DataSync
                     else
                     {
                         item.DbcStats = Convert.ToInt32(
-                            data[17].Replace("&__item_stats_data[", "").Trim(']'));
+                            data[17].Replace("&__ptr_item_stats_data[", "").Replace("&__item_stats_data[", "").Trim(']'));
                     }
 
                     // 18 is dbc stats count
@@ -492,7 +492,7 @@ namespace SimcProfileParser.DataSync
                         data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
                     }
 
-                    if (data[0].Contains("&__spell_data"))
+                    if (data[0].Contains("&__spell_data") || data[0].Contains("&__ptr_spell_data"))
                         continue;
 
                     // 0 is Id
@@ -992,7 +992,7 @@ namespace SimcProfileParser.DataSync
                 spellScalingTable[i] = new double[80];
             }
 
-            string key = "__spell_scaling[][80] = {";
+            string key = "_spell_scaling[][80] = {";
 
             int start = rawData.IndexOf(key) + key.Length;
             int end = rawData.IndexOf("};", start);
@@ -1120,7 +1120,7 @@ namespace SimcProfileParser.DataSync
             var rawData = incomingRawData.Where(d => d.Key == "CovenantData.raw").FirstOrDefault().Value;
 
             // Split the raw data to only be the parts we want.
-            string key = "__conduit_rank_data {";
+            string key = "_conduit_rank_data {";
 
             int start = rawData.IndexOf(key) + key.Length;
             int end = rawData.IndexOf("};", start);
@@ -1205,7 +1205,7 @@ namespace SimcProfileParser.DataSync
             var rawData = incomingRawData.Where(d => d.Key == "TraitData.raw").FirstOrDefault().Value;
 
             // Split the raw data to only be the parts we want.
-            string key = "__trait_data_data { {";
+            string key = "_trait_data_data { {";
 
             int start = rawData.IndexOf(key) + key.Length;
             int end = rawData.IndexOf("} };", start);
