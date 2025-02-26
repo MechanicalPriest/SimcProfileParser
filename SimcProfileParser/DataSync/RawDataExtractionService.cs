@@ -984,7 +984,7 @@ namespace SimcProfileParser.DataSync
         {
             var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
 
-            var numSpellScalingTables = 21;
+            var numSpellScalingTables = 23;
 
             double[][] spellScalingTable = new double[numSpellScalingTables][];
             for (int i = 0; i < numSpellScalingTables; i++)
