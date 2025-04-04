@@ -48,6 +48,9 @@ namespace SimcProfileParser
         {
             var spellData = await _simcUtilityService.GetRawSpellDataAsync(spellId);
 
+            if (spellData == null)
+                return new();
+
             var itemSpell = new SimcSpell()
             {
                 SpellId = spellData.Id,

@@ -331,7 +331,7 @@ namespace SimcProfileParser.Tests.DataSync
 
             // Assert
             ClassicAssert.IsNotNull(result);
-            ClassicAssert.AreEqual(21, result.Length);
+            ClassicAssert.AreEqual(23, result.Length);
             ClassicAssert.AreEqual(80, result[0].Length);
             ClassicAssert.AreEqual(1d, result[0][0]);
             ClassicAssert.AreEqual(2d, result[1][0]);

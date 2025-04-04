@@ -204,6 +204,26 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public async Task SSC_Creates_Player_Spell_With_Invalid_Trigger_Spell()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 34433,
+                PlayerLevel = 80
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+
+            // Assert
+            ClassicAssert.IsNotNull(spell);
+            ClassicAssert.IsNotNull(spell.Effects);
+            ClassicAssert.AreEqual(15000d, spell.Duration);
+            ClassicAssert.AreEqual(180000d, spell.Cooldown);
+        }
+
+        [Test]
         public async Task SSC_Creates_Player_Spell_Raw()
         {
             // Arrange
