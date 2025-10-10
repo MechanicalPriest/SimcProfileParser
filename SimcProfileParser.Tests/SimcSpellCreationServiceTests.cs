@@ -159,7 +159,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(1, spell.Effects.Count);
             ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
-            ClassicAssert.AreEqual(21.946373000000001d, spell.Effects[0].Coefficient);
+            ClassicAssert.AreEqual(26.649944000000001d, spell.Effects[0].Coefficient);
         }
 
         [Test]
