@@ -26,8 +26,6 @@ namespace SimcProfileParser.Interfaces
         Task<List<SimcRawRppmEntry>> GetSpellRppmModifiersAsync(uint spellId);
         Task<double> GetSpellScalingMultiplierAsync(int scaleIndex, int playerLevel);
         Task<double> GetStaminaMultiplierAsync(int itemLevel, CombatRatingMultiplayerType staminaRatingType);
-        Task<List<SimcRawSpellConduitRankEntry>> GetSpellConduitRanksAsync(uint spellId);
-        Task<uint> GetSpellConduitSpellIdAsync(uint conduitId);
         Task<SimcRawItemEffect> GetItemEffectAsync(uint itemEffectId);
         Task<SimcRawTrait> GetTraitDataAsync(int traitEntryId);
         Task<List<SimcRawTrait>> GetTraitsByClassSpecAsync(int classId, int specId);

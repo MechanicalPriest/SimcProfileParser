@@ -26,13 +26,6 @@ namespace SimcProfileParser.Model.Profile
         public string Race { get; internal set; }
         public int RaceId { get; internal set; }
         public string Role { get; internal set; }
-
-        public string Covenant { get; internal set; }
-        public IReadOnlyList<SimcParsedSoulbind> Soulbinds { get; internal set; }
-        /// <summary>
-        /// Available conduits
-        /// </summary>
-        public IReadOnlyList<SimcParsedConduit> Conduits { get; internal set; }
         /// <summary>
         /// Covenant Renown level
         /// </summary>
@@ -56,9 +49,6 @@ namespace SimcProfileParser.Model.Profile
             Items = new List<SimcParsedItem>();
             Professions = new List<SimcParsedProfession>();
             Talents = new List<SimcParsedTalent>();
-
-            Soulbinds = new List<SimcParsedSoulbind>();
-            Conduits = new List<SimcParsedConduit>();
 
             ProfileLines = new List<SimcParsedLine>();
         }

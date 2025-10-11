@@ -9,6 +9,5 @@ namespace SimcProfileParser.Interfaces
         Task<SimcSpell> GenerateItemSpellAsync(SimcSpellOptions spellOptions);
         Task<SimcSpell> GeneratePlayerSpellAsync(uint playerLevel, uint spellId);
         Task<SimcSpell> GeneratePlayerSpellAsync(SimcSpellOptions spellOptions);
-        Task<uint> GetSpellIdFromConduitIdAsync(uint conduitId);
     }
 }
