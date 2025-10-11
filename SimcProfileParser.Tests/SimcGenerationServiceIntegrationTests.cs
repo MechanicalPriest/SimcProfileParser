@@ -52,11 +52,6 @@ namespace SimcProfileParser.Tests
             ClassicAssert.NotZero(profile.ParsedProfile.Level);
             ClassicAssert.NotZero(profile.GeneratedItems.Count);
             ClassicAssert.IsTrue(profile.GeneratedItems[0].Equipped);
-            ClassicAssert.NotZero(profile.ParsedProfile.Conduits.Count);
-            ClassicAssert.NotZero(profile.ParsedProfile.Conduits[0].SpellId);
-            ClassicAssert.NotZero(profile.ParsedProfile.Soulbinds.Count);
-            ClassicAssert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits.Count);
-            ClassicAssert.NotZero(profile.ParsedProfile.Soulbinds[0].SocketedConduits[0].SpellId);
             ClassicAssert.IsNotNull(profile.Talents);
             ClassicAssert.AreEqual(0, profile.Talents.Count);
             //Assert.AreEqual(103775, profile.Talents[0].TraitEntryId);

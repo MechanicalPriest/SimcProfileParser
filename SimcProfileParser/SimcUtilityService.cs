@@ -339,17 +339,21 @@ namespace SimcProfileParser
 
                 return (int)Math.Round(rawValue);
             }
-
-            if (currentStatValue == 0 || newItemLevel == 0 || item.ItemLevel == 0)
-            { 
-                _logger?.LogError($"Items and mods that don't scale are not yet implemented. modType: {modType}, slotType: {slotType}, statAllocation: {statAllocation}, itemBudget: {itemBudget}");
-                return 0;
-            }
             else
             {
-                var approximateCoefficient = ApproximateScaleCoefficient(item.ItemLevel, newItemLevel);
-                return (int)Math.Floor(currentStatValue * approximateCoefficient);
-            }            
+                if (currentStatValue == 0 || newItemLevel == 0 || item.ItemLevel == 0)
+                {
+                    _logger?.LogError($"Items and mods that don't scale are not yet implemented. modType: {modType}, slotType: {slotType}, statAllocation: {statAllocation}, itemBudget: {itemBudget}");
+                    return 0;
+                }
+                else
+                {
+                    var approximateCoefficient = ApproximateScaleCoefficient(item.ItemLevel, newItemLevel);
+                    return (int)Math.Floor(currentStatValue * approximateCoefficient);
+                }
+            }
+
+                       
 
             // TODO: Some new items have a zero value for stats like stamina.
             //throw new NotImplementedException("Items and mods that don't scale are not yet implemented");
@@ -457,24 +461,6 @@ namespace SimcProfileParser
             var result = modifiers.Where(m => m.SpellId == spellId).ToList();
 
             return result;
-        }
-
-        public async Task<List<SimcRawSpellConduitRankEntry>> GetSpellConduitRanksAsync(uint spellId)
-        {
-            var conduitRanks = await _cacheService.GetParsedFileContentsAsync<List<SimcRawSpellConduitRankEntry>>(SimcParsedFileType.CovenantData);
-
-            var result = conduitRanks.Where(m => m.SpellId == spellId).ToList();
-
-            return result;
-        }
-
-        public async Task<uint> GetSpellConduitSpellIdAsync(uint conduitId)
-        {
-            var conduitRanks = await _cacheService.GetParsedFileContentsAsync<List<SimcRawSpellConduitRankEntry>>(SimcParsedFileType.CovenantData);
-
-            var result = conduitRanks.Where(c => c.ConduitId == conduitId).ToList().FirstOrDefault();
-
-            return result.SpellId;
         }
 
         public async Task<SimcRawItemEffect> GetItemEffectAsync(uint itemEffectId)

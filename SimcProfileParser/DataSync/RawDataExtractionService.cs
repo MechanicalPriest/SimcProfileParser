@@ -40,7 +40,6 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.SpellScaleMultipliers => GenerateSpellScalingMultipliers(incomingRawData),
                 SimcParsedFileType.CurvePoints => GenerateCurveData(incomingRawData),
                 SimcParsedFileType.RppmData => GenerateRppmData(incomingRawData),
-                SimcParsedFileType.CovenantData => GenerateConduitRankData(incomingRawData),
                 SimcParsedFileType.ItemEffectData => GenerateItemEffectData(incomingRawData),
                 SimcParsedFileType.GameDataVersion => GenerateGameDataVersion(incomingRawData),
                 SimcParsedFileType.TraitData => GenerateTraitData(incomingRawData),
@@ -1113,60 +1112,6 @@ namespace SimcProfileParser.DataSync
             }
 
             return rppmData;
-        }
-
-        internal List<SimcRawSpellConduitRankEntry> GenerateConduitRankData(Dictionary<string, string> incomingRawData)
-        {
-            var rawData = incomingRawData.Where(d => d.Key == "CovenantData.raw").FirstOrDefault().Value;
-
-            // Split the raw data to only be the parts we want.
-            string key = "_conduit_rank_data {";
-
-            int start = rawData.IndexOf(key) + key.Length;
-            int end = rawData.IndexOf("};", start);
-
-            var dataChunk = rawData[start..end];
-
-            var lines = dataChunk.Split(
-                new[] { "\r\n", "\r", "\n" },
-                StringSplitOptions.None
-            );
-
-            var conduitRankEntries = new List<SimcRawSpellConduitRankEntry>();
-
-            foreach (var line in lines)
-            {
-                // Split the data up
-                var data = line.Split(',');
-
-                // Only process valid lines
-                if (data.Count() != 5)
-                    continue;
-
-                var conduitRank = new SimcRawSpellConduitRankEntry();
-
-                // Clean the data up
-                for (var i = 0; i < data.Length; i++)
-                {
-                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
-                }
-
-                // 0 is curve Id
-                conduitRank.ConduitId = Convert.ToUInt32(data[0]);
-
-                // 1 is rank
-                conduitRank.Rank = Convert.ToUInt32(data[1]);
-
-                // 2 is spell id
-                conduitRank.SpellId = Convert.ToUInt32(data[2]);
-
-                // 3 is spell id
-                conduitRank.Value = ToDoubleClean(data[3]);
-
-                conduitRankEntries.Add(conduitRank);
-            }
-
-            return conduitRankEntries;
         }
 
         internal string GenerateGameDataVersion(Dictionary<string, string> incomingRawData)

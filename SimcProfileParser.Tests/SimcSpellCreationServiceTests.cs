@@ -259,26 +259,6 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public async Task SSC_Creates_Player_Spell_WithConduitRanks()
-        {
-            // Arrange
-            var playerLevel = 80u;
-            var spellId = 340609u;
-
-            // Act
-            var spell = await _spellCreationService.GeneratePlayerSpellAsync(playerLevel, spellId);
-            var firstConduitRank = spell.ConduitRanks.FirstOrDefault();
-
-            // Assert
-            ClassicAssert.IsNotNull(spell);
-            ClassicAssert.IsNotNull(spell.ConduitRanks);
-            ClassicAssert.AreEqual(270, spell.ConduitId);
-            ClassicAssert.IsNotNull(firstConduitRank);
-            ClassicAssert.AreEqual(15, firstConduitRank.Value);
-            ClassicAssert.AreEqual(0, firstConduitRank.Key);
-        }
-
-        [Test]
         public async Task SSC_Creates_Item_Spell_RppmSpecModifiers()
         {
             // Arrange

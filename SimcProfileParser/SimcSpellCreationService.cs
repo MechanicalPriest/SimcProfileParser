@@ -142,17 +142,6 @@ namespace SimcProfileParser
                 });
             }
 
-            // Add the conduit info
-            var conduitRanks = await _simcUtilityService.GetSpellConduitRanksAsync(spellData.Id);
-
-            foreach (var rank in conduitRanks)
-            {
-                if (itemSpell.ConduitId == 0)
-                    itemSpell.ConduitId = rank.ConduitId;
-
-                itemSpell.ConduitRanks.Add(rank.Rank, rank.Value);
-            }
-
             return itemSpell;
         }
 
@@ -169,13 +158,6 @@ namespace SimcProfileParser
             var spell = await GeneratePlayerSpellAsync(spellOptions.PlayerLevel.Value, spellOptions.SpellId);
 
             return spell;
-        }
-
-        public async Task<uint> GetSpellIdFromConduitIdAsync(uint conduitId)
-        {
-            var result = await _simcUtilityService.GetSpellConduitSpellIdAsync(conduitId);
-
-            return result;
         }
 
         internal async Task<SimcSpell> BuildItemSpellAsync(uint spellId, int itemLevel,

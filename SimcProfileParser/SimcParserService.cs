@@ -160,21 +160,6 @@ namespace SimcProfileParser
                         profile.Spec = line.Value.Trim();
                         break;
 
-                    case "covenant":
-                        _logger?.LogDebug("Trying to parse covenant ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
-                        profile.Covenant = line.Value.Trim();
-                        break;
-
-                    case "soulbind":
-                        _logger?.LogDebug("Trying to parse soulbind ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
-                        TryApplySoulbind(profile, line);
-                        break;
-
-                    case "conduits_available":
-                        _logger?.LogDebug("Trying to parse conduits_available ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
-                        TryApplyConduitData(profile, line.Value);
-                        break;
-
                     case "renown":
                         _logger?.LogDebug("Trying to parse renown ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
 
@@ -441,53 +426,6 @@ namespace SimcProfileParser
             result.Level = level;
         }
 
-        private void TryApplyConduitData(SimcParsedProfile profile, string valueString)
-        {
-            if (profile.Conduits.Count > 0)
-            {
-                _logger?.LogWarning("Overriding existing conduits. " +
-                    "There should only be one conduits_available provided per profile.");
-            }
-
-            // Valid conduit string
-            // conduits_available=116:1/78:1/82:1/84:1/101:1/69:1/73:1/67:1/66:1
-            if (valueString.Contains(":"))
-            {
-                var results = new List<SimcParsedConduit>();
-
-                var conduitParts = valueString.Split('/');
-
-                foreach (var part in conduitParts)
-                {
-                    var kvp = part.Split(':');
-
-                    if (kvp.Length != 2 ||
-                        !int.TryParse(kvp[0], out int conduitId) ||
-                        !int.TryParse(kvp[1], out int conduitRank))
-                    {
-                        _logger?.LogWarning("Invalid conduit found in part ({part}): {valueString}", part, valueString);
-                        continue;
-                    }
-
-                    _logger?.LogDebug("Adding new conduit ({conduitId}) at rank: {conduitRank}", conduitId, conduitRank);
-
-                    var conduit = new SimcParsedConduit()
-                    {
-                        ConduitId = conduitId,
-                        Rank = conduitRank
-                    };
-
-                    results.Add(conduit);
-                }
-
-                profile.Conduits = new ReadOnlyCollection<SimcParsedConduit>(results);
-            }
-            else
-            {
-                _logger?.LogDebug("No valid conduits found in string: {valueString}", valueString);
-            }
-        }
-
         private void TryApplyTalents(SimcParsedProfile profile, string valueString)
         {
             if (valueString.Length > 0)
@@ -518,99 +456,7 @@ namespace SimcProfileParser
             else
                 _logger?.LogDebug("No valid talents found in string: {valueString}", valueString);
         }
-
-        private void TryApplySoulbind(SimcParsedProfile profile, SimcParsedLine line)
-        {
-            // Valid soublind string
-            // # soulbind=niya,342270/82:1/73:1/320662/69:1/84:1/320668/322721
-            if (line.Value.Contains(","))
-            {
-                var result = new SimcParsedSoulbind();
-
-                // Get the soulbind name
-                var soulbindName = line.Value.Split(',').FirstOrDefault();
-                if (soulbindName.Length > 0)
-                {
-                    if (soulbindName.Contains(':'))
-                    {
-                        var soulbindNameParts = soulbindName.Split(':');
-                        result.Name = soulbindNameParts[0];
-                        result.SoulbindId = Convert.ToInt32(soulbindNameParts[1]);
-                    }
-                    else
-                        result.Name = soulbindName;
-                }
-                else
-                {
-                    _logger?.LogWarning("Unable to parse soulbind name on line: {line.RawLine}", line.RawLine);
-                }
-
-                // Set if it's active
-                result.IsActive = !(line.RawLine[0] == '#');
-
-                // Now split all the pairs and grab the soulbind spells and socketed conduits
-                var soulbindParts = line.Value.Split(',').LastOrDefault().Split('/');
-
-                var soulbindSpells = new List<int>();
-                var socketedConduits = new List<SimcParsedConduit>();
-
-                foreach (var part in soulbindParts)
-                {
-                    if (part.Contains(':'))
-                    {
-                        // It's a socketed conduit 
-                        var kvp = part.Split(':');
-
-                        if (kvp.Length != 2 ||
-                            !int.TryParse(kvp[0], out int conduitId) ||
-                            !int.TryParse(kvp[1], out int conduitRank))
-                        {
-                            _logger?.LogWarning("Invalid socketed conduit found in part ({part}): {line.CleanLine}", part, line.CleanLine);
-                            continue;
-                        }
-
-                        _logger?.LogDebug("Adding new socketed conduit ({conduitId}) at rank: {conduitRank}", conduitId, conduitRank);
-
-                        var conduit = new SimcParsedConduit()
-                        {
-                            ConduitId = conduitId,
-                            Rank = conduitRank
-                        };
-
-                        socketedConduits.Add(conduit);
-                    }
-                    else
-                    {
-                        // It's a soulbind spell
-                        if (int.TryParse(part, out int soulbindSpellId))
-                        {
-                            _logger?.LogDebug("Adding soulbind ({soulbindSpellId}) from: {line.CleanLine}", soulbindSpellId, line.CleanLine);
-                            soulbindSpells.Add(soulbindSpellId);
-                        }
-                        else
-                        {
-                            _logger?.LogWarning("Unable to parse soulbind spell or conduit from part ({part}) in: {line.CleanLine}", part, line.CleanLine);
-                        }
-                    }
-                }
-
-                // Add the soulbind spells and socketed conduits
-                result.SocketedConduits = socketedConduits;
-                result.SoulbindSpells = soulbindSpells;
-
-                // Add the soulbind to the current ones.
-                var soulbinds = new List<SimcParsedSoulbind>(profile.Soulbinds)
-                {
-                    result
-                };
-                profile.Soulbinds = soulbinds;
-            }
-            else
-            {
-                _logger?.LogDebug("No valid soulbinds found in string: {line.CleanLine}", line.CleanLine);
-            }
-        }
-
+        
         private void TryApplyProfessions(SimcParsedProfile profile, SimcParsedLine line)
         {
             var professions = new List<SimcParsedProfession>();

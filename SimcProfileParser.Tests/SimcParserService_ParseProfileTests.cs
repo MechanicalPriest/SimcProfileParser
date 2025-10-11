@@ -188,49 +188,6 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
-        public void SPS_Parses_Covenant()
-        {
-            // Arrange
-            var covenant = "night_fae";
-
-            // Act
-
-            // Assert
-            ClassicAssert.IsNotNull(ParsedProfile);
-            ClassicAssert.IsNotNull(ParsedProfile.Covenant);
-            ClassicAssert.AreEqual(covenant, ParsedProfile.Covenant);
-        }
-
-        [Test]
-        public void SPS_Parses_Conduits()
-        {
-            // Arrange
-            // 116:1/78:1/82:1/84:1/101:1/69:1/73:1/67:1/66:1
-            var allConduits = new List<SimcParsedConduit>()
-            {
-                new SimcParsedConduit() { ConduitId = 116, Rank = 1 },
-                new SimcParsedConduit() { ConduitId = 78, Rank = 7 },
-                new SimcParsedConduit() { ConduitId = 82, Rank = 1 },
-                new SimcParsedConduit() { ConduitId = 84, Rank = 1 },
-                new SimcParsedConduit() { ConduitId = 101, Rank = 1 },
-                new SimcParsedConduit() { ConduitId = 69, Rank = 1 },
-                new SimcParsedConduit() { ConduitId = 73, Rank = 1 },
-                new SimcParsedConduit() { ConduitId = 67, Rank = 10 },
-                new SimcParsedConduit() { ConduitId = 66, Rank = 1 },
-            };
-
-            // Act
-            var expectedConduits = JsonConvert.SerializeObject(allConduits);
-            var actualConduits = JsonConvert.SerializeObject(ParsedProfile.Conduits);
-
-            // Assert
-            ClassicAssert.IsNotNull(ParsedProfile);
-            ClassicAssert.IsNotNull(ParsedProfile.Conduits);
-            ClassicAssert.NotZero(ParsedProfile.Conduits.Count);
-            ClassicAssert.AreEqual(expectedConduits, actualConduits);
-        }
-
-        [Test]
         public void SPS_Parses_Talents()
         {
             // Arrange
@@ -263,71 +220,6 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(className, ParsedProfile.Class);
             ClassicAssert.AreEqual(classId, ParsedProfile.ClassId);
         }
-
-        [Test]
-        public void SPS_Parses_Soulbinds()
-        {
-            // Arrange
-            // # soulbind=niya:1,342270/82:1/73:1/320662/69:1/84:1/320668/322721
-            // soulbind = dreamweaver:2,319191 / 82:1 / 66:1 / 319213 / 69:1 / 84:1 / 319216 / 319217
-            // # soulbind=korayn:6,
-            var allSoulbinds = new List<SimcParsedSoulbind>()
-            {
-                new SimcParsedSoulbind()
-                {
-                    Name = "niya",
-                    SoulbindId = 1,
-                    IsActive = false,
-                    SocketedConduits = new List<SimcParsedConduit>()
-                    {
-                        new SimcParsedConduit() { ConduitId = 82, Rank = 1 },
-                        new SimcParsedConduit() { ConduitId = 73, Rank = 1 },
-                        new SimcParsedConduit() { ConduitId = 69, Rank = 1 },
-                        new SimcParsedConduit() { ConduitId = 84, Rank = 1 }
-                    },
-                    SoulbindSpells = new List<int>()
-                    {
-                        342270, 320662, 320668, 322721
-                    }
-                },
-                new SimcParsedSoulbind()
-                {
-                    Name = "dreamweaver",
-                    SoulbindId = 2,
-                    IsActive = true,
-                    SocketedConduits = new List<SimcParsedConduit>()
-                    {
-                        new SimcParsedConduit() { ConduitId = 82, Rank = 1 },
-                        new SimcParsedConduit() { ConduitId = 66, Rank = 1 },
-                        new SimcParsedConduit() { ConduitId = 69, Rank = 1 },
-                        new SimcParsedConduit() { ConduitId = 84, Rank = 1 }
-                    },
-                    SoulbindSpells = new List<int>()
-                    {
-                        319191, 319213, 319216, 319217
-                    }
-                },
-                new SimcParsedSoulbind()
-                {
-                    Name = "korayn",
-                    SoulbindId = 6,
-                    IsActive = false,
-                    SocketedConduits = new List<SimcParsedConduit>(),
-                    SoulbindSpells = new List<int>()
-                }
-            };
-
-            // Act
-            var expectedSoulbinds = JsonConvert.SerializeObject(allSoulbinds);
-            var actualSoulbinds = JsonConvert.SerializeObject(ParsedProfile.Soulbinds);
-
-            // Assert
-            ClassicAssert.IsNotNull(ParsedProfile);
-            ClassicAssert.IsNotNull(ParsedProfile.Soulbinds);
-            ClassicAssert.NotZero(ParsedProfile.Soulbinds.Count);
-            ClassicAssert.AreEqual(expectedSoulbinds, actualSoulbinds);
-        }
-
 
         [Test]
         public void SPS_Parses_Professions()

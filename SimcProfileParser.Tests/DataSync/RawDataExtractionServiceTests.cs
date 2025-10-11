@@ -400,35 +400,6 @@ namespace SimcProfileParser.Tests.DataSync
         }
 
         [Test]
-        public void RDE_Generates_ConduitRankData()
-        {
-            // Arrange
-            RawDataExtractionService rawDataExtractionService =
-                new RawDataExtractionService(null);
-
-            var incomingRawData = new Dictionary<string, string>()
-            {
-                { "CovenantData.raw", "__conduit_rank_data { {\r\n" +
-                "{  41,  0, 337078, 10.000000 },\r\n" +
-                "{  41,  1, 337078, 11.000000 },\r\n" +
-                "};"}
-            };
-
-            // Act
-            var result = rawDataExtractionService.GenerateConduitRankData(incomingRawData);
-            var firstResult = result.FirstOrDefault();
-
-            // Assert
-            ClassicAssert.IsNotNull(result);
-            ClassicAssert.AreEqual(2, result.Count);
-            ClassicAssert.IsNotNull(firstResult);
-            ClassicAssert.AreEqual(337078, firstResult.SpellId, "Spell Id");
-            ClassicAssert.AreEqual(41, firstResult.ConduitId, "Conduit Id");
-            ClassicAssert.AreEqual(10.000000, firstResult.Value, "Value");
-            ClassicAssert.AreEqual(0, firstResult.Rank, "Rank");
-        }
-
-        [Test]
         public void RDE_Generates_ItemEffectData()
         {
             // Arrange

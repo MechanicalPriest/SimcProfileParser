@@ -169,16 +169,6 @@ namespace SimcProfileParser.DataSync
 
             ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
             {
-                LocalParsedFile = "CovenantData.json",
-                ParsedFileType = SimcParsedFileType.CovenantData,
-                RawFiles = new Dictionary<string, string>()
-                {
-                    { "CovenantData.raw", "covenant_data" }
-                }
-            });
-
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
-            {
                 LocalParsedFile = "ItemEffectData.json",
                 ParsedFileType = SimcParsedFileType.ItemEffectData,
                 RawFiles = new Dictionary<string, string>()

@@ -14,8 +14,6 @@ namespace SimcProfileParser.Tests.Model.Profile
             var spp = new SimcParsedProfile();
 
             // Assert
-            ClassicAssert.IsNotNull(spp.Soulbinds);
-            ClassicAssert.IsNotNull(spp.Conduits);
             ClassicAssert.IsNotNull(spp.Professions);
             ClassicAssert.IsNotNull(spp.Items);
         }
