@@ -274,7 +274,7 @@ namespace SimcProfileParser
             return budget;
         }
 
-        public async Task<int> GetScaledModValueAsync(SimcItem item, ItemModType modType, int statAllocation)
+        public async Task<int> GetScaledModValueAsync(SimcItem item, ItemModType modType, int statAllocation, int currentStatValue = 0, int newItemLevel = 0)
         {
             // based on item_database::scaled_stat
             var slotType = GetSlotType(item.ItemClass, item.ItemSubClass, item.InventoryType);
@@ -340,11 +340,29 @@ namespace SimcProfileParser
                 return (int)Math.Round(rawValue);
             }
 
-            _logger?.LogError($"Items and mods that don't scale are not yet implemented. modType: {modType}, slotType: {slotType}, statAllocation: {statAllocation}, itemBudget: {itemBudget}");
+            if (currentStatValue == 0 || newItemLevel == 0 || item.ItemLevel == 0)
+            { 
+                _logger?.LogError($"Items and mods that don't scale are not yet implemented. modType: {modType}, slotType: {slotType}, statAllocation: {statAllocation}, itemBudget: {itemBudget}");
+                return 0;
+            }
+            else
+            {
+                var approximateCoefficient = ApproximateScaleCoefficient(item.ItemLevel, newItemLevel);
+                return (int)Math.Floor(currentStatValue * approximateCoefficient);
+            }            
 
             // TODO: Some new items have a zero value for stats like stamina.
             //throw new NotImplementedException("Items and mods that don't scale are not yet implemented");
-            return 0; // Remove this if the exception is re-implemented.
+            //return 0; // Remove this if the exception is re-implemented.
+        }
+
+        private double ApproximateScaleCoefficient(int currentIlvl, int newIlvl)
+        {
+            if(currentIlvl == 0 && newIlvl == 0)
+                return 1.0d;
+
+            var diff = currentIlvl - newIlvl;
+            return 1.0 / Math.Pow(1.15, diff / 15.0);
         }
 
         // TODO This is a hot mess. Need a service to retrieve data from these generated files.

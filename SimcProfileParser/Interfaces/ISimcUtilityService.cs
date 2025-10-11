@@ -22,7 +22,7 @@ namespace SimcProfileParser.Interfaces
         Task<SimcRawRandomPropData> GetRandomPropsAsync(int itemLevel);
         Task<SimcRawItem> GetRawItemDataAsync(uint itemId);
         Task<SimcRawSpell> GetRawSpellDataAsync(uint spellId);
-        Task<int> GetScaledModValueAsync(SimcItem item, ItemModType modType, int statAllocation);
+        Task<int> GetScaledModValueAsync(SimcItem item, ItemModType modType, int statAllocation, int currentStatValue = 0, int newItemLevel = 0);
         Task<List<SimcRawRppmEntry>> GetSpellRppmModifiersAsync(uint spellId);
         Task<double> GetSpellScalingMultiplierAsync(int scaleIndex, int playerLevel);
         Task<double> GetStaminaMultiplierAsync(int itemLevel, CombatRatingMultiplayerType staminaRatingType);

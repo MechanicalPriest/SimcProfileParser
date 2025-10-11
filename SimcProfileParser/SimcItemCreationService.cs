@@ -130,6 +130,9 @@ namespace SimcProfileParser
         {
             var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
 
+            // Store the original item level before any modifications
+            var originalItemLevel = item.ItemLevel;
+
             // Now add the base mods
             foreach (var mod in rawItemData.ItemMods)
             {
@@ -143,6 +146,21 @@ namespace SimcProfileParser
             foreach (var mod in item.Mods)
             {
                 mod.StatRating = await _simcUtilityService.GetScaledModValueAsync(item, mod.Type, mod.RawStatAllocation);
+            }
+
+            if (item.ItemLevel != originalItemLevel)
+            {
+                foreach (var mod in item.Mods)
+                {
+                    // Use the new overload with current stat value and new item level
+                    mod.StatRating = await _simcUtilityService.GetScaledModValueAsync(
+                        item,
+                        mod.Type,
+                        mod.RawStatAllocation,
+                        mod.StatRating, // Current calculated value
+                        item.ItemLevel  // New item level after bonus processing
+                    );
+                }
             }
 
             await AddGemsAsync(item, gemIds);
