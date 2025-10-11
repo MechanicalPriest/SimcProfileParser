@@ -21,7 +21,7 @@ namespace SimcProfileParser
 
         public SimcParsedProfile ParseProfileAsync(List<string> profileLines)
         {
-            _logger?.LogInformation($"Parsing a profileString with {profileLines.Count} lines.");
+            _logger?.LogInformation("Parsing a profileString with {profileLines.Count} lines.", profileLines.Count);
             var runtime = Stopwatch.StartNew();
 
             var profile = new SimcParsedProfile();
@@ -50,7 +50,7 @@ namespace SimcProfileParser
                 if (string.IsNullOrEmpty(rawLine) || !rawLine.Contains('='))
                     continue;
 
-                _logger?.LogDebug($"New raw line: {currentLine}");
+                _logger?.LogDebug("New raw line: {currentLine}", currentLine);
 
                 var kvp = currentLine.Split('=');
                 var identifier = kvp.FirstOrDefault();
@@ -67,7 +67,7 @@ namespace SimcProfileParser
                 validLines.Add(parsedLine);
             }
 
-            _logger?.LogInformation($"Found {validLines.Count} valid lines");
+            _logger?.LogInformation("Found {validLines.Count} valid lines", validLines.Count);
 
             if (validLines.Count == 0)
                 return profile;
@@ -76,8 +76,8 @@ namespace SimcProfileParser
 
             foreach (var line in validLines)
             {
-                _logger?.LogTrace($"Processing line: {line.CleanLine} " +
-                    $"Identifier: ({line.Identifier}) Value: {line.Value}");
+                _logger?.LogTrace("Processing line: {line.CleanLine} " +
+                    "Identifier: ({line.Identifier}) Value: {line.Value}", line.CleanLine, line.Identifier, line.Value);
 
                 switch (line.Identifier)
                 {
@@ -98,7 +98,7 @@ namespace SimcProfileParser
                     case "trinket2":
                     case "main_hand":
                     case "off_hand":
-                        _logger?.LogDebug($"Trying to parse item for slot: ({line.Identifier}) with values: {line.Value}");
+                        _logger?.LogDebug("Trying to parse item for slot: ({line.Identifier}) with values: {line.Value}", line.Identifier, line.Value);
                         TryApplyItem(profile, line);
                         break;
 
@@ -115,79 +115,79 @@ namespace SimcProfileParser
                     case "hunter":
                     case "warlock":
                     case "warrior":
-                        _logger?.LogDebug($"Setting player name for class ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Setting player name for class ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         profile.Name = line.Value.Trim().Trim('"');
                         TryApplyClass(profile, line.Identifier.Trim());
                         break;
 
                     case "level":
-                        _logger?.LogDebug($"Trying to set level ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to set level ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         TryApplyLevel(profile, line.Value.Trim());
                         break;
 
                     case "race":
-                        _logger?.LogDebug($"Trying to set race ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to set race ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         TryApplyRace(profile, line);
                         break;
 
                     case "region":
-                        _logger?.LogDebug($"Trying to set region ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to set region ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         profile.Region = line.Value.Trim();
                         break;
 
                     case "server":
-                        _logger?.LogDebug($"Trying to set server ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to set server ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         profile.Server = line.Value.Trim();
                         break;
 
                     case "role":
-                        _logger?.LogDebug($"Trying to set role ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to set role ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         profile.Role = line.Value.Trim();
                         break;
 
                     case "professions":
-                        _logger?.LogDebug($"Trying to parse profession ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to parse profession ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         TryApplyProfessions(profile, line);
                         break;
 
                     case "class_talents":
-                        _logger?.LogDebug($"Trying to parse class talents ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to parse class talents ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         TryApplyTalents(profile, line.Value);
                         break;
 
                     case "spec":
-                        _logger?.LogDebug($"Trying to set spec ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to set spec ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         profile.Spec = line.Value.Trim();
                         break;
 
                     case "covenant":
-                        _logger?.LogDebug($"Trying to parse covenant ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to parse covenant ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         profile.Covenant = line.Value.Trim();
                         break;
 
                     case "soulbind":
-                        _logger?.LogDebug($"Trying to parse soulbind ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to parse soulbind ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         TryApplySoulbind(profile, line);
                         break;
 
                     case "conduits_available":
-                        _logger?.LogDebug($"Trying to parse conduits_available ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to parse conduits_available ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
                         TryApplyConduitData(profile, line.Value);
                         break;
 
                     case "renown":
-                        _logger?.LogDebug($"Trying to parse renown ({line.Identifier}) with value: {line.Value}");
+                        _logger?.LogDebug("Trying to parse renown ({line.Identifier}) with value: {line.Value}", line.Identifier, line.Value);
 
                         if (int.TryParse(line.Value.Trim(), out int renown))
                         {
                             profile.Renown = renown;
                         }
                         else
-                            _logger?.LogWarning($"Invalid renown value: {line.Value}");
+                            _logger?.LogWarning("Invalid renown value: {line.Value}", line.Value);
                         break;
 
                     default:
-                        _logger?.LogWarning($"Unrecognised identifier found: {line.Identifier}");
+                        _logger?.LogWarning("Unrecognised identifier found: {line.Identifier}", line.Identifier);
                         break;
                 }
             }
@@ -196,7 +196,7 @@ namespace SimcProfileParser
             TryApplySpecId(profile);
 
             runtime.Stop();
-            _logger?.LogInformation($"Done processing profile in {runtime.ElapsedMilliseconds}ms");
+            _logger?.LogInformation("Done processing profile in {runtime.ElapsedMilliseconds}ms", runtime.ElapsedMilliseconds);
 
             return profile;
         }
@@ -403,7 +403,7 @@ namespace SimcProfileParser
             {
                 var version = valueString[versionPrefix.Length..];
 
-                _logger?.LogDebug($"Found SimC version string ({version}) on line: {valueString}");
+                _logger?.LogDebug("Found SimC version string ({version}) on line: {valueString}", version, valueString);
 
                 result.SimcAddonVersion = version;
             }
@@ -424,7 +424,7 @@ namespace SimcProfileParser
 
                     DateTime.TryParse(dateTime, out DateTime parsedDateTime);
 
-                    _logger?.LogDebug($"Found SimC collection date string ({parsedDateTime}) on line: {valueString}");
+                    _logger?.LogDebug("Found SimC collection date string ({parsedDateTime}) on line: {valueString}", parsedDateTime, valueString);
 
                     result.CollectionDate = parsedDateTime;
                 }
@@ -436,7 +436,7 @@ namespace SimcProfileParser
         {
             int.TryParse(valueString, out int level);
 
-            _logger?.LogDebug($"Setting level to ({level}) from: {valueString}");
+            _logger?.LogDebug("Setting level to ({level}) from: {valueString}", level, valueString);
 
             result.Level = level;
         }
@@ -445,8 +445,8 @@ namespace SimcProfileParser
         {
             if (profile.Conduits.Count > 0)
             {
-                _logger?.LogWarning($"Overriding existing conduits. " +
-                    $"There should only be one conduits_available provided per profile.");
+                _logger?.LogWarning("Overriding existing conduits. " +
+                    "There should only be one conduits_available provided per profile.");
             }
 
             // Valid conduit string
@@ -465,11 +465,11 @@ namespace SimcProfileParser
                         !int.TryParse(kvp[0], out int conduitId) ||
                         !int.TryParse(kvp[1], out int conduitRank))
                     {
-                        _logger?.LogWarning($"Invalid conduit found in part ({part}): {valueString}");
+                        _logger?.LogWarning("Invalid conduit found in part ({part}): {valueString}", part, valueString);
                         continue;
                     }
 
-                    _logger?.LogDebug($"Adding new conduit ({conduitId}) at rank: {conduitRank}");
+                    _logger?.LogDebug("Adding new conduit ({conduitId}) at rank: {conduitRank}", conduitId, conduitRank);
 
                     var conduit = new SimcParsedConduit()
                     {
@@ -484,7 +484,7 @@ namespace SimcProfileParser
             }
             else
             {
-                _logger?.LogDebug($"No valid conduits found in string: {valueString}");
+                _logger?.LogDebug("No valid conduits found in string: {valueString}", valueString);
             }
         }
 
@@ -509,14 +509,14 @@ namespace SimcProfileParser
                     }
                     else
                     {
-                        _logger?.LogWarning($"Unable to parse talent: {talentPart}");
+                        _logger?.LogWarning("Unable to parse talent: {talentPart}", talentPart);
                     }
                 }
 
                 profile.Talents = talents;
             }
             else
-                _logger?.LogDebug($"No valid talents found in string: {valueString}");
+                _logger?.LogDebug("No valid talents found in string: {valueString}", valueString);
         }
 
         private void TryApplySoulbind(SimcParsedProfile profile, SimcParsedLine line)
@@ -542,7 +542,7 @@ namespace SimcProfileParser
                 }
                 else
                 {
-                    _logger?.LogWarning($"Unable to parse soulbind name on line: {line.RawLine}");
+                    _logger?.LogWarning("Unable to parse soulbind name on line: {line.RawLine}", line.RawLine);
                 }
 
                 // Set if it's active
@@ -565,11 +565,11 @@ namespace SimcProfileParser
                             !int.TryParse(kvp[0], out int conduitId) ||
                             !int.TryParse(kvp[1], out int conduitRank))
                         {
-                            _logger?.LogWarning($"Invalid socketed conduit found in part ({part}): {line.CleanLine}");
+                            _logger?.LogWarning("Invalid socketed conduit found in part ({part}): {line.CleanLine}", part, line.CleanLine);
                             continue;
                         }
 
-                        _logger?.LogDebug($"Adding new socketed conduit ({conduitId}) at rank: {conduitRank}");
+                        _logger?.LogDebug("Adding new socketed conduit ({conduitId}) at rank: {conduitRank}", conduitId, conduitRank);
 
                         var conduit = new SimcParsedConduit()
                         {
@@ -584,12 +584,12 @@ namespace SimcProfileParser
                         // It's a soulbind spell
                         if (int.TryParse(part, out int soulbindSpellId))
                         {
-                            _logger?.LogDebug($"Adding soulbind ({soulbindSpellId}) from: {line.CleanLine}");
+                            _logger?.LogDebug("Adding soulbind ({soulbindSpellId}) from: {line.CleanLine}", soulbindSpellId, line.CleanLine);
                             soulbindSpells.Add(soulbindSpellId);
                         }
                         else
                         {
-                            _logger?.LogWarning($"Unable to parse soulbind spell or conduit from part ({part}) in: {line.CleanLine}");
+                            _logger?.LogWarning("Unable to parse soulbind spell or conduit from part ({part}) in: {line.CleanLine}", part, line.CleanLine);
                         }
                     }
                 }
@@ -607,7 +607,7 @@ namespace SimcProfileParser
             }
             else
             {
-                _logger?.LogDebug($"No valid soulbinds found in string: {line.CleanLine}");
+                _logger?.LogDebug("No valid soulbinds found in string: {line.CleanLine}", line.CleanLine);
             }
         }
 
@@ -628,7 +628,7 @@ namespace SimcProfileParser
                     var professionName = kvp[0];
                     if (!int.TryParse(kvp[1], out int professionLevel))
                     {
-                        _logger?.LogWarning($"Unable to get profession level ({part}) from string {line.RawLine}");
+                        _logger?.LogWarning("Unable to get profession level ({part}) from string {line.RawLine}", part, line.RawLine);
                     }
 
                     professions.Add(new SimcParsedProfession()
@@ -671,7 +671,7 @@ namespace SimcProfileParser
                     case "id":
                         if (!uint.TryParse(kvp[1], out uint itemId))
                         {
-                            _logger?.LogWarning($"Unable to get itemid ({part}) from string {line.RawLine}");
+                            _logger?.LogWarning("Unable to get itemid ({part}) from string {line.RawLine}", part, line.RawLine);
                             continue;
                         }
                         itemResult.ItemId = itemId;
@@ -680,7 +680,7 @@ namespace SimcProfileParser
                     case "enchant_id":
                         if (!int.TryParse(kvp[1], out int enchantId))
                         {
-                            _logger?.LogWarning($"Unable to get enchantid ({part}) from string {line.RawLine}");
+                            _logger?.LogWarning("Unable to get enchantid ({part}) from string {line.RawLine}", part, line.RawLine);
                             continue;
                         }
                         itemResult.EnchantId = enchantId;
@@ -690,7 +690,7 @@ namespace SimcProfileParser
                     case "context":
                         if (!int.TryParse(kvp[1], out int context))
                         {
-                            _logger?.LogWarning($"Unable to get context ({part}) from string {line.RawLine}");
+                            _logger?.LogWarning("Unable to get context ({part}) from string {line.RawLine}", part, line.RawLine);
                             continue;
                         }
                         itemResult.Context = context;
@@ -700,7 +700,7 @@ namespace SimcProfileParser
                     case "drop_level":
                         if (!int.TryParse(kvp[1], out int dropLevel))
                         {
-                            _logger?.LogWarning($"Unable to get drop_level ({part}) from string {line.RawLine}");
+                            _logger?.LogWarning("Unable to get drop_level ({part}) from string {line.RawLine}", part, line.RawLine);
                             continue;
                         }
                         itemResult.DropLevel = dropLevel;
@@ -744,7 +744,7 @@ namespace SimcProfileParser
                     case "ilevel":
                         if (!int.TryParse(kvp[1], out int itemLevel))
                         {
-                            _logger?.LogWarning($"Unable to get ilevel ({part}) from string {line.RawLine}");
+                            _logger?.LogWarning("Unable to get ilevel ({part}) from string {line.RawLine}", part, line.RawLine);
                             continue;
                         }
                         itemResult.ItemLevel = itemLevel;
