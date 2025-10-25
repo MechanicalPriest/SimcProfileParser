@@ -58,7 +58,11 @@ ISimcGenerationService sgs = new SimcGenerationService();
 // Using async
 var profile = await sgs.GenerateProfileAsync(File.ReadAllText("import.simc"));
 
+// Output some details about the profile
 Console.WriteLine($"Profile object created for player {profile.Name}.");
+
+var json = JsonSerializer.Serialize(profile, new JsonSerializerOptions() { WriteIndented = true });
+await File.WriteAllTextAsync("profile.json", json);
 ```
 
 You can also generate a profile object from individual lines of an import file:
@@ -68,14 +72,18 @@ ISimcGenerationService sgs = new SimcGenerationService();
 
 var lines = new List<string>()
 {
-    "level=70",
-    "main_hand=,id=178473,bonus_id=6774/1504/6646"
+    "level=90",
+    "main_hand=,id=237728,bonus_id=6652/10356/13446/1540/10255"
 };
 
 var profile = await sgs.GenerateProfileAsync(lines);
 
+// Output some details about the profile
 Console.WriteLine($"Profile object created for a level {profile.Level}");
 Console.WriteLine($"They are weilding {profile.Items.FirstOrDefault().Name}.");
+
+var json = JsonSerializer.Serialize(profile, new JsonSerializerOptions() { WriteIndented = true });
+await File.WriteAllTextAsync("profile.json", json);
 ```
 
 #### Creating a single item
@@ -86,12 +94,15 @@ ISimcGenerationService sgs = new SimcGenerationService();
 
 var itemOptions = new SimcItemOptions()
 {
-    ItemId = 177813,
+    ItemId = 242392,
     Quality = ItemQuality.ITEM_QUALITY_EPIC,
-    ItemLevel = 226
+    ItemLevel = 730
 };
 
 var item = await sgs.GenerateItemAsync(spellOptions);
+
+var json = JsonSerializer.Serialize(profile, new JsonSerializerOptions() { WriteIndented = true });
+await File.WriteAllTextAsync("item.json", json);
 ```
 
 There are other options that can be set, including bonus ids, gems and the original drop level:
@@ -120,13 +131,16 @@ ISimcGenerationService sgs = new SimcGenerationService();
 
 var spellOptions = new SimcSpellOptions()
 {
-    ItemLevel = 226,
-    SpellId = 343538,
+    ItemLevel = 730,
+    SpellId = 1238697,
     ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
     ItemInventoryType = InventoryType.INVTYPE_TRINKET
 };
 
 var spell = await sgs.GenerateSpellAsync(spellOptions);
+
+var json = JsonSerializer.Serialize(spell, new JsonSerializerOptions() { WriteIndented = true });
+await File.WriteAllTextAsync("spell.json", json);
 ```
 
 Generating an player scaling spell (id 274740):
@@ -137,10 +151,13 @@ ISimcGenerationService sgs = new SimcGenerationService();
 var spellOptions = new SimcSpellOptions()
 {
     SpellId = 274740,
-    PlayerLevel = 70
+    PlayerLevel = 90
 };
 
 var spell = await sgs.GenerateSpellAsync(spellOptions);
+
+var json = JsonSerializer.Serialize(spell, new JsonSerializerOptions() { WriteIndented = true });
+await File.WriteAllTextAsync("spell.json", json);
 ```
 
 The spell object has a property `ScaleBudget` which can be multiplied with a coeffecient from a spells effect if required. 
