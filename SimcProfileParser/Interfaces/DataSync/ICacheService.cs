@@ -7,7 +7,7 @@ namespace SimcProfileParser.Interfaces.DataSync
     /// <summary>
     /// A service for keeping local parsed json files ready for use.
     /// </summary>
-    public interface ICacheService
+    internal interface ICacheService
     {
         /// <summary>
         /// The base directory the cache service stores its files

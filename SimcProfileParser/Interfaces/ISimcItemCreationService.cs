@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SimcProfileParser.Interfaces
 {
-    public interface ISimcItemCreationService
+    internal interface ISimcItemCreationService
     {
         Task<SimcItem> CreateItemAsync(SimcParsedItem parsedItemData);
         Task<SimcItem> CreateItemAsync(SimcItemOptions itemOptions);

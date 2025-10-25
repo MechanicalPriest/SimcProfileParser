@@ -49,7 +49,7 @@ namespace SimcProfileParser
         /// <param name="simcVersionService">Service for retrieving game data version information.</param>
         /// <param name="simcTalentService">Service for fetching and processing talent data.</param>
         /// <param name="cacheService">Service for caching and retrieving raw game data files.</param>
-        public SimcGenerationService(ILogger<SimcGenerationService> logger,
+        internal SimcGenerationService(ILogger<SimcGenerationService> logger,
             ISimcParserService simcParserService,
             ISimcItemCreationService simcItemCreationService,
             ISimcSpellCreationService simcSpellCreationService,
