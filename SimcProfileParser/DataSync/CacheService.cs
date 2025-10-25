@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.DataSync;
 using System;
@@ -9,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.DataSync
@@ -239,7 +239,7 @@ namespace SimcProfileParser.DataSync
 
             var fileText = await File.ReadAllTextAsync(localPath);
 
-            var deserialisedData = JsonConvert.DeserializeObject<T>(fileText);
+            var deserialisedData = JsonSerializer.Deserialize<T>(fileText);
 
             _cachedFileData.Add(fileType, deserialisedData);
 
@@ -268,7 +268,7 @@ namespace SimcProfileParser.DataSync
             var localPath = Path.Combine(BaseFileDirectory, configuration.LocalParsedFile);
 
             _logger?.LogTrace("Saving parsed json data for [{configuration.ParsedFileType}] to [{localPath}]", configuration.ParsedFileType, localPath);
-            await File.WriteAllTextAsync(localPath, JsonConvert.SerializeObject(parsedData));
+            await File.WriteAllTextAsync(localPath, JsonSerializer.Serialize(parsedData));
         }
 
         void ICacheService.RegisterFileConfiguration(CacheFileConfiguration configuration)
@@ -457,7 +457,7 @@ namespace SimcProfileParser.DataSync
             {
                 var data = await File.ReadAllTextAsync(cacheDataFile);
 
-                var deserialised = JsonConvert.DeserializeObject<List<FileETag>>(data);
+                var deserialised = JsonSerializer.Deserialize<List<FileETag>>(data);
 
                 if (deserialised != null)
                     results = deserialised;
@@ -476,7 +476,7 @@ namespace SimcProfileParser.DataSync
                 Directory.CreateDirectory(baseDirectory.OriginalString);
 
             var cacheDataFile = Path.Combine(BaseFileDirectory, _etagCacheDataFile);
-            var dataString = JsonConvert.SerializeObject(data, Formatting.Indented);
+            var dataString = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
 
             await File.WriteAllTextAsync(cacheDataFile, dataString);
         }
