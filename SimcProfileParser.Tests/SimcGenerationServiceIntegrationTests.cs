@@ -135,5 +135,27 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(version);
             ClassicAssert.AreEqual("12.", version.Substring(0, 3));
         }
+
+        [Test]
+        public async Task SGS_ClearsCache()
+        {
+            // Arrange: Warm up by generating something that touches the cache
+            var spellOptions = new SimcSpellOptions()
+            {
+                ItemLevel =226,
+                SpellId =343538,
+                ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemInventoryType = InventoryType.INVTYPE_TRINKET
+            };
+            var spell = await _sgs.GenerateSpellAsync(spellOptions);
+            ClassicAssert.IsNotNull(spell);
+
+            // Act: clear the cache
+            await _sgs.ClearCacheAsync();
+
+            // Assert: call again should still work (re-hydrates cache)
+            var spell2 = await _sgs.GenerateSpellAsync(spellOptions);
+            ClassicAssert.IsNotNull(spell2);
+        }
     }
 }

@@ -244,5 +244,39 @@ namespace SimcProfileParser.Tests.DataSync
             // Assert
             Assert.That(url, Is.EqualTo("https://raw.githubusercontent.com/simulationcraft/simc/test_branch/engine/dbc/generated/test.inc"));
         }
+
+        [Test]
+        public async Task CS_ClearCache_Deletes_Files_And_Recovers()
+        {
+            // Arrange
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+
+            var configuration = new CacheFileConfiguration()
+            {
+                LocalParsedFile = "CombatRatingMultipliers.json",
+                ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ScaleData.raw", "sc_scale_data" }
+                }
+            };
+            var filePath = Path.Combine(cache.BaseFileDirectory, "ScaleData.raw");
+
+            // Ensure a file exists by downloading it
+            _ = await cache.GetRawFileContentsAsync(configuration, "ScaleData.raw");
+            FileAssert.Exists(filePath);
+
+            // Act: clear the cache
+            await cache.ClearCacheAsync();
+
+            // Assert: file was deleted
+            Assert.That(File.Exists(filePath), Is.False, "Cache file should be removed after clear.");
+
+            // Act again: accessing should re-download
+            _ = await cache.GetRawFileContentsAsync(configuration, "ScaleData.raw");
+
+            // Assert: file is back
+            FileAssert.Exists(filePath);
+        }
     }
 }
