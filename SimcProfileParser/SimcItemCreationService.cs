@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.DataSync;
@@ -9,6 +8,7 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser
@@ -333,7 +333,7 @@ namespace SimcProfileParser
                             break;
 
                         default:
-                            var entryString = JsonConvert.SerializeObject(entry);
+                            var entryString = JsonSerializer.Serialize(entry);
                             _logger?.LogTrace($"[{item.ItemId}] [{bonusId}:{entry.Type}] Unknown bonus entry: {entry.Type} ({bonusId}): {entryString}");
                             break;
                     }

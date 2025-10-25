@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using Serilog;
@@ -8,6 +7,7 @@ using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests
@@ -241,8 +241,8 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var expectedProfessions = JsonConvert.SerializeObject(professions);
-            var actualProfessions = JsonConvert.SerializeObject(ParsedProfile.Professions);
+            var expectedProfessions = JsonSerializer.Serialize(professions);
+            var actualProfessions = JsonSerializer.Serialize(ParsedProfile.Professions);
 
             // Assert
             ClassicAssert.IsNotNull(ParsedProfile);
@@ -270,8 +270,8 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var expectedItem = JsonConvert.SerializeObject(fourthItem);
-            var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[3]);
+            var expectedItem = JsonSerializer.Serialize(fourthItem);
+            var actualItem = JsonSerializer.Serialize(ParsedProfile.Items[3]);
 
             // Assert
             ClassicAssert.IsNotNull(ParsedProfile);
@@ -300,8 +300,8 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var expectedItem = JsonConvert.SerializeObject(sixteenthItem);
-            var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[15]);
+            var expectedItem = JsonSerializer.Serialize(sixteenthItem);
+            var actualItem = JsonSerializer.Serialize(ParsedProfile.Items[15]);
 
             // Assert
             ClassicAssert.IsNotNull(ParsedProfile);
@@ -334,8 +334,8 @@ namespace SimcProfileParser.Tests
             };
 
             // Act
-            var expectedItem = JsonConvert.SerializeObject(seventhItem);
-            var actualItem = JsonConvert.SerializeObject(ParsedProfile.Items[7]);
+            var expectedItem = JsonSerializer.Serialize(seventhItem);
+            var actualItem = JsonSerializer.Serialize(ParsedProfile.Items[7]);
 
             // Assert
             ClassicAssert.IsNotNull(ParsedProfile);
