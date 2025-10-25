@@ -82,7 +82,8 @@ namespace SimcProfileParser
                 loggerFactory.CreateLogger<RawDataExtractionService>());
 
             _cacheService = new CacheService(dataExtractionService,
-                loggerFactory.CreateLogger<CacheService>());
+                loggerFactory.CreateLogger<CacheService>(),
+                new RawFileService(loggerFactory.CreateLogger<RawFileService>()));
 
             var utilityService = new SimcUtilityService(
                 _cacheService,
