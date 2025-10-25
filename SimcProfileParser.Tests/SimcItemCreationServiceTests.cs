@@ -41,7 +41,9 @@ namespace SimcProfileParser.Tests
 
             IRawDataExtractionService rawDataExtractionService =
                 new RawDataExtractionService(_loggerFactory.CreateLogger<RawDataExtractionService>());
-            ICacheService cacheService = new CacheService(rawDataExtractionService, _loggerFactory.CreateLogger<CacheService>());
+            ICacheService cacheService = new CacheService(rawDataExtractionService, 
+                _loggerFactory.CreateLogger<CacheService>(),
+                new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
             var utilityService = new SimcUtilityService(
                 cacheService,
                 _loggerFactory.CreateLogger<SimcUtilityService>());

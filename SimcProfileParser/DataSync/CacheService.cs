@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -18,34 +16,28 @@ namespace SimcProfileParser.DataSync
     {
         public string BaseFileDirectory { get; }
 
-        protected IList<CacheFileConfiguration> _registeredFiles;
-        protected IDictionary<SimcParsedFileType, object> _cachedFileData;
+        protected List<CacheFileConfiguration> _registeredFiles = [];
+        protected Dictionary<SimcParsedFileType, object> _cachedFileData = [];
         protected readonly IRawDataExtractionService _rawDataExtractionService;
         protected readonly ILogger<CacheService> _logger;
+        private readonly IRawFileService rawFileService;
 
-        private bool _usePtrData = false;
-        private string _useBranchName = "midnight";
-        internal string _getUrl(string fileName) => "https://raw.githubusercontent.com/simulationcraft/simc/"
-                + _useBranchName + "/engine/dbc/generated/"
-                + fileName
-                + (_usePtrData ? "_ptr" : "")
-                + ".inc";
-
+        private readonly string parsedDataFileExtension = "json";
         public IReadOnlyCollection<CacheFileConfiguration> RegisteredFiles => new ReadOnlyCollection<CacheFileConfiguration>(_registeredFiles);
 
         public CacheService(IRawDataExtractionService rawDataExtractionService,
-            ILogger<CacheService> logger)
+            ILogger<CacheService> logger,
+            IRawFileService rawFileService)
         {
-            _registeredFiles = new List<CacheFileConfiguration>();
-            _cachedFileData = new Dictionary<SimcParsedFileType, object>();
-
             BaseFileDirectory = Path.Combine(
                 Path.GetTempPath(), "SimcProfileParserData");
 
             _rawDataExtractionService = rawDataExtractionService;
             _logger = logger;
+            this.rawFileService = rawFileService;
+            this.rawFileService.ConfigureAsync(BaseFileDirectory).GetAwaiter().GetResult();
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "ItemDataNew.json",
                 ParsedFileType = SimcParsedFileType.ItemDataNew,
@@ -56,7 +48,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "ItemDataOld.json",
                 ParsedFileType = SimcParsedFileType.ItemDataOld,
@@ -67,7 +59,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "CombatRatingMultipliers.json",
                 ParsedFileType = SimcParsedFileType.CombatRatingMultipliers,
@@ -77,7 +69,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "StaminaMultipliers.json",
                 ParsedFileType = SimcParsedFileType.StaminaMultipliers,
@@ -87,7 +79,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "RandomPropPoints.json",
                 ParsedFileType = SimcParsedFileType.RandomPropPoints,
@@ -97,7 +89,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "SpellData.json",
                 ParsedFileType = SimcParsedFileType.SpellData,
@@ -107,7 +99,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "ItemBonusData.json",
                 ParsedFileType = SimcParsedFileType.ItemBonusData,
@@ -117,7 +109,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "GemData.json",
                 ParsedFileType = SimcParsedFileType.GemData,
@@ -127,7 +119,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "ItemEnchantData.json",
                 ParsedFileType = SimcParsedFileType.ItemEnchantData,
@@ -137,7 +129,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "SpellScalingMultipliers.json",
                 ParsedFileType = SimcParsedFileType.SpellScaleMultipliers,
@@ -147,7 +139,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "CurveData.json",
                 ParsedFileType = SimcParsedFileType.CurvePoints,
@@ -157,7 +149,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "RppmData.json",
                 ParsedFileType = SimcParsedFileType.RppmData,
@@ -167,7 +159,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "ItemEffectData.json",
                 ParsedFileType = SimcParsedFileType.ItemEffectData,
@@ -177,7 +169,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "GameDataVersion.json",
                 ParsedFileType = SimcParsedFileType.GameDataVersion,
@@ -187,7 +179,7 @@ namespace SimcProfileParser.DataSync
                 }
             });
 
-            ((ICacheService)this).RegisterFileConfiguration(new CacheFileConfiguration()
+            RegisterFileConfiguration(new CacheFileConfiguration()
             {
                 LocalParsedFile = "TraitData.json",
                 ParsedFileType = SimcParsedFileType.TraitData,
@@ -205,10 +197,21 @@ namespace SimcProfileParser.DataSync
         /// <param name="fileType">Type of file to return data from</param>
         async Task<T> ICacheService.GetParsedFileContentsAsync<T>(SimcParsedFileType fileType)
         {
+            var configuration = _registeredFiles.FirstOrDefault(f => f.ParsedFileType == fileType)
+                ?? throw new ArgumentOutOfRangeException(nameof(fileType), "Supplied fileType has not been registered.");
+
             // First check if we already have the data loaded:
-            if (_cachedFileData.ContainsKey(fileType))
+            if (_cachedFileData.TryGetValue(fileType, out object cachedData))
             {
-                var cachedData = _cachedFileData[fileType];
+
+                if (!await IsDiskCacheValidForConfiguration(configuration))
+                {
+                    // Anytime a raw file is invalidated, the raw file and parsed json file should be removed,
+                    //  and the file re - obtained
+                    await DeleteDiskCacheForConfiguration(configuration);
+
+                    return await GetParsedFileContents<T>(configuration);
+                }
 
                 if (cachedData is T t)
                 {
@@ -225,32 +228,85 @@ namespace SimcProfileParser.DataSync
                 }
             }
 
-            var configuration = _registeredFiles.Where(f => f.ParsedFileType == fileType).FirstOrDefault()
-                ?? throw new ArgumentOutOfRangeException(nameof(fileType), "Supplied fileType has not been registered.");
+            return await GetParsedFileContents<T>(configuration);
+        }
 
-            var localPath = new Uri(Path.Combine(BaseFileDirectory, configuration.LocalParsedFile)).LocalPath;
+        /// <summary>
+        /// For a given configuration, parse and load the .json file contents into T
+        /// </summary>
+        /// <returns></returns>
+        async Task<T> GetParsedFileContents<T>(CacheFileConfiguration configuration)
+        {
+            var localPath = Path.Combine(BaseFileDirectory, configuration.LocalParsedFile);
 
             // If the file doesn't exist, generate it.
             if (!File.Exists(localPath))
             {
                 _logger?.LogTrace("File [{localPath}] does not exist, generating it...", localPath);
-                await ((ICacheService)this).GenerateParsedFileAsync(fileType);
+                await GenerateParsedFileAsync(configuration.ParsedFileType);
             }
 
             var fileText = await File.ReadAllTextAsync(localPath);
 
-            var deserialisedData = JsonSerializer.Deserialize<T>(fileText);
+            var deserialisedData = JsonSerializer.Deserialize<T>(fileText)
+                ?? throw new InvalidDataException($"Failed to deserialize {configuration.LocalParsedFile} to {typeof(T).Name}.");
 
-            _cachedFileData.Add(fileType, deserialisedData);
+            _cachedFileData[configuration.ParsedFileType] = deserialisedData;
 
             return deserialisedData;
+        }
+
+        async Task<bool> IsDiskCacheValidForConfiguration(CacheFileConfiguration configuration)
+        {
+            // First, check that all the raw files exist
+            foreach (var rawFile in configuration.RawFiles)
+            {
+                var remoteFileName = rawFile.Value;
+                var localFileName = rawFile.Key;
+
+                var isLocalFileValid = await rawFileService.IsFileValidAsync(remoteFileName, localFileName);
+                if(!isLocalFileValid)
+                {
+                    return false;
+                }
+            }
+
+            // Next, check that the parsed .json file exists
+            var localParsedFilePath = Path.Combine(BaseFileDirectory, configuration.LocalParsedFile);
+            if (!File.Exists(localParsedFilePath))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        async Task DeleteDiskCacheForConfiguration(CacheFileConfiguration configuration)
+        {
+            // Clear the cached data for this file type
+            _cachedFileData.Remove(configuration.ParsedFileType);
+
+            // Now delete both the parsed .json file and the raw files
+            var localParsedFilePath = Path.Combine(BaseFileDirectory, configuration.LocalParsedFile);
+            if (File.Exists(localParsedFilePath))
+            {
+                File.Delete(localParsedFilePath);
+            }
+            foreach (var rawFile in configuration.RawFiles)
+            {
+                var localRawFilePath = Path.Combine(BaseFileDirectory, rawFile.Key);
+                if (File.Exists(localRawFilePath))
+                {
+                    File.Delete(localRawFilePath);
+                }
+            }
         }
 
         /// <summary>
         /// Generates a parsed .json file for the specified configuration by calling the RawDataExtractionService
         /// </summary>
         /// <param name="fileType">Type of file to generate data for</param>
-        async Task ICacheService.GenerateParsedFileAsync(SimcParsedFileType fileType)
+        async Task GenerateParsedFileAsync(SimcParsedFileType fileType)
         {
             var configuration = _registeredFiles.Where(f => f.ParsedFileType == fileType).FirstOrDefault() 
                 ?? throw new ArgumentOutOfRangeException(nameof(fileType), "Supplied fileType has not been registered.");
@@ -259,7 +315,7 @@ namespace SimcProfileParser.DataSync
             var rawData = new Dictionary<string, string>();
             foreach (var rawFile in configuration.RawFiles)
             {
-                var data = await GetRawFileContentsAsync(configuration, rawFile.Key);
+                var data = await rawFileService.GetFileContentsAsync(configuration, rawFile.Key);
                 rawData.Add(rawFile.Key, data);
             }
 
@@ -271,11 +327,10 @@ namespace SimcProfileParser.DataSync
             await File.WriteAllTextAsync(localPath, JsonSerializer.Serialize(parsedData));
         }
 
-        void ICacheService.RegisterFileConfiguration(CacheFileConfiguration configuration)
+        void RegisterFileConfiguration(CacheFileConfiguration configuration)
         {
             var exists = _registeredFiles
-                .Where(f => f.ParsedFileType == configuration.ParsedFileType)
-                .FirstOrDefault();
+                .FirstOrDefault(f => f.ParsedFileType == configuration.ParsedFileType);
 
             if (exists != null)
             {
@@ -285,250 +340,41 @@ namespace SimcProfileParser.DataSync
             _registeredFiles.Add(configuration);
         }
 
-        internal async Task<string> GetRawFileContentsAsync(CacheFileConfiguration configuration, string localRawFile)
-        {
-            var localPath = new Uri(Path.Combine(BaseFileDirectory, localRawFile)).LocalPath;
-            if (!File.Exists(localPath))
-            {
-                var destinationRawFile = configuration.RawFiles.Where(r => r.Key == localRawFile).FirstOrDefault();
-
-                _logger?.LogTrace("Path does not exist: [{localPath}] - attempting to download file from [{destinationRawFile}].", localPath, destinationRawFile);
-
-                var downloaded = await DownloadFileIfChangedAsync(new Uri(_getUrl(destinationRawFile.Value)),
-                    new Uri(Path.Combine(BaseFileDirectory, destinationRawFile.Key)));
-
-                if (!downloaded)
-                {
-                    _logger?.LogError("Unable to download [{destinationRawFile}] to [{localPath}]", destinationRawFile, localPath);
-                    if(Directory.Exists(BaseFileDirectory))
-                    {
-                        _logger?.LogTrace("Listing directory contents for [{BaseFileDirectory}]", BaseFileDirectory);
-                        foreach(var file in Directory.GetFiles(BaseFileDirectory))
-                        {
-                            _logger?.LogTrace("File: {file}", file);
-                        }
-                    }
-                    else
-                    {
-                        _logger?.LogError("Directory does not exist: [{BaseFileDirectory}]", BaseFileDirectory);
-                    }
-                }
-            }
-
-            var data = await File.ReadAllTextAsync(localPath);
-
-            return data;
-        }
-
-        /// <summary>
-        /// Check if the local file exists and the cache matches
-        /// </summary>
-        /// <param name="sourceUri"></param>
-        /// <param name="destinationUri"></param>
-        /// <returns></returns>
-        internal async Task<bool> DownloadFileIfChangedAsync(Uri sourceUri, Uri destinationUri)
-        {
-            using HttpClient httpClient = new();
-
-            HttpRequestMessage request =
-               new(HttpMethod.Head,
-                  sourceUri);
-
-            HttpResponseMessage response;
-
-            try
-            {
-                response = await httpClient.SendAsync(request);
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error downloading {sourceUri} to {destinationUri}", sourceUri, destinationUri);
-                return false;
-            }
-
-            // Grab the cache info and the files last modified date.
-            var eTagCacheData = await GetCacheDataAsync();
-            var eTag = eTagCacheData
-                .Where(e => e.Filename == destinationUri.LocalPath)
-                .FirstOrDefault();
-
-            if (eTag != null)
-                _logger?.LogTrace("etag for this file is {eTag}", eTag);
-            else
-                _logger?.LogTrace("No etag found for {destinationUri.LocalPath}", destinationUri.LocalPath);
-
-            DateTime lastModified = DateTime.UtcNow;
-
-            if (File.Exists(destinationUri.LocalPath))
-                lastModified = File.GetLastWriteTimeUtc(destinationUri.LocalPath);
-
-            // Check if we need to download it or not.
-            if (eTag != null && // If there is an etag
-                response.Headers.ETag.Tag == eTag.ETag && // and they match
-                eTag.LastModified == lastModified) // and the last modified match
-                return true; // Then we don't need to download it.
-
-            var downloadResponse = await DownloadFileAsync(sourceUri, destinationUri);
-
-            // If the download was successful, save the etag.
-            if (downloadResponse)
-            {
-                _logger?.LogTrace("Successfully downloaded {sourceUri} to {destinationUri.LocalPath}", sourceUri, destinationUri.LocalPath);
-                lastModified = File.GetLastWriteTimeUtc(destinationUri.LocalPath);
-                await UpdateCacheDataAsync(destinationUri.LocalPath, response.Headers.ETag.Tag, lastModified);
-            }
-            else
-            {
-                _logger?.LogError("Failure downloading file.");
-            }
-
-            return downloadResponse;
-        }
-
-        internal async Task<bool> DownloadFileAsync(Uri sourceUri, Uri destinationUri)
-        {
-            using HttpClient client = new();
-
-            try
-            {
-                var baseDirectory = new Uri(destinationUri, ".");
-                if (!Directory.Exists(baseDirectory.OriginalString))
-                    Directory.CreateDirectory(baseDirectory.OriginalString);
-
-                using var s = await client.GetStreamAsync(sourceUri);
-
-                if (File.Exists(destinationUri.LocalPath))
-                    File.Delete(destinationUri.LocalPath);
-
-                using var fs = new FileStream(destinationUri.LocalPath, FileMode.CreateNew);
-                await s.CopyToAsync(fs);
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Unable to DownloadFileAsync [{sourceUri}] to [{destinationUri}]", sourceUri, destinationUri);
-                return false;
-            }
-            return true;
-        }
-
-        #region eTag Cache
-
-        private readonly string _etagCacheDataFile = "FileDownloadCache.json";
-        protected List<FileETag> _eTagCacheData = new();
-
-        /// <summary>
-        /// Update the cache with an entry
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="eTag"></param>
-        internal async Task UpdateCacheDataAsync(string filename, string eTag, DateTime lastModified)
-        {
-            var eTagCacheData = await GetCacheDataAsync();
-
-            var existing = eTagCacheData.Where(e => e.Filename == filename).FirstOrDefault();
-
-            if (existing != null)
-                existing.ETag = eTag;
-            else
-            {
-                eTagCacheData.Add(new FileETag()
-                {
-                    Filename = filename,
-                    ETag = eTag,
-                    LastModified = lastModified
-                });
-            }
-
-            await SaveCacheDataAsync(eTagCacheData);
-        }
-
-        /// <summary>
-        /// Load the cached etag data from file
-        /// </summary>
-        internal async Task<List<FileETag>> GetCacheDataAsync(bool force = false)
-        {
-            if (!force && _eTagCacheData.Count > 0)
-                return _eTagCacheData;
-
-            var results = new List<FileETag>();
-            var cacheDataFile = Path.Combine(BaseFileDirectory, _etagCacheDataFile);
-
-            if (File.Exists(cacheDataFile))
-            {
-                var data = await File.ReadAllTextAsync(cacheDataFile);
-
-                var deserialised = JsonSerializer.Deserialize<List<FileETag>>(data);
-
-                if (deserialised != null)
-                    results = deserialised;
-            }
-
-            return results;
-        }
-
-        /// <summary>
-        /// Save the cached etag data to file
-        /// </summary>
-        internal async Task SaveCacheDataAsync(List<FileETag> data)
-        {
-            var baseDirectory = new Uri(BaseFileDirectory);
-            if (!Directory.Exists(baseDirectory.OriginalString))
-                Directory.CreateDirectory(baseDirectory.OriginalString);
-
-            var cacheDataFile = Path.Combine(BaseFileDirectory, _etagCacheDataFile);
-            var dataString = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-
-            await File.WriteAllTextAsync(cacheDataFile, dataString);
-        }
-
-        #endregion
-
         /// <summary>
         /// Get the flag used PTR data for data extraction
         /// </summary>
-        public bool UsePtrData { get => _usePtrData; }
-
-        public void SetUsePtrData(bool usePtrData)
-        {
-            _usePtrData = usePtrData;
-        }
+        public bool UsePtrData { get => rawFileService.UsePtrData; }
+        public void SetUsePtrData(bool usePtrData) => rawFileService.SetUsePtrData(usePtrData);
 
         /// <summary>
         /// Get the github branch name used for data extraction
         /// </summary>
-        public string UseBranchName { get => _useBranchName; }
-        public void SetUseBranchName(string branchName)
-        {
-            _useBranchName = branchName;
-        }
+        public string UseBranchName { get => rawFileService.UseBranchName; }
+        public void SetUseBranchName(string branchName) => rawFileService.SetUseBranchName(branchName);
 
         public async Task ClearCacheAsync()
         {
             // Clear in-memory caches
             _cachedFileData.Clear();
-            _eTagCacheData.Clear();
 
             // Clear on-disk cache
-            try
+            if (Directory.Exists(BaseFileDirectory))
             {
-                if (Directory.Exists(BaseFileDirectory))
+                foreach (var file in Directory.GetFiles(BaseFileDirectory, $"*.{parsedDataFileExtension}"))
                 {
-                    foreach (var file in Directory.GetFiles(BaseFileDirectory))
+                    try
                     {
-                        try { File.Delete(file); }
-                        catch (Exception ex)
-                        {
-                            _logger?.LogWarning(ex, "Failed to delete cache file {file}", file);
-                        }
+                        File.Delete(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger?.LogWarning(ex, "Failed to delete cache file {file}", file);
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error clearing cache directory {BaseFileDirectory}", BaseFileDirectory);
-            }
 
-            await Task.CompletedTask;
+            // Clear raw file cache
+            await rawFileService.DeleteAllFiles();
         }
     }
 }

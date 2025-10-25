@@ -37,7 +37,7 @@ namespace SimcProfileParser.Tests.DataSync
                 .AddSerilog()
                 .AddFilter(level => level >= LogLevel.Trace));
 
-            ICacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            ICacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
 
             // Wipe out the directory before testing as a workaround for file access not being abstracted
             if (Directory.Exists(cache.BaseFileDirectory))
@@ -54,7 +54,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Downloads_File()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
 
             var configuration = new CacheFileConfiguration()
             {
@@ -81,7 +81,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Downloads_Ptr_File()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
             cache.SetUsePtrData(true);
 
             var configuration = new CacheFileConfiguration()
@@ -109,7 +109,7 @@ namespace SimcProfileParser.Tests.DataSync
         public void CS_Download_Fails_Bad_Filename()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
             cache.SetUsePtrData(true);
 
             var configuration = new CacheFileConfiguration()
@@ -137,14 +137,15 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Cache_Updates()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
             var filename = "test.txt";
             var eTag = "12345";
             var fileContents = @"[" + Environment.NewLine +
                 @"  {" + Environment.NewLine +
                 @"    ""Filename"": ""test.txt""," + Environment.NewLine +
                 @"    ""ETag"": ""12345""," + Environment.NewLine +
-                @"    ""LastModified"": ""0001-01-01T00:00:00.0000001""" + Environment.NewLine +
+                @"    ""LastModified"": ""0001-01-01T00:00:00.0000001""," + Environment.NewLine +
+                @"    ""LastChecked"": ""0001-01-01T00:00:00""" + Environment.NewLine +
                 @"  }" + Environment.NewLine +
                 @"]";
             var lastModified = new DateTime(1);
@@ -162,7 +163,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Cache_Reads()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
             var filename = "test.txt";
             var eTag = "12345";
             var lastModified = new DateTime(1);
@@ -183,7 +184,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_Cache_Saves()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
 
             // Act
             var filename = "test.txt";
@@ -202,7 +203,8 @@ namespace SimcProfileParser.Tests.DataSync
                 @"  {" + Environment.NewLine +
                 @"    ""Filename"": ""test.txt""," + Environment.NewLine +
                 @"    ""ETag"": ""12345""," + Environment.NewLine +
-                @"    ""LastModified"": ""0001-01-01T00:00:00.0000001""" + Environment.NewLine +
+                @"    ""LastModified"": ""0001-01-01T00:00:00.0000001""," + Environment.NewLine +
+                @"    ""LastChecked"": ""0001-01-01T00:00:00""" + Environment.NewLine +
                 @"  }" + Environment.NewLine +
                 @"]";
 
@@ -220,7 +222,7 @@ namespace SimcProfileParser.Tests.DataSync
         public void CS_Respects_Ptr_Flag()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
             cache.SetUsePtrData(true);
             cache.SetUseBranchName("test_branch");
 
@@ -235,7 +237,7 @@ namespace SimcProfileParser.Tests.DataSync
         public void CS_Ptr_Defaults_Off()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
             cache.SetUseBranchName("test_branch");
 
             // Act
@@ -249,7 +251,7 @@ namespace SimcProfileParser.Tests.DataSync
         public async Task CS_ClearCache_Deletes_Files_And_Recovers()
         {
             // Arrange
-            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>());
+            CacheService cache = new CacheService(null, _loggerFactory.CreateLogger<CacheService>(), new RawFileService(_loggerFactory.CreateLogger<RawFileService>()));
 
             var configuration = new CacheFileConfiguration()
             {
