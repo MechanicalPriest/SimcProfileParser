@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SimcProfileParser.Interfaces
 {
-    public interface ISimcParserService
+    internal interface ISimcParserService
     {
         SimcParsedProfile ParseProfileAsync(List<string> profileString);
     }

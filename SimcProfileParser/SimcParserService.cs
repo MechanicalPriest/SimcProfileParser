@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace SimcProfileParser
 {
-    public class SimcParserService : ISimcParserService
+    internal class SimcParserService : ISimcParserService
     {
         private readonly ILogger<SimcParserService> _logger;
 

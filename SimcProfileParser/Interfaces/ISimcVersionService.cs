@@ -2,7 +2,7 @@
 
 namespace SimcProfileParser.Interfaces
 {
-    public interface ISimcVersionService
+    internal interface ISimcVersionService
     {
         Task<string> GetGameDataVersionAsync();
     }
