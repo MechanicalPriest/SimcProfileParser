@@ -988,10 +988,10 @@ namespace SimcProfileParser.DataSync
             double[][] spellScalingTable = new double[numSpellScalingTables][];
             for (int i = 0; i < numSpellScalingTables; i++)
             {
-                spellScalingTable[i] = new double[80];
+                spellScalingTable[i] = new double[90];
             }
 
-            string key = "_spell_scaling[][80] = {";
+            string key = "_spell_scaling[][90] = {";
 
             int start = rawData.IndexOf(key) + key.Length;
             int end = rawData.IndexOf("};", start);

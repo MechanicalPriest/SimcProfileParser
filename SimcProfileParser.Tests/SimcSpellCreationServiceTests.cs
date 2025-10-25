@@ -63,7 +63,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(2, spell.Effects.Count);
-            ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(127.8034668d, spell.Effects[0].ScaleBudget);
             ClassicAssert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             ClassicAssert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
@@ -110,7 +110,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(1, spell.Effects.Count);
-            ClassicAssert.AreEqual(125.98769760131836d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(162.23414856664567d, spell.Effects[0].ScaleBudget);
             ClassicAssert.AreEqual(1.65, spell.Effects[0].Coefficient);
             ClassicAssert.AreEqual(-7, spell.Effects[0].ScalingType);
         }
@@ -134,7 +134,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(2, spell.Effects.Count);
-            ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(127.8034668d, spell.Effects[0].ScaleBudget);
             ClassicAssert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             ClassicAssert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
@@ -158,7 +158,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(1, spell.Effects.Count);
-            ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(180.9646759d, spell.Effects[0].ScaleBudget);
             ClassicAssert.AreEqual(26.649944000000001d, spell.Effects[0].Coefficient);
         }
 
@@ -170,7 +170,7 @@ namespace SimcProfileParser.Tests
             var spellOptions = new SimcSpellOptions()
             {
                 SpellId = 274740,
-                PlayerLevel = 80
+                PlayerLevel = 90
             };
 
             // Act
@@ -180,7 +180,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(1.716d, spell.Effects[0].Coefficient);
-            ClassicAssert.AreEqual(3828.969615d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(131.08048629999999d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -200,7 +200,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(1.716d, spell.Effects[0].Coefficient);
-            ClassicAssert.AreEqual(3828.969615d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(33.631460769999997d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -227,7 +227,7 @@ namespace SimcProfileParser.Tests
         public async Task SSC_Creates_Player_Spell_Raw()
         {
             // Arrange
-            var playerLevel = 70u;
+            var playerLevel = 90u;
             var spellId = 274740u;
 
             // Act
@@ -237,7 +237,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(1.716d, spell.Effects[0].Coefficient);
-            ClassicAssert.AreEqual(453.3443671d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(131.08048629999999d, spell.Effects[0].ScaleBudget); // Updated for midnight branch level 90
         }
 
         [Test]

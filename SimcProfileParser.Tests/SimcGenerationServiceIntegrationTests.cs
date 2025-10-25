@@ -98,7 +98,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(2, spell.Effects.Count);
-            ClassicAssert.AreEqual(25.512510299999999d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(127.8034668d, spell.Effects[0].ScaleBudget);
             ClassicAssert.AreEqual(460.97500600000001d, spell.Effects[0].Coefficient);
             ClassicAssert.AreEqual(621.39996299999996d, spell.Effects[1].Coefficient);
         }
@@ -110,7 +110,7 @@ namespace SimcProfileParser.Tests
             var spellOptions = new SimcSpellOptions()
             {
                 SpellId = 274740,
-                PlayerLevel = 60
+                PlayerLevel = 90
             };
 
             // Act
@@ -120,7 +120,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(spell);
             ClassicAssert.IsNotNull(spell.Effects);
             ClassicAssert.AreEqual(1.716, spell.Effects[0].Coefficient);
-            ClassicAssert.AreEqual(258.2211327d, spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(131.08048629999999d, spell.Effects[0].ScaleBudget);
         }
 
         [Test]

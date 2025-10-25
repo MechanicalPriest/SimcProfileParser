@@ -121,13 +121,13 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(202573, item.ItemId);
 
             // Stam
-            ClassicAssert.AreEqual(3422, item.Mods[0].StatRating);
+            ClassicAssert.AreEqual(892, item.Mods[0].StatRating);
             ClassicAssert.AreEqual(ItemModType.ITEM_MOD_STAMINA, item.Mods[0].Type);
             // Crit rating
-            ClassicAssert.AreEqual(460, item.Mods[1].StatRating);
+            ClassicAssert.AreEqual(269, item.Mods[1].StatRating);
             ClassicAssert.AreEqual(ItemModType.ITEM_MOD_CRIT_RATING, item.Mods[1].Type);
             // Haste rating
-            ClassicAssert.AreEqual(211, item.Mods[2].StatRating);
+            ClassicAssert.AreEqual(123, item.Mods[2].StatRating);
             ClassicAssert.AreEqual(ItemModType.ITEM_MOD_HASTE_RATING, item.Mods[2].Type);
         }
 
@@ -174,8 +174,8 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
             ClassicAssert.AreEqual(181360, item.ItemId);
             // This will make sure the scale value that's being pulled for spells is using the right
-            // item level. In this cast it's 226 = 1.5.
-            ClassicAssert.AreEqual(1.5d, item.Effects[0].Spell.CombatRatingMultiplier);
+            // item level. 
+            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[0].Spell.CombatRatingMultiplier);
         }
 
         [Test]
@@ -252,8 +252,8 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
             ClassicAssert.AreEqual(178809, item.ItemId);
             // This will make sure the scale value that's being pulled for spells with healing/damage effects is using the right
-            // item level. In this cast it's 226 = 58.
-            ClassicAssert.AreEqual(25.512510299999999d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            // item level. 
+            ClassicAssert.AreEqual(180.9646759d, item.Effects[0].Spell.Effects[0].ScaleBudget);
         }
 
         [Test]
@@ -285,8 +285,8 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(336841, item.Effects[0].Spell.SpellId);
             ClassicAssert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
             ClassicAssert.AreEqual(12000.0d, item.Effects[0].Spell.Duration);
-            ClassicAssert.AreEqual(1.5d, item.Effects[0].Spell.CombatRatingMultiplier);
-            ClassicAssert.AreEqual(25.512510299999999d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[0].Spell.CombatRatingMultiplier);
+            ClassicAssert.AreEqual(180.9646759d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             ClassicAssert.IsNotNull(item.Effects[0].Spell.Effects);
             ClassicAssert.AreEqual(1, item.Effects[0].Spell.Effects.Count);
             ClassicAssert.AreEqual(2.955178d, item.Effects[1].Spell.Effects[0].Coefficient);
@@ -325,14 +325,14 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(336866, item.Effects[0].Spell.SpellId);
             ClassicAssert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
             ClassicAssert.AreEqual(6000, item.Effects[0].Spell.Duration);
-            ClassicAssert.AreEqual(1.5d, item.Effects[0].Spell.CombatRatingMultiplier);
-            ClassicAssert.AreEqual(25.512510299999999d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[0].Spell.CombatRatingMultiplier);
+            ClassicAssert.AreEqual(180.9646759d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             // Second effect
             ClassicAssert.AreEqual(135863, item.Effects[1].EffectId);
             ClassicAssert.IsNotNull(item.Effects[1].Spell);
             ClassicAssert.AreEqual(343538, item.Effects[1].Spell.SpellId);
-            ClassicAssert.AreEqual(1.5d, item.Effects[1].Spell.CombatRatingMultiplier);
-            ClassicAssert.AreEqual(25.512510299999999d, item.Effects[1].Spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[1].Spell.CombatRatingMultiplier);
+            ClassicAssert.AreEqual(127.8034668d, item.Effects[1].Spell.Effects[0].ScaleBudget);
             ClassicAssert.IsNotNull(item.Effects[1].Spell.Effects);
             ClassicAssert.AreEqual(2, item.Effects[1].Spell.Effects.Count);
             // Second effect's spells first effect
@@ -370,8 +370,8 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(item.Effects[0].Spell);
             ClassicAssert.AreEqual(344117, item.Effects[0].Spell.SpellId);
             ClassicAssert.AreEqual(1.5, item.Effects[0].Spell.Rppm);
-            ClassicAssert.AreEqual(1.5d, item.Effects[0].Spell.CombatRatingMultiplier);
-            ClassicAssert.AreEqual(25.512510299999999d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[0].Spell.CombatRatingMultiplier);
+            ClassicAssert.AreEqual(180.9646759d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             // First effect's spells first effect trigger spells first effect (lol)
             // This is basically testing that the trigger spell gets linked. This particular spell
             // stores the proc coefficient in the trigger spell and multiplies it by 155.
@@ -470,7 +470,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(193748, item.ItemId);
             ClassicAssert.AreEqual(395, item.ItemLevel);
             ClassicAssert.AreEqual(1, item.Mods.Count);
-            ClassicAssert.AreEqual(477, item.Mods[0].StatRating);
+            ClassicAssert.AreEqual(179, item.Mods[0].StatRating);
         }
 
         [Test]
@@ -496,7 +496,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(194307, item.ItemId);
             ClassicAssert.AreEqual(398, item.ItemLevel);
             ClassicAssert.AreEqual(1, item.Mods.Count);
-            ClassicAssert.AreEqual(382, item.Mods[0].StatRating);
+            ClassicAssert.AreEqual(325, item.Mods[0].StatRating);
         }
     }
 }
