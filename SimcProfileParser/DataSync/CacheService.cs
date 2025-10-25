@@ -24,7 +24,7 @@ namespace SimcProfileParser.DataSync
         protected readonly ILogger<CacheService> _logger;
 
         private bool _usePtrData = false;
-        private string _useBranchName = "thewarwithin";
+        private string _useBranchName = "midnight";
         internal string _getUrl(string fileName) => "https://raw.githubusercontent.com/simulationcraft/simc/"
                 + _useBranchName + "/engine/dbc/generated/"
                 + fileName

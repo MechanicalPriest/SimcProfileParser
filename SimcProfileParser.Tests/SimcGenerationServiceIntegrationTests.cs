@@ -133,7 +133,7 @@ namespace SimcProfileParser.Tests
 
             // Assert
             ClassicAssert.IsNotNull(version);
-            ClassicAssert.AreEqual("11.", version.Substring(0, 3));
+            ClassicAssert.AreEqual("12.", version.Substring(0, 3));
         }
     }
 }
