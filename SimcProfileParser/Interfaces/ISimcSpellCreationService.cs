@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SimcProfileParser.Interfaces
 {
-    public interface ISimcSpellCreationService
+    internal interface ISimcSpellCreationService
     {
         Task<SimcSpell> GenerateItemSpellAsync(SimcItem item, uint spellId);
         Task<SimcSpell> GenerateItemSpellAsync(SimcSpellOptions spellOptions);
