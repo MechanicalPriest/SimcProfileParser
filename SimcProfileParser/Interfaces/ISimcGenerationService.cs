@@ -27,6 +27,11 @@ namespace SimcProfileParser.Interfaces
         Task<SimcSpell> GenerateSpellAsync(SimcSpellOptions options);
 
         Task<string> GetGameDataVersionAsync();
+
+        /// <summary>
+        /// Clears all cached data used by the generator (both memory and disk cache).
+        /// </summary>
+        Task ClearCacheAsync();
         // TODO: Make this public once implemented.
         //Task<List<SimcTalent>> GetAvailableTalentsAsync(int classId, int specId);
     }

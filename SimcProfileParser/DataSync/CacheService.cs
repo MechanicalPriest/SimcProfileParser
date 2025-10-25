@@ -501,5 +501,34 @@ namespace SimcProfileParser.DataSync
         {
             _useBranchName = branchName;
         }
+
+        public async Task ClearCacheAsync()
+        {
+            // Clear in-memory caches
+            _cachedFileData.Clear();
+            _eTagCacheData.Clear();
+
+            // Clear on-disk cache
+            try
+            {
+                if (Directory.Exists(BaseFileDirectory))
+                {
+                    foreach (var file in Directory.GetFiles(BaseFileDirectory))
+                    {
+                        try { File.Delete(file); }
+                        catch (Exception ex)
+                        {
+                            _logger?.LogWarning(ex, "Failed to delete cache file {file}", file);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error clearing cache directory {BaseFileDirectory}", BaseFileDirectory);
+            }
+
+            await Task.CompletedTask;
+        }
     }
 }

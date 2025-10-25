@@ -477,5 +477,24 @@ namespace SimcProfileParser
             get => _cacheService.UseBranchName;
             set => _cacheService.SetUseBranchName(value);
         }
+
+        /// <summary>
+        /// Clears the cached data for profiles, items, spells, and talents.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method will remove all cached entries associated with the current character or profile.
+        /// It is useful for refreshing data after game updates, profile changes, or debugging.
+        /// </para>
+        /// <para>
+        /// After clearing the cache, the next profile generation will
+        /// re-download and re-process all required data from SimulationCraft's data files.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="SimcProfileParser.Interfaces.ICacheService.ClearCacheAsync"/>
+        public async Task ClearCacheAsync()
+        {
+            await _cacheService.ClearCacheAsync();
+        }
     }
 }

@@ -56,5 +56,10 @@ namespace SimcProfileParser.Interfaces.DataSync
         /// </summary>
         /// <param name="branchName">e.g. thewarwithin</param>
         void SetUseBranchName(string branchName);
+
+        /// <summary>
+        /// Clears all cached data from memory and disk.
+        /// </summary>
+        Task ClearCacheAsync();
     }
 }
