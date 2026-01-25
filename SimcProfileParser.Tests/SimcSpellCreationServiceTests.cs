@@ -205,6 +205,7 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(33.631460769999997d, spell.Effects[0].ScaleBudget);
         }
 
+        [Ignore("Was previously tested on Shadowfiend which has been removed. Need a new spell to test this.")]
         [Test]
         public async Task SSC_Creates_Player_Spell_With_Invalid_Trigger_Spell()
         {

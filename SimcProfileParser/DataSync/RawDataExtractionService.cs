@@ -666,49 +666,48 @@ namespace SimcProfileParser.DataSync
                     // 36 is cast time
                     spell.CastTime = Convert.ToInt32(data[36]);
 
-                    // 37 - 51. Next up is something of length NUM_SPELL_FLAGS = 15
-                    spell.Attributes = new uint[15];
+                    // 37 - 53. Next up is something of length NUM_SPELL_FLAGS = 17
+                    spell.Attributes = new uint[17];
                     for (var i = 0; i < spell.Attributes.Length; i++)
                     {
                         spell.Attributes[i] = Convert.ToUInt32(data[i + 37]);
                     }
 
-                    // 52 - 55. Next up is something of length NUM_CLASS_FAMILY_FLAGS = 4
+                    // 54 - 57. Next up is something of length NUM_CLASS_FAMILY_FLAGS = 4
                     spell.ClassFlags = new uint[4];
                     for (var i = 0; i < spell.ClassFlags.Length; i++)
                     {
-                        spell.ClassFlags[i] = Convert.ToUInt32(data[i + 52]);
+                        spell.ClassFlags[i] = Convert.ToUInt32(data[i + 54]);
                     }
 
-                    // 56 is class flags family
-                    spell.ClassFlagsFamily = Convert.ToUInt32(data[56]);
+                    // 58 is class flags family
+                    spell.ClassFlagsFamily = Convert.ToUInt32(data[58]);
 
-                    // 57-58 is aura interrupt flags, skip these
+                    // 59-60 is aura interrupt flags, skip these
 
-                    // 59-60 is channel interrupt flags, skip these
+                    // 61-62 is channel interrupt flags, skip these
 
-                    // 61 is stance mask
-                    uint.TryParse(data[61].Replace("0x", ""),
+                    // 63 is stance mask
+                    uint.TryParse(data[63].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out uint stanceMask);
                     spell.StanceMask = stanceMask;
 
-                    // 62 is mechanic
-                    spell.Mechanic = Convert.ToUInt32(data[62]);
+                    // 64 is mechanic
+                    spell.Mechanic = Convert.ToUInt32(data[64]);
 
-                    // 63 is az power id
-                    spell.PowerId = Convert.ToUInt32(data[63]);
+                    // 65 is az power id
+                    spell.PowerId = Convert.ToUInt32(data[65]);
 
-                    // 64 is essence id
-                    spell.EssenceId = Convert.ToUInt32(data[64]);
+                    // 66 is essence id
+                    spell.EssenceId = Convert.ToUInt32(data[66]);
 
                     // We don't have a practical use for the counts metadata
-                    // 65 is effects count
+                    // 67 is effects count
 
-                    // 66 is power count
+                    // 68 is power count
 
-                    // 67 is driver count
-
-                    // 68 is label count
+                    // 69 is driver count
+                    // 70 is label count
 
                     spells.Add(spell);
                 }

@@ -28,7 +28,7 @@ namespace SimcProfileParser.Interfaces.DataSync
         /// <summary>
         /// Set the flag to use PTR data for data extraction
         /// </summary>
-        /// <param name="usePtrData">TUE for using PTR data</param>
+        /// <param name="usePtrData">TRUE for using PTR data</param>
         void SetUsePtrData(bool usePtrData);
         /// <summary>
         /// The github branch name to use for data extraction
