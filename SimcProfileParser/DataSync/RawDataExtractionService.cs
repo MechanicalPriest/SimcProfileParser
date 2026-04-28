@@ -627,87 +627,91 @@ namespace SimcProfileParser.DataSync
                     // 25 is max targets
                     spell.MaxTargets = Convert.ToInt32(data[25]);
 
-                    // 26 is Duration
-                    spell.Duration = ToDoubleClean(data[26]);
+                    // 26 is Cone Degrees - we don't have a use for this yet
 
-                    // 27 is max stacks
-                    spell.MaxStack = Convert.ToUInt32(data[27]);
+                    // 27 is Line Width - we don't have a use for this yet
 
-                    // 28 is proc chance
-                    spell.ProcChance = Convert.ToUInt32(data[28]);
+                    // 28 is Duration
+                    spell.Duration = ToDoubleClean(data[28]);
 
-                    // 29 is proc charges
-                    spell.ProcCharges = Convert.ToInt32(data[29]);
+                    // 29 is max stacks
+                    spell.MaxStack = Convert.ToUInt32(data[29]);
 
-                    // 30 is proc flags
-                    ulong.TryParse(data[30].Replace("0x", ""),
+                    // 30 is proc chance
+                    spell.ProcChance = Convert.ToUInt32(data[30]);
+
+                    // 31 is proc charges
+                    spell.ProcCharges = Convert.ToInt32(data[31]);
+
+                    // 32 is proc flags
+                    ulong.TryParse(data[32].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out ulong procFlags);
                     spell.ProcFlags = procFlags;
 
-                    // 31 is icd
-                    spell.InternalCooldown = Convert.ToUInt32(data[31]);
+                    // 33 is icd
+                    spell.InternalCooldown = Convert.ToUInt32(data[33]);
 
-                    // 32 is rppm
-                    spell.Rppm = ToDoubleClean(data[32]);
+                    // 34 is rppm
+                    spell.Rppm = ToDoubleClean(data[34]);
 
-                    // 33 is eq class
-                    spell.EquippedClass = Convert.ToUInt32(data[33]);
+                    // 35 is eq class
+                    spell.EquippedClass = Convert.ToUInt32(data[35]);
 
-                    // 34 is eq class inventory type mask
-                    _ = uint.TryParse(data[34].Replace("0x", ""),
+                    // 36 is eq class inventory type mask
+                    _ = uint.TryParse(data[36].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out uint eqEquipmentInventoryType);
                     spell.EquippedInventoryTypeMask = eqEquipmentInventoryType;
 
-                    // 35 is eq class subclass mask
-                    _ = uint.TryParse(data[35].Replace("0x", ""),
+                    // 37 is eq class subclass mask
+                    _ = uint.TryParse(data[37].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out uint eqEquippedSubclass);
                     spell.EquippedSubclassMask = eqEquippedSubclass;
 
-                    // 36 is cast time
-                    spell.CastTime = Convert.ToInt32(data[36]);
+                    // 38 is cast time
+                    spell.CastTime = Convert.ToInt32(data[38]);
 
-                    // 37 - 53. Next up is something of length NUM_SPELL_FLAGS = 17
+                    // 39 - 55. Next up is something of length NUM_SPELL_FLAGS = 17
                     spell.Attributes = new uint[17];
                     for (var i = 0; i < spell.Attributes.Length; i++)
                     {
-                        spell.Attributes[i] = Convert.ToUInt32(data[i + 37]);
+                        spell.Attributes[i] = Convert.ToUInt32(data[i + 39]);
                     }
 
-                    // 54 - 57. Next up is something of length NUM_CLASS_FAMILY_FLAGS = 4
+                    // 56 - 59. Next up is something of length NUM_CLASS_FAMILY_FLAGS = 4
                     spell.ClassFlags = new uint[4];
                     for (var i = 0; i < spell.ClassFlags.Length; i++)
                     {
-                        spell.ClassFlags[i] = Convert.ToUInt32(data[i + 54]);
+                        spell.ClassFlags[i] = Convert.ToUInt32(data[i + 56]);
                     }
 
-                    // 58 is class flags family
-                    spell.ClassFlagsFamily = Convert.ToUInt32(data[58]);
+                    // 60 is class flags family
+                    spell.ClassFlagsFamily = Convert.ToUInt32(data[60]);
 
-                    // 59-60 is aura interrupt flags, skip these
+                    // 61-62 is aura interrupt flags, skip these
 
-                    // 61-62 is channel interrupt flags, skip these
+                    // 63-64 is channel interrupt flags, skip these
 
-                    // 63 is stance mask
-                    uint.TryParse(data[63].Replace("0x", ""),
+                    // 65 is stance mask
+                    uint.TryParse(data[65].Replace("0x", ""),
                         System.Globalization.NumberStyles.HexNumber, null, out uint stanceMask);
                     spell.StanceMask = stanceMask;
 
-                    // 64 is mechanic
-                    spell.Mechanic = Convert.ToUInt32(data[64]);
+                    // 66 is mechanic
+                    spell.Mechanic = Convert.ToUInt32(data[66]);
 
-                    // 65 is az power id
-                    spell.PowerId = Convert.ToUInt32(data[65]);
+                    // 67 is az power id
+                    spell.PowerId = Convert.ToUInt32(data[67]);
 
-                    // 66 is essence id
-                    spell.EssenceId = Convert.ToUInt32(data[66]);
+                    // 68 is essence id
+                    spell.EssenceId = Convert.ToUInt32(data[68]);
 
                     // We don't have a practical use for the counts metadata
-                    // 67 is effects count
+                    // 69 is effects count
 
-                    // 68 is power count
+                    // 70 is power count
 
-                    // 69 is driver count
-                    // 70 is label count
+                    // 71 is driver count
+                    // 72 is label count
 
                     spells.Add(spell);
                 }
