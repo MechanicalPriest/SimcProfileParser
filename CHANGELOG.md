@@ -18,6 +18,9 @@ This project follows [Semantic Versioning](https://semver.org/).
 - **`AffectedBySpellIds` and `AffectedSpellIds` may contain more spells than in 4.1.x**, because label matches are added
   to the existing family flag and category matches. Each list still contains every spell ID once. Effects targeting broad
   labels such as "Class Spells" (16) list every spell with that label.
+- Parsed data files are now versioned (recorded in `ParsedFileVersions.json` in the cache directory). When the parser
+  output changes, existing parsed files are regenerated from the already-downloaded raw files, without a re-download.
+  Upgrading from 4.1.x re-parses the spell data once to pick up labels.
 
 ## 4.1.1 - 2026-11-04
 

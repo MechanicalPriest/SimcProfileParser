@@ -5,10 +5,12 @@ using Serilog;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces.DataSync;
 using SimcProfileParser.Model.DataSync;
+using SimcProfileParser.Model.RawData;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests.DataSync
@@ -541,6 +543,85 @@ namespace SimcProfileParser.Tests.DataSync
                   $"Remote name {remoteName} should not contain spaces");
                 }
             }
+        }
+
+        #endregion
+
+        #region Parser Versioning Tests
+
+        /// <summary>
+        /// Generate the parsed spell data, then replace it with an empty list so we can tell whether it gets regenerated.
+        /// </summary>
+        private async Task<CacheService> SetUpEmptyParsedSpellDataAsync()
+        {
+            ICacheService cacheService = new CacheService(
+                new RawDataExtractionService(_loggerFactory.CreateLogger<RawDataExtractionService>()),
+                _loggerFactory.CreateLogger<CacheService>(), _rawFileService);
+            await cacheService.GetParsedFileContentsAsync<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
+
+            var concrete = (CacheService)cacheService;
+            await File.WriteAllTextAsync(Path.Combine(concrete.BaseFileDirectory, "SpellData.json"), "[]");
+            return concrete;
+        }
+
+        private static ICacheService CreateFreshCacheService(ILoggerFactory loggerFactory)
+            => new CacheService(
+                new RawDataExtractionService(loggerFactory.CreateLogger<RawDataExtractionService>()),
+                loggerFactory.CreateLogger<CacheService>(),
+                new RawFileService(loggerFactory.CreateLogger<RawFileService>()));
+
+        private static Dictionary<string, int> ReadParsedFileVersions(string baseDirectory)
+            => JsonSerializer.Deserialize<Dictionary<string, int>>(
+                File.ReadAllText(Path.Combine(baseDirectory, CacheService.ParsedFileVersionsFileName)));
+
+        [Test]
+        public async Task CS_Regenerates_Parsed_File_From_Older_Parser_Version()
+        {
+            // Arrange
+            var setup = await SetUpEmptyParsedSpellDataAsync();
+            var versionsPath = Path.Combine(setup.BaseFileDirectory, CacheService.ParsedFileVersionsFileName);
+            await File.WriteAllTextAsync(versionsPath, "{\"SpellData.json\":1}");
+            var cacheService = CreateFreshCacheService(_loggerFactory);
+
+            // Act
+            var spells = await cacheService.GetParsedFileContentsAsync<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
+
+            // Assert
+            Assert.That(spells, Is.Not.Empty);
+            Assert.That(spells.Any(s => s.Labels.Count > 0), Is.True);
+            Assert.That(ReadParsedFileVersions(setup.BaseFileDirectory)["SpellData.json"], Is.EqualTo(2));
+        }
+
+        [Test]
+        public async Task CS_Regenerates_Parsed_File_With_No_Recorded_Version()
+        {
+            // Arrange
+            // Parsed files from before versioning was added have no entry, so are treated as version 1
+            var setup = await SetUpEmptyParsedSpellDataAsync();
+            File.Delete(Path.Combine(setup.BaseFileDirectory, CacheService.ParsedFileVersionsFileName));
+            var cacheService = CreateFreshCacheService(_loggerFactory);
+
+            // Act
+            var spells = await cacheService.GetParsedFileContentsAsync<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
+
+            // Assert
+            Assert.That(spells, Is.Not.Empty);
+            Assert.That(ReadParsedFileVersions(setup.BaseFileDirectory)["SpellData.json"], Is.EqualTo(2));
+        }
+
+        [Test]
+        public async Task CS_Uses_Parsed_File_From_Current_Parser_Version()
+        {
+            // Arrange
+            // The versions file already records SpellData.json at the current version, so the (empty) file is trusted
+            await SetUpEmptyParsedSpellDataAsync();
+            var cacheService = CreateFreshCacheService(_loggerFactory);
+
+            // Act
+            var spells = await cacheService.GetParsedFileContentsAsync<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
+
+            // Assert
+            Assert.That(spells, Is.Empty);
         }
 
         #endregion
