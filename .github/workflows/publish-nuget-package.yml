@@ -7,15 +7,18 @@ jobs:
   publish:
     name: build, pack & publish
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for NuGet trusted publishing (OIDC)
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: | 
+          dotnet-version: |
             10.0.x
-      # Build    
+      # Build
       - name: Install dependencies
         run: dotnet restore
       - name: Build the libraries
@@ -24,5 +27,10 @@ jobs:
       - name: Package the libraries
         run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release SimcProfileParser/SimcProfileParser.csproj -o .
       # Publish
+      - name: NuGet login (trusted publishing)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: Niphyr # nuget.org profile name
       - name: Publish on version change
-        run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+        run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
