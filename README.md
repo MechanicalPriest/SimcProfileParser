@@ -1,7 +1,6 @@
 # Simc Profile Parser
-![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/MechanicalPriest/SimcProfileParser?branch=master&svg=true)
-![Publish to nuget](https://github.com/MechanicalPriest/SimcProfileParser/workflows/Publish%20to%20nuget/badge.svg?branch=master)
-![Build & Run Tests (.NET Core)](https://github.com/MechanicalPriest/SimcProfileParser/workflows/Build%20&%20Run%20Tests%20(.NET%20Core)/badge.svg?branch=master)
+[![Build & Run Tests](https://github.com/MechanicalPriest/SimcProfileParser/actions/workflows/dotnet-core-build-test.yml/badge.svg?branch=master)](https://github.com/MechanicalPriest/SimcProfileParser/actions/workflows/dotnet-core-build-test.yml)
+[![Publish to nuget](https://github.com/MechanicalPriest/SimcProfileParser/actions/workflows/publish-nuget-package.yml/badge.svg?branch=master)](https://github.com/MechanicalPriest/SimcProfileParser/actions/workflows/publish-nuget-package.yml)
 
 A library to parse items in the simc import format into functional objects.
 
