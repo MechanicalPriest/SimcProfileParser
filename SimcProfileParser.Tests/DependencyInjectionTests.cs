@@ -28,9 +28,9 @@ namespace SimcProfileParser.Tests
                 });
 
         [Test]
-        public void TryTestDIExtensions()
+        public async Task TryTestDIExtensions()
         {
-            Assert.DoesNotThrowAsync(async () => await CreateHostBuilder(null).Build().RunAsync());
+            await Assert.DoesNotThrowAsync(async () => await CreateHostBuilder(null).Build().RunAsync());
         }
     }
 

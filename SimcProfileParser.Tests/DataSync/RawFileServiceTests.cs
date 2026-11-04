@@ -537,7 +537,7 @@ namespace SimcProfileParser.Tests.DataSync
             };
 
             // Act & Assert - Should not throw even with null logger
-            Assert.DoesNotThrowAsync(async () =>
+            await Assert.DoesNotThrowAsync(async () =>
             {
                 var data = await rawFileService.GetFileContentsAsync(configuration, "ScaleData.raw");
             });
