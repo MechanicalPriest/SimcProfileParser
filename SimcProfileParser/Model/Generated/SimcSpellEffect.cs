@@ -1,4 +1,6 @@
-﻿namespace SimcProfileParser.Model.Generated
+﻿using System.Collections.Generic;
+
+namespace SimcProfileParser.Model.Generated
 {
     public class SimcSpellEffect
     {
@@ -21,5 +23,10 @@
         public double ScaleBudget { get; internal set; }
         public uint TriggerSpellId { get; internal set; }
         public SimcSpell TriggerSpell { get; internal set; }
+        /// <summary>
+        /// Ids of spells this effect modifies, matched by class family flags or spell category.
+        /// Equivalent to "Affected Spells" in simc's spell dump.
+        /// </summary>
+        public List<uint> AffectedSpellIds { get; internal set; } = new List<uint>();
     }
 }

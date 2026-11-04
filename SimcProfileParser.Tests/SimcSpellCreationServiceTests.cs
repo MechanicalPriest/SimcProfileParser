@@ -312,5 +312,87 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(0, spell.RppmModifiers[0].RppmSpec);
             ClassicAssert.AreEqual(1, spell.RppmModifiers[0].RppmCoefficient);
         }
+
+        [Test]
+        public async Task SSC_Player_Spell_Lists_Spells_Affecting_It_By_Family_Flags()
+        {
+            // Arrange
+            // Power Word: Shield is modified by the Priest and Discipline Priest auras
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 17,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+
+            // Assert
+            Assert.That(spell.AffectedBySpellIds, Does.Contain(137030u));
+            Assert.That(spell.AffectedBySpellIds, Does.Contain(137032u));
+            Assert.That(spell.AffectedBySpellIds, Does.Not.Contain(17u), "A spell should not list itself as affecting itself");
+            Assert.That(spell.AffectedBySpellIds, Is.Ordered);
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Effect_Lists_Affected_Spells_By_Family_Flags()
+        {
+            // Arrange
+            // The Priest class aura modifies Power Word: Shield
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 137030,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+
+            // Assert
+            Assert.That(spell.Effects.Any(e => e.AffectedSpellIds.Contains(17u)), Is.True);
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Affects_Include_Category_Modifiers()
+        {
+            // Arrange
+            // Vanguard has a Modify Recharge Time (Category) effect for Spell Reflection's category
+            var vanguardOptions = new SimcSpellOptions()
+            {
+                SpellId = 71,
+                PlayerLevel = 90
+            };
+            var spellReflectionOptions = new SimcSpellOptions()
+            {
+                SpellId = 23920,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var vanguard = await _spellCreationService.GeneratePlayerSpellAsync(vanguardOptions);
+            var spellReflection = await _spellCreationService.GeneratePlayerSpellAsync(spellReflectionOptions);
+
+            // Assert
+            Assert.That(vanguard.Effects.Any(e => e.AffectedSpellIds.Contains(23920u)), Is.True);
+            Assert.That(spellReflection.AffectedBySpellIds, Does.Contain(71u));
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Affects_Include_Category_Cooldown_Effects()
+        {
+            // Arrange
+            // Coldthirst uses the Modify Cooldown (Category) effect type rather than an aura to reduce Counterspell's cooldown
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 2139,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var counterspell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+
+            // Assert
+            Assert.That(counterspell.AffectedBySpellIds, Does.Contain(378849u));
+        }
     }
 }

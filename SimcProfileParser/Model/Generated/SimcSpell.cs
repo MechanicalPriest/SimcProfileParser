@@ -41,12 +41,18 @@ namespace SimcProfileParser.Model.Generated
         /// </summary>
         public Dictionary<uint, double> PowerCosts { get; internal set; }
         public List<SimcSpellRppmModifier> RppmModifiers { get; internal set; }
+        /// <summary>
+        /// Ids of spells that have an effect modifying this spell, e.g. talents, auras and set bonuses.
+        /// Matched by class family flags or spell category. Equivalent to "Affecting Spells" in simc's spell dump.
+        /// </summary>
+        public List<uint> AffectedBySpellIds { get; internal set; }
 
         public SimcSpell()
         {
             Effects = new List<SimcSpellEffect>();
             RppmModifiers = new List<SimcSpellRppmModifier>();
             PowerCosts = new Dictionary<uint, double>();
+            AffectedBySpellIds = new List<uint>();
         }
     }
 }

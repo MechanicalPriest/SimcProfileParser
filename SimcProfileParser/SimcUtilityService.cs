@@ -454,6 +454,156 @@ namespace SimcProfileParser
             return result;
         }
 
+        #region Spell affects
+
+        /// <summary>
+        /// Aura subtypes whose MiscValue1 is a spell category. simc: dbc::effect_category_subtypes
+        /// </summary>
+        private static readonly HashSet<uint> _categoryEffectSubTypes =
+        [
+            148, // A_MOD_CHARGE_RECHARGE_RATE
+            341, // A_MODIFY_CATEGORY_COOLDOWN
+            411, // A_MOD_MAX_CHARGES
+            453, // A_MOD_RECHARGE_TIME_CATEGORY
+            454, // A_MOD_RECHARGE_TIME_PCT_CATEGORY
+            457, // A_HASTED_CATEGORY
+            500, // A_IGNORE_SPELL_CHARGE_COOLDOWN_CATEGORY
+        ];
+
+        /// <summary>
+        /// Effect types whose MiscValue1 is a spell category
+        /// </summary>
+        private static readonly HashSet<uint> _categoryEffectTypes =
+        [
+            292, // E_MODIFY_COOLDOWN_IN_CATEGORY
+            293, // E_RECHARGE_CATEGORY_COOLDOWN_IMMEDIATE
+        ];
+
+        private sealed class SpellAffectIndex
+        {
+            public List<SimcRawSpell> Source { get; init; }
+            public Dictionary<uint, List<SimcRawSpell>> SpellsByFamily { get; } = [];
+            public Dictionary<uint, List<uint>> SpellIdsByCategory { get; } = [];
+            /// <summary>
+            /// Category => ids of spells with an effect modifying that category
+            /// </summary>
+            public Dictionary<uint, List<uint>> SpellIdsAffectingCategory { get; } = [];
+        }
+
+        private SpellAffectIndex _spellAffectIndex;
+
+        public async Task<List<uint>> GetSpellIdsAffectedByEffectAsync(SimcRawSpell spell, SimcRawSpellEffect effect)
+        {
+            var index = await GetSpellAffectIndexAsync();
+            var result = new SortedSet<uint>();
+
+            if (spell.ClassFlagsFamily != 0
+                && index.SpellsByFamily.TryGetValue(spell.ClassFlagsFamily, out var familySpells))
+            {
+                foreach (var familySpell in familySpells)
+                {
+                    if (SharesClassFlag(effect.ClassFlags, familySpell.ClassFlags))
+                        result.Add(familySpell.Id);
+                }
+            }
+
+            if (IsCategoryEffect(effect)
+                && index.SpellIdsByCategory.TryGetValue((uint)effect.MiscValue1, out var categorySpellIds))
+            {
+                result.UnionWith(categorySpellIds);
+            }
+
+            return [.. result];
+        }
+
+        public async Task<List<uint>> GetSpellIdsAffectingSpellAsync(SimcRawSpell spell)
+        {
+            var index = await GetSpellAffectIndexAsync();
+            var result = new SortedSet<uint>();
+
+            if (spell.ClassFlagsFamily != 0
+                && index.SpellsByFamily.TryGetValue(spell.ClassFlagsFamily, out var familySpells))
+            {
+                foreach (var familySpell in familySpells)
+                {
+                    if (familySpell.Id == spell.Id)
+                        continue;
+
+                    if (familySpell.Effects.Any(e => SharesClassFlag(e.ClassFlags, spell.ClassFlags)))
+                        result.Add(familySpell.Id);
+                }
+            }
+
+            if (spell.Category != 0
+                && index.SpellIdsAffectingCategory.TryGetValue(spell.Category, out var categoryAffectors))
+            {
+                result.UnionWith(categoryAffectors);
+            }
+
+            return [.. result];
+        }
+
+        private async Task<SpellAffectIndex> GetSpellAffectIndexAsync()
+        {
+            var spells = await _cacheService.GetParsedFileContentsAsync<List<SimcRawSpell>>(SimcParsedFileType.SpellData);
+
+            // Rebuild whenever the cache hands back a different list, e.g. after the cache is cleared or refreshed.
+            var index = _spellAffectIndex;
+            if (index != null && ReferenceEquals(index.Source, spells))
+                return index;
+
+            index = new SpellAffectIndex() { Source = spells };
+
+            foreach (var spell in spells)
+            {
+                if (spell.ClassFlagsFamily != 0)
+                    AddToIndex(index.SpellsByFamily, spell.ClassFlagsFamily, spell);
+
+                if (spell.Category != 0)
+                    AddToIndex(index.SpellIdsByCategory, spell.Category, spell.Id);
+
+                foreach (var effect in spell.Effects)
+                {
+                    // Duplicates are fine here, results are de-duplicated on lookup
+                    if (IsCategoryEffect(effect))
+                        AddToIndex(index.SpellIdsAffectingCategory, (uint)effect.MiscValue1, spell.Id);
+                }
+            }
+
+            _spellAffectIndex = index;
+            return index;
+        }
+
+        private static void AddToIndex<T>(Dictionary<uint, List<T>> index, uint key, T value)
+        {
+            if (!index.TryGetValue(key, out var list))
+            {
+                list = [];
+                index[key] = list;
+            }
+            list.Add(value);
+        }
+
+        private static bool IsCategoryEffect(SimcRawSpellEffect effect)
+            => effect.MiscValue1 > 0
+            && (_categoryEffectSubTypes.Contains(effect.EffectSubType) || _categoryEffectTypes.Contains(effect.EffectType));
+
+        private static bool SharesClassFlag(uint[] a, uint[] b)
+        {
+            if (a == null || b == null)
+                return false;
+
+            for (var i = 0; i < Math.Min(a.Length, b.Length); i++)
+            {
+                if ((a[i] & b[i]) != 0)
+                    return true;
+            }
+
+            return false;
+        }
+
+        #endregion
+
         public async Task<List<SimcRawRppmEntry>> GetSpellRppmModifiersAsync(uint spellId)
         {
             var modifiers = await _cacheService.GetParsedFileContentsAsync<List<SimcRawRppmEntry>>(SimcParsedFileType.RppmData);

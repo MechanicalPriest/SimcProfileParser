@@ -186,6 +186,12 @@ await File.WriteAllTextAsync("spell.json", json);
 Each spell effect has a `ScaleBudget` property that should be multiplied with the effect's coefficient to get the final scaled value. 
 For simple cases, the `BaseValue` property contains the unscaled value.
 
+**Spell relationships** - Generated spells also list which spells modify each other, matching the "Affected Spells" / "Affecting Spells" output in simc's `allspells.txt`:
+- `SimcSpell.AffectedBySpellIds` - IDs of spells with an effect that modifies this spell (talents, class auras, set bonuses, etc.)
+- `SimcSpellEffect.AffectedSpellIds` - IDs of spells this effect modifies
+
+Relationships are matched by spell class family flags and spell category (e.g. cooldown/charge modifiers). Spell label based modifiers are not included.
+
 #### Working with Talents
 
 ```csharp

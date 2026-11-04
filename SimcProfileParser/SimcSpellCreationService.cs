@@ -73,6 +73,8 @@ namespace SimcProfileParser
                 CastTime = spellData.CastTime
             };
 
+            itemSpell.AffectedBySpellIds = await _simcUtilityService.GetSpellIdsAffectingSpellAsync(spellData);
+
             // Add power costs
             foreach (var power in spellData.SpellPowers)
             {
@@ -138,7 +140,8 @@ namespace SimcProfileParser
                     BaseValue = spellEffect.BaseValue,
                     TriggerSpellId = spellEffect.TriggerSpellId,
                     TriggerSpell = triggerSpell,
-                    ScaleBudget = budget
+                    ScaleBudget = budget,
+                    AffectedSpellIds = await _simcUtilityService.GetSpellIdsAffectedByEffectAsync(spellData, spellEffect)
                 });
             }
 
@@ -222,6 +225,8 @@ namespace SimcProfileParser
                 CastTime = spellData.CastTime,
                 CombatRatingMultiplier = multi
             };
+
+            itemSpell.AffectedBySpellIds = await _simcUtilityService.GetSpellIdsAffectingSpellAsync(spellData);
 
             // Add power costs
             foreach (var power in spellData.SpellPowers)
@@ -332,7 +337,8 @@ namespace SimcProfileParser
                     BaseValue = spellEffect.BaseValue,
                     TriggerSpellId = spellEffect.TriggerSpellId,
                     TriggerSpell = triggerSpell,
-                    ScaleBudget = budget
+                    ScaleBudget = budget,
+                    AffectedSpellIds = await _simcUtilityService.GetSpellIdsAffectedByEffectAsync(spellData, spellEffect)
                 });
             }
 
