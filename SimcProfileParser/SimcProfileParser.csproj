@@ -3,9 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>4.1.0</Version>
-	<AssemblyVersion>4.1.0</AssemblyVersion>
-	<FileVersion>4.1.0</FileVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Not every public member has XML docs yet; do not warn about missing ones -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <Version>4.1.1</Version>
+	<AssemblyVersion>4.1.1</AssemblyVersion>
+	<FileVersion>4.1.1</FileVersion>
 	<Authors>Mechanical Priest</Authors>
 	<Company>Mechanical Priest</Company>
 	<PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
@@ -21,6 +24,7 @@
 	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageIcon>packageIcon.png</PackageIcon>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<PackageReleaseNotes>4.1.1: GetAvailableTalentsAsync added to ISimcGenerationService, XML documentation included, README fixes. 4.1.0: Spell relationships (SimcSpell.AffectedBySpellIds, SimcSpellEffect.AffectedSpellIds). 4.0.0 (breaking): requires .NET 10 (net9.0 dropped) and Microsoft.Extensions.*.Abstractions 10.x. No public API was removed. Full notes: https://github.com/MechanicalPriest/SimcProfileParser/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

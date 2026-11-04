@@ -9,7 +9,18 @@ A library to parse items in the simc import format into functional objects.
 Please raise an issue if something isn't working as you would expect or throws a `NotYetImplemented` 
 exception and it may be prioritised. 
 
+Requires .NET 10. See the [changelog](https://github.com/MechanicalPriest/SimcProfileParser/blob/master/CHANGELOG.md) for release notes and upgrade steps between major versions.
+
 ## Usage
+The examples below assume these namespaces are imported:
+
+```csharp
+using SimcProfileParser;                  // SimcGenerationService, AddSimcProfileParser()
+using SimcProfileParser.Interfaces;       // ISimcGenerationService
+using SimcProfileParser.Model.Generated;  // SimcItemOptions, SimcSpellOptions and the generated models
+using SimcProfileParser.Model.RawData;    // ItemQuality, InventoryType enums
+```
+
 ### Initialising
 
 #### Instance Creation

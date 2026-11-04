@@ -125,6 +125,8 @@ namespace SimcProfileParser
         /// <param name="item">Base item to update</param>
         /// <param name="bonusIds">Bonus IDs to apply</param>
         /// <param name="gemIds">Gem IDs to apply</param>
+        /// <param name="craftedStatIds">Crafted stat IDs to apply</param>
+        /// <param name="dropLevel">Character level the item dropped at, used for item level scaling</param>
         internal async Task UpdateItemAsync(SimcItem item,
             IList<int> bonusIds, IList<int> gemIds, IList<int> craftedStatIds, int dropLevel)
         {

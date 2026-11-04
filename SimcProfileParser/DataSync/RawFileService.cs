@@ -203,6 +203,7 @@ namespace SimcProfileParser.DataSync
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="eTag"></param>
+        /// <param name="lastModified"></param>
         internal async Task UpdateRawFileDetailsAsync(string filename, string eTag, DateTime lastModified)
         {
             var existing = _rawFileEtagCacheData.FirstOrDefault(e => e.Filename == filename);

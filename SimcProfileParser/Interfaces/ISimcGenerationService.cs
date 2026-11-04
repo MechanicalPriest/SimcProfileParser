@@ -32,7 +32,12 @@ namespace SimcProfileParser.Interfaces
         /// Clears all cached data used by the generator (both memory and disk cache).
         /// </summary>
         Task ClearCacheAsync();
-        // TODO: Make this public once implemented.
-        //Task<List<SimcTalent>> GetAvailableTalentsAsync(int classId, int specId);
+        /// <summary>
+        /// Gets all talents available to a class and specialization.
+        /// Returns the raw talent tree structure; prerequisites, choice nodes and point requirements are not validated.
+        /// </summary>
+        /// <param name="classId">Class ID, e.g. 5 for Priest</param>
+        /// <param name="specId">Specialization ID, e.g. 257 for Holy Priest</param>
+        Task<List<SimcTalent>> GetAvailableTalentsAsync(int classId, int specId);
     }
 }

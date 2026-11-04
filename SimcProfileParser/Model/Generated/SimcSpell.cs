@@ -23,11 +23,11 @@ namespace SimcProfileParser.Model.Generated
         public uint InternalCooldown { get; internal set; }
         public double Rppm { get; internal set; }
         public int CastTime { get; internal set; }
-        /// <summary>
-        /// Calculated field, generated from the associated item or player level scaling
-        /// to get the scale budget for the SP coefficient
-        /// MOVED TO SimcSpellEffect
-        /// </summary>
+        // <summary>
+        // Calculated field, generated from the associated item or player level scaling
+        // to get the scale budget for the SP coefficient
+        // MOVED TO SimcSpellEffect
+        // </summary>
         //public double ScaleBudget { get; internal set; }
         /// <summary>
         /// Combat Rating Multiplier, used for Item spells to store an optional multiplier

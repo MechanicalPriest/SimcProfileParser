@@ -492,7 +492,6 @@ namespace SimcProfileParser
         /// re-download and re-process all required data from SimulationCraft's data files.
         /// </para>
         /// </remarks>
-        /// <seealso cref="SimcProfileParser.Interfaces.ICacheService.ClearCacheAsync"/>
         public async Task ClearCacheAsync()
         {
             await _cacheService.ClearCacheAsync();

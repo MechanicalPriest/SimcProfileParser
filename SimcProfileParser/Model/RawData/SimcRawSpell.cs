@@ -24,9 +24,9 @@ namespace SimcProfileParser.Model.RawData
         /// Class mask for spell
         /// </summary>
         public uint ClassMask { get; set; }
-        /// <summary>
-        /// NO LONGER IN USE?
-        /// </summary>
+        // <summary>
+        // NO LONGER IN USE?
+        // </summary>
         //public int ScalingType { get; set; }
         /// <summary>
         /// Max scaling level(?), 0 == no restrictions, otherwise min( player_level, max_scaling_level )
