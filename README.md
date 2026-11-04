@@ -201,7 +201,18 @@ For simple cases, the `BaseValue` property contains the unscaled value.
 - `SimcSpell.AffectedBySpellIds` - IDs of spells with an effect that modifies this spell (talents, class auras, set bonuses, etc.)
 - `SimcSpellEffect.AffectedSpellIds` - IDs of spells this effect modifies
 
-Relationships are matched by spell class family flags and spell category (e.g. cooldown/charge modifiers). Spell label based modifiers are not included.
+Relationships are matched three ways, and each list contains every spell ID once:
+- **Class family flags**: e.g. Add Flat/Percent Modifier effects (subtypes 107/108).
+- **Spell category**: cooldown and charge modifiers. The category is the effect's `MiscValue1`.
+- **Spell label**: e.g. Apply Flat/Percent Modifier w/ Label effects (subtypes 219/218), which modify every spell carrying a label.
+  The label is the effect's `MiscValue2` (or `MiscValue1` for other label effects, such as cooldown recharge rate).
+
+Broad labels such as "Class Spells" (16) or "Priest Spells" (18) are matched like any other label, so an effect targeting them
+lists every spell with that label. simc's dump shows only the label name in that case.
+
+The raw data is also available so you can do your own matching:
+- `SimcSpell.Labels`: the spell's label IDs
+- `SimcSpellEffect.MiscValue1` / `MiscValue2`: for spell modifiers, `MiscValue1` is the property modified (e.g. damage, duration, cooldown)
 
 #### Working with Talents
 

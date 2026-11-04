@@ -97,11 +97,16 @@ namespace SimcProfileParser.Model.RawData
         public uint EssenceId { get; set; }
         public List<SimcRawSpellEffect> Effects { get; set; }
         public List<SimcRawSpellPower> SpellPowers { get; set; }
+        /// <summary>
+        /// Spell labels (SpellLabel.db2). simc: spelllabel_data_t
+        /// </summary>
+        public List<uint> Labels { get; set; }
 
         public SimcRawSpell()
         {
             Effects = new List<SimcRawSpellEffect>();
             SpellPowers = new List<SimcRawSpellPower>();
+            Labels = new List<uint>();
         }
     }
 }

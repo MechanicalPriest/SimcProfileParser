@@ -479,6 +479,33 @@ namespace SimcProfileParser
             293, // E_RECHARGE_CATEGORY_COOLDOWN_IMMEDIATE
         ];
 
+        /// <summary>
+        /// Aura subtypes whose MiscValue1 is a spell label. simc: sc_spell_info.cpp / sc_const_data.cpp generate_indices
+        /// </summary>
+        private static readonly HashSet<uint> _labelMiscValue1EffectSubTypes =
+        [
+            143, // A_MOD_RECHARGE_RATE_LABEL
+            307, // A_ENABLE_CAST_WHILE_MOVING_FOR_SPELL_LABEL
+            320, // A_APPLY_HASTED_GCD_LABEL
+            470, // A_MOD_TIME_RATE_BY_SPELL_LABEL
+            507, // A_MOD_DAMAGE_FROM_SPELLS_LABEL
+            537, // A_MOD_DAMAGE_FROM_CASTER_SPELLS_LABEL
+        ];
+
+        /// <summary>
+        /// Aura subtypes whose MiscValue2 is a spell label (MiscValue1 is the property modified)
+        /// </summary>
+        private static readonly HashSet<uint> _labelMiscValue2EffectSubTypes =
+        [
+            218, // A_ADD_PCT_LABEL_MODIFIER
+            219, // A_ADD_FLAT_LABEL_MODIFIER
+        ];
+
+        /// <summary>
+        /// E_REMOVE_AURA_BY_SPELL_LABEL, MiscValue1 is a spell label
+        /// </summary>
+        private const uint _removeAuraByLabelEffectType = 212;
+
         private sealed class SpellAffectIndex
         {
             public List<SimcRawSpell> Source { get; init; }
@@ -488,6 +515,11 @@ namespace SimcProfileParser
             /// Category => ids of spells with an effect modifying that category
             /// </summary>
             public Dictionary<uint, List<uint>> SpellIdsAffectingCategory { get; } = [];
+            public Dictionary<uint, List<uint>> SpellIdsByLabel { get; } = [];
+            /// <summary>
+            /// Label => ids of spells with an effect modifying spells with that label
+            /// </summary>
+            public Dictionary<uint, List<uint>> SpellIdsAffectingLabel { get; } = [];
         }
 
         private SpellAffectIndex _spellAffectIndex;
@@ -511,6 +543,13 @@ namespace SimcProfileParser
                 && index.SpellIdsByCategory.TryGetValue((uint)effect.MiscValue1, out var categorySpellIds))
             {
                 result.UnionWith(categorySpellIds);
+            }
+
+            var label = GetEffectLabel(effect);
+            if (label != 0
+                && index.SpellIdsByLabel.TryGetValue(label, out var labelSpellIds))
+            {
+                result.UnionWith(labelSpellIds);
             }
 
             return [.. result];
@@ -540,6 +579,12 @@ namespace SimcProfileParser
                 result.UnionWith(categoryAffectors);
             }
 
+            foreach (var label in spell.Labels ?? [])
+            {
+                if (index.SpellIdsAffectingLabel.TryGetValue(label, out var labelAffectors))
+                    result.UnionWith(labelAffectors);
+            }
+
             return [.. result];
         }
 
@@ -562,11 +607,18 @@ namespace SimcProfileParser
                 if (spell.Category != 0)
                     AddToIndex(index.SpellIdsByCategory, spell.Category, spell.Id);
 
+                foreach (var label in spell.Labels ?? [])
+                    AddToIndex(index.SpellIdsByLabel, label, spell.Id);
+
                 foreach (var effect in spell.Effects)
                 {
                     // Duplicates are fine here, results are de-duplicated on lookup
                     if (IsCategoryEffect(effect))
                         AddToIndex(index.SpellIdsAffectingCategory, (uint)effect.MiscValue1, spell.Id);
+
+                    var label = GetEffectLabel(effect);
+                    if (label != 0)
+                        AddToIndex(index.SpellIdsAffectingLabel, label, spell.Id);
                 }
             }
 
@@ -587,6 +639,22 @@ namespace SimcProfileParser
         private static bool IsCategoryEffect(SimcRawSpellEffect effect)
             => effect.MiscValue1 > 0
             && (_categoryEffectSubTypes.Contains(effect.EffectSubType) || _categoryEffectTypes.Contains(effect.EffectType));
+
+        /// <summary>
+        /// Get the spell label an effect targets, or 0 if it doesn't target a label
+        /// </summary>
+        private static uint GetEffectLabel(SimcRawSpellEffect effect)
+        {
+            int label = 0;
+
+            if (_labelMiscValue2EffectSubTypes.Contains(effect.EffectSubType))
+                label = effect.MiscValue2;
+            else if (_labelMiscValue1EffectSubTypes.Contains(effect.EffectSubType)
+                || effect.EffectType == _removeAuraByLabelEffectType)
+                label = effect.MiscValue1;
+
+            return label > 0 ? (uint)label : 0;
+        }
 
         private static bool SharesClassFlag(uint[] a, uint[] b)
         {

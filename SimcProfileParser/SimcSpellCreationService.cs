@@ -74,6 +74,7 @@ namespace SimcProfileParser
             };
 
             itemSpell.AffectedBySpellIds = await _simcUtilityService.GetSpellIdsAffectingSpellAsync(spellData);
+            itemSpell.Labels = [.. spellData.Labels ?? []];
 
             // Add power costs
             foreach (var power in spellData.SpellPowers)
@@ -138,6 +139,8 @@ namespace SimcProfileParser
                     Radius = spellEffect.Radius,
                     RadiusMax = spellEffect.RadiusMax,
                     BaseValue = spellEffect.BaseValue,
+                    MiscValue1 = spellEffect.MiscValue1,
+                    MiscValue2 = spellEffect.MiscValue2,
                     TriggerSpellId = spellEffect.TriggerSpellId,
                     TriggerSpell = triggerSpell,
                     ScaleBudget = budget,
@@ -227,6 +230,7 @@ namespace SimcProfileParser
             };
 
             itemSpell.AffectedBySpellIds = await _simcUtilityService.GetSpellIdsAffectingSpellAsync(spellData);
+            itemSpell.Labels = [.. spellData.Labels ?? []];
 
             // Add power costs
             foreach (var power in spellData.SpellPowers)
@@ -335,6 +339,8 @@ namespace SimcProfileParser
                     Radius = spellEffect.Radius,
                     RadiusMax = spellEffect.RadiusMax,
                     BaseValue = spellEffect.BaseValue,
+                    MiscValue1 = spellEffect.MiscValue1,
+                    MiscValue2 = spellEffect.MiscValue2,
                     TriggerSpellId = spellEffect.TriggerSpellId,
                     TriggerSpell = triggerSpell,
                     ScaleBudget = budget,

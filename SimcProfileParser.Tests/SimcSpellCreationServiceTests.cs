@@ -394,5 +394,119 @@ namespace SimcProfileParser.Tests
             // Assert
             Assert.That(counterspell.AffectedBySpellIds, Does.Contain(378849u));
         }
+
+        [Test]
+        public async Task SSC_Player_Spell_Has_Labels()
+        {
+            // Arrange
+            // Smite carries the Class Spells (16), Priest Spells (18), 292 and 954 labels
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 585,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+
+            // Assert
+            Assert.That(spell.Labels, Is.SupersetOf(new uint[] { 16, 18, 292, 954 }));
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Effect_Lists_Affected_Spells_By_Label()
+        {
+            // Arrange
+            // Holy Priest aura effect #16 (1040388) is a percent label modifier (218) on label 2932, which Halo (120692) carries
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 137031,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var effect = spell.Effects.Single(e => e.Id == 1040388);
+
+            // Assert
+            Assert.That(effect.EffectSubType, Is.EqualTo(218u));
+            Assert.That(effect.MiscValue2, Is.EqualTo(2932));
+            Assert.That(effect.AffectedSpellIds, Does.Contain(120692u));
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Lists_Label_Modifiers_Affecting_It()
+        {
+            // Arrange
+            // The Holy Priest 12.0 4pc (1264853) modifies Divine Image (392990) and Healing Light (196809) through labels 5993 and 5992
+            var setBonusOptions = new SimcSpellOptions()
+            {
+                SpellId = 1264853,
+                PlayerLevel = 90
+            };
+            var divineImageOptions = new SimcSpellOptions()
+            {
+                SpellId = 392990,
+                PlayerLevel = 90
+            };
+            var healingLightOptions = new SimcSpellOptions()
+            {
+                SpellId = 196809,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var setBonus = await _spellCreationService.GeneratePlayerSpellAsync(setBonusOptions);
+            var divineImage = await _spellCreationService.GeneratePlayerSpellAsync(divineImageOptions);
+            var healingLight = await _spellCreationService.GeneratePlayerSpellAsync(healingLightOptions);
+
+            // Assert
+            Assert.That(divineImage.AffectedBySpellIds, Does.Contain(1264853u));
+            Assert.That(healingLight.AffectedBySpellIds, Does.Contain(1264853u));
+            Assert.That(setBonus.Effects.Any(e => e.AffectedSpellIds.Contains(392990u)), Is.True);
+            Assert.That(setBonus.Effects.Any(e => e.AffectedSpellIds.Contains(196809u)), Is.True);
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Family_Flag_Modifiers_Still_Listed()
+        {
+            // Arrange
+            // Apotheosis (200183) modifies Flash Heal (2061) through family flags
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 2061,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+
+            // Assert
+            Assert.That(spell.AffectedBySpellIds, Does.Contain(200183u));
+            Assert.That(spell.AffectedBySpellIds, Is.Unique);
+        }
+
+        [Test]
+        public async Task SSC_Item_Spell_Without_Labels_Or_Modifiers_Has_Empty_Lists()
+        {
+            // Arrange
+            // Item spell 343538 has no labels and no family, category or label relationships
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 343538,
+                ItemLevel = 226,
+                ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemInventoryType = InventoryType.INVTYPE_TRINKET
+            };
+
+            // Act
+            var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
+
+            // Assert
+            Assert.That(spell.Labels, Is.Empty);
+            Assert.That(spell.AffectedBySpellIds, Is.Empty);
+            Assert.That(spell.Effects, Is.Not.Empty);
+            Assert.That(spell.Effects.Select(e => e.AffectedSpellIds), Has.All.Empty);
+        }
     }
 }

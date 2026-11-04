@@ -3,6 +3,22 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.2.0 - 2026-11-04
+
+### Added
+- **Label-based spell relationships.** Effects that modify spells by spell label (e.g. Apply Flat/Percent Modifier w/ Label,
+  subtypes 219/218) are now included in `SimcSpell.AffectedBySpellIds` and `SimcSpellEffect.AffectedSpellIds`.
+  Many newer talents, spec auras and set bonuses use these. For example, the Holy Priest 12.0 4pc (1264853) now lists
+  Divine Image and Healing Light, and they list it.
+- `SimcSpell.Labels`: the spell's label IDs.
+- `SimcSpellEffect.MiscValue1` and `SimcSpellEffect.MiscValue2`. For spell modifiers, `MiscValue1` is the property being
+  modified. For label modifiers, `MiscValue2` is the label.
+
+### Changed
+- **`AffectedBySpellIds` and `AffectedSpellIds` may contain more spells than in 4.1.x**, because label matches are added
+  to the existing family flag and category matches. Each list still contains every spell ID once. Effects targeting broad
+  labels such as "Class Spells" (16) list every spell with that label.
+
 ## 4.1.1 - 2026-11-04
 
 ### Added

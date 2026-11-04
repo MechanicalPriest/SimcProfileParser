@@ -46,6 +46,11 @@ namespace SimcProfileParser.Model.Generated
         /// Matched by class family flags or spell category. Equivalent to "Affecting Spells" in simc's spell dump.
         /// </summary>
         public List<uint> AffectedBySpellIds { get; internal set; }
+        /// <summary>
+        /// Spell label IDs this spell carries. Effects with label modifiers (see <see cref="SimcSpellEffect.MiscValue2"/>)
+        /// modify every spell with the matching label.
+        /// </summary>
+        public List<uint> Labels { get; internal set; }
 
         public SimcSpell()
         {
@@ -53,6 +58,7 @@ namespace SimcProfileParser.Model.Generated
             RppmModifiers = new List<SimcSpellRppmModifier>();
             PowerCosts = new Dictionary<uint, double>();
             AffectedBySpellIds = new List<uint>();
+            Labels = new List<uint>();
         }
     }
 }

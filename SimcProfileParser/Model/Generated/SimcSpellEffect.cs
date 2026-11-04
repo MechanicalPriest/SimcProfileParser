@@ -17,6 +17,15 @@ namespace SimcProfileParser.Model.Generated
         public double RadiusMax { get; internal set; }
         public double BaseValue { get; internal set; }
         /// <summary>
+        /// Effect misc value 1. Its meaning depends on the effect subtype, e.g. for spell modifiers
+        /// (subtypes 107, 108, 218, 219) it is the property being modified; for category effects it is the spell category.
+        /// </summary>
+        public int MiscValue1 { get; internal set; }
+        /// <summary>
+        /// Effect misc value 2. For label modifiers (subtypes 218 and 219) this is the spell label being modified.
+        /// </summary>
+        public int MiscValue2 { get; internal set; }
+        /// <summary>
         /// Calculated field, generated from the associated item or player level scaling
         /// to get the scale budget for the SP coefficient
         /// </summary>

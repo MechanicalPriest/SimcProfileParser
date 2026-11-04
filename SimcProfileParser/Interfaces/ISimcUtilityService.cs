@@ -23,12 +23,12 @@ namespace SimcProfileParser.Interfaces
         Task<SimcRawItem> GetRawItemDataAsync(uint itemId);
         Task<SimcRawSpell> GetRawSpellDataAsync(uint spellId);
         /// <summary>
-        /// Get the ids of spells modified by a spell effect, matched by class family flags or spell category.
+        /// Get the ids of spells modified by a spell effect, matched by class family flags, spell category or spell label.
         /// simc: dbc_t::effect_affects_spells / dbc_t::spells_by_category
         /// </summary>
         Task<List<uint>> GetSpellIdsAffectedByEffectAsync(SimcRawSpell spell, SimcRawSpellEffect effect);
         /// <summary>
-        /// Get the ids of spells that have an effect modifying the given spell, matched by class family flags or spell category.
+        /// Get the ids of spells that have an effect modifying the given spell, matched by class family flags, spell category or spell label.
         /// simc: dbc_t::effects_affecting_spell / dbc_t::effect_categories_affecting_spell
         /// </summary>
         Task<List<uint>> GetSpellIdsAffectingSpellAsync(SimcRawSpell spell);

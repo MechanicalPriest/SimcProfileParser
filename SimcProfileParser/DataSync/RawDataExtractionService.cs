@@ -370,9 +370,43 @@ namespace SimcProfileParser.DataSync
             var spells = new List<SimcRawSpell>();
             var effects = new List<SimcRawSpellEffect>();
             var spellPowers = new List<SimcRawSpellPower>();
+            var spellLabels = new Dictionary<uint, List<uint>>();
+            var inLabelSection = false;
 
             foreach (var line in lines)
             {
+                // spelllabel_data_t entries: { spell_id, label }
+                // Lives in its own __spelllabel_data (or __ptr_spelllabel_data) array, terminated by "} };"
+                if (line.Contains("spelllabel_data_t"))
+                {
+                    inLabelSection = true;
+                    continue;
+                }
+
+                if (inLabelSection)
+                {
+                    var trimmed = line.Trim();
+                    if (trimmed.StartsWith('}'))
+                    {
+                        inLabelSection = false;
+                        continue;
+                    }
+
+                    var labelData = trimmed.Replace("{", "").Replace("}", "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    if (labelData.Length >= 2
+                        && uint.TryParse(labelData[0].Trim(), out var labelSpellId)
+                        && uint.TryParse(labelData[1].Trim(), out var label))
+                    {
+                        if (!spellLabels.TryGetValue(labelSpellId, out var labelList))
+                        {
+                            labelList = new List<uint>();
+                            spellLabels[labelSpellId] = labelList;
+                        }
+                        labelList.Add(label);
+                    }
+                    continue;
+                }
+
                 // First try and do an effect - they have 33 total fields.
                 // spelleffect_data_t
                 if (line.Split(',').Count() == 35)
@@ -729,6 +763,11 @@ namespace SimcProfileParser.DataSync
                 foreach (var spellPower in spellPowers.Where(s => s.SpellId == spell.Id))
                 {
                     spell.SpellPowers.Add(spellPower);
+                }
+                // Add the spell labels
+                if (spellLabels.TryGetValue(spell.Id, out var labels))
+                {
+                    spell.Labels.AddRange(labels);
                 }
             }
 
