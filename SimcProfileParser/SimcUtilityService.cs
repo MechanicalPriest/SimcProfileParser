@@ -161,6 +161,10 @@ namespace SimcProfileParser
             // from spell_data.hpp:scaling_class
             switch (scaleType)
             {
+                case -10:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE10;
+                case -9:
+                    return PlayerScaling.PLAYER_SPECIAL_SCALE9;
                 case -8:
                     return PlayerScaling.PLAYER_SPECIAL_SCALE8;
                 case -7:
@@ -235,7 +239,8 @@ namespace SimcProfileParser
                 PlayerScaling.PLAYER_SPECIAL_SCALE6 => 19,
                 PlayerScaling.PLAYER_SPECIAL_SCALE7 => 14,
                 PlayerScaling.PLAYER_SPECIAL_SCALE8 => 20,
-                PlayerScaling.PLAYER_SPECIAL_SCALE9 => 20,
+                PlayerScaling.PLAYER_SPECIAL_SCALE9 => 21,
+                PlayerScaling.PLAYER_SPECIAL_SCALE10 => 22,
                 _ => 0,
             };
         }

@@ -324,6 +324,7 @@
     // from sc_enums.hpp
     enum PlayerScaling
     {
+        PLAYER_SPECIAL_SCALE10 = -10,
         PLAYER_SPECIAL_SCALE9 = -9,
         PLAYER_SPECIAL_SCALE8 = -8,
         PLAYER_SPECIAL_SCALE7 = -7,

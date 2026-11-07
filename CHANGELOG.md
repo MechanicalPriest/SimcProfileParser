@@ -3,6 +3,23 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.4.0 - 2026-11-07
+
+### Added
+- **Scaled values for player spells.** `SimcSpellEffect.ScaledValue` is the effect's value at the player level,
+  matching "Scaled Value" in simc's `allspells.txt` (checked against every scaled effect in current data). For
+  coefficient-scaled effects it is `Coefficient` × `ScaleBudget`; for effects with points per level it is `BaseValue`
+  plus the per-level increase from the spell's level up to the player level. For item spells it is `BaseValue`.
+- **Points per level.** `SimcSpellEffect.PointsPerLevel` is how much the effect's value increases per player level,
+  matching "Points Per Level" in simc's `allspells.txt`.
+
+### Fixed
+- **Player spells with scaling class -9 or -10 had a `ScaleBudget` of 0.** These are now scaled like simc does. Spells
+  with no scaling class but a max scaling level now use simc's fallback scaling for their coefficient-scaled effects.
+- **A spell's max scaling level was applied to its trigger spells.** When a player spell had a max scaling level, trigger
+  spells on its later effects were generated at the capped level instead of the player level. The cap now only applies to
+  the spell's own scale budget.
+
 ## 4.3.0 - 2026-11-04
 
 ### Added

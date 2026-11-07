@@ -609,5 +609,73 @@ namespace SimcProfileParser.Tests
             // Assert
             Assert.That(backToStart.TriggerSpell, Is.Null, "The cycle back to 388511 should not be generated again");
         }
+
+        [Test]
+        [TestCase(137031u, 3u, 0d, 1d, 90d, TestName = "SSC_Player_Spell_ScaledValue_From_Points_Per_Level")]
+        [TestCase(126u, 1u, 0d, 5d, 365d, TestName = "SSC_Player_Spell_ScaledValue_Starts_At_Spell_Level")]
+        [TestCase(19804u, 0u, 0d, 1d, 49d, TestName = "SSC_Player_Spell_ScaledValue_Capped_At_Spell_Max_Level")]
+        public async Task SSC_Player_Spell_ScaledValue_Points_Per_Level(uint spellId, uint effectIndex,
+            double baseValue, double pointsPerLevel, double scaledValue)
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = spellId,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var effect = spell.Effects.Single(e => e.EffectIndex == effectIndex);
+
+            // Assert
+            Assert.That(effect.BaseValue, Is.EqualTo(baseValue));
+            Assert.That(effect.PointsPerLevel, Is.EqualTo(pointsPerLevel));
+            Assert.That(effect.ScaledValue, Is.EqualTo(scaledValue));
+        }
+
+        [Test]
+        [TestCase(274738u, 224.9341d, TestName = "SSC_Player_Spell_ScaledValue_Coefficient_Overrides_Points_Per_Level")]
+        [TestCase(10368u, 901.0145d, TestName = "SSC_Player_Spell_ScaledValue_Scaling_Class_9")]
+        [TestCase(370607u, 2.1375e+07d, TestName = "SSC_Player_Spell_ScaledValue_Scaling_Class_10")]
+        [TestCase(338385u, 0.003916739d, TestName = "SSC_Player_Spell_ScaledValue_No_Scaling_Class_With_Max_Scaling_Level")]
+        public async Task SSC_Player_Spell_ScaledValue_Coefficient(uint spellId, double scaledValue)
+        {
+            // Arrange
+            // Values from simc's allspells.txt at level 90
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = spellId,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var effect = spell.Effects.Single(e => e.EffectIndex == 0);
+
+            // Assert
+            Assert.That(effect.ScaledValue, Is.EqualTo(scaledValue).Within(0.0001).Percent);
+            Assert.That(effect.ScaledValue, Is.EqualTo(effect.Coefficient * effect.ScaleBudget));
+        }
+
+        [Test]
+        public async Task SSC_Item_Spell_ScaledValue_Is_BaseValue()
+        {
+            // Arrange
+            var spellOptions = new SimcSpellOptions()
+            {
+                ItemLevel = 226,
+                SpellId = 343538,
+                ItemQuality = ItemQuality.ITEM_QUALITY_EPIC,
+                ItemInventoryType = InventoryType.INVTYPE_TRINKET
+            };
+
+            // Act
+            var spell = await _spellCreationService.GenerateItemSpellAsync(spellOptions);
+
+            // Assert
+            Assert.That(spell.Effects, Is.Not.Empty);
+            Assert.That(spell.Effects.Select(e => e.ScaledValue), Is.EqualTo(spell.Effects.Select(e => e.BaseValue)));
+        }
     }
 }

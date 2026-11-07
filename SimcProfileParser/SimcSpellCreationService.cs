@@ -120,17 +120,23 @@ namespace SimcProfileParser
 
                 var spellScalingClass = _simcUtilityService.GetScaleClass(spellEffect.ScalingType);
 
+                // Coefficient-scaled effects with no scaling class on spells with a max scaling level use PLAYER_SPECIAL_SCALE8
+                // simc: dbc_t::effect_average
+                if (spellScalingClass == PlayerScaling.PLAYER_NONE && spellEffect.Coefficient != 0 && spellData.MaxScalingLevel > 0)
+                    spellScalingClass = PlayerScaling.PLAYER_SPECIAL_SCALE8;
+
                 double budget = 0;
 
                 if (spellScalingClass != PlayerScaling.PLAYER_NONE)
                 {
                     // Cap the scaling level if needed
+                    var scalingLevel = playerLevel;
                     if (spellData.MaxScalingLevel > 0)
-                        playerLevel = Math.Min(playerLevel, (uint)spellData.MaxScalingLevel);
+                        scalingLevel = Math.Min(scalingLevel, (uint)spellData.MaxScalingLevel);
 
                     var scaleIndex = _simcUtilityService.GetClassId(spellScalingClass);
 
-                    var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, (int)playerLevel);
+                    var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, (int)scalingLevel);
 
                     budget = scaledValue;
                 }
@@ -151,6 +157,8 @@ namespace SimcProfileParser
                     Radius = spellEffect.Radius,
                     RadiusMax = spellEffect.RadiusMax,
                     BaseValue = spellEffect.BaseValue,
+                    PointsPerLevel = spellEffect.RealPpl,
+                    ScaledValue = GetScaledValue(spellData, spellEffect, playerLevel, budget),
                     MiscValue1 = spellEffect.MiscValue1,
                     MiscValue2 = spellEffect.MiscValue2,
                     TriggerSpellId = spellEffect.TriggerSpellId,
@@ -355,6 +363,8 @@ namespace SimcProfileParser
                     Radius = spellEffect.Radius,
                     RadiusMax = spellEffect.RadiusMax,
                     BaseValue = spellEffect.BaseValue,
+                    PointsPerLevel = spellEffect.RealPpl,
+                    ScaledValue = spellEffect.BaseValue,
                     MiscValue1 = spellEffect.MiscValue1,
                     MiscValue2 = spellEffect.MiscValue2,
                     TriggerSpellId = spellEffect.TriggerSpellId,
@@ -371,6 +381,24 @@ namespace SimcProfileParser
             // Checks if the effects subtype  is A_MOOD_RATING
             // Then grab the rating then translate value1 to get the stat type
             // and if its an item, apply the combat rating multi for the item.
+        }
+
+        /// <summary>
+        /// The effect's value at the given player level: coefficient × scale budget for coefficient-scaled effects,
+        /// otherwise the base value plus its points per level.
+        /// simc: dbc_t::effect_average
+        /// </summary>
+        private static double GetScaledValue(SimcRawSpell spell, SimcRawSpellEffect effect, uint playerLevel, double budget)
+        {
+            if (effect.Coefficient != 0 && budget != 0)
+                return effect.Coefficient * budget;
+
+            if (effect.RealPpl == 0)
+                return effect.BaseValue;
+
+            var level = spell.MaxLevel > 0 ? Math.Min(playerLevel, spell.MaxLevel) : playerLevel;
+
+            return effect.BaseValue + ((double)level - spell.SpellLevel) * effect.RealPpl;
         }
 
         /// <summary>

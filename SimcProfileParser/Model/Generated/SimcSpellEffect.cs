@@ -17,6 +17,23 @@ namespace SimcProfileParser.Model.Generated
         public double RadiusMax { get; internal set; }
         public double BaseValue { get; internal set; }
         /// <summary>
+        /// How much the effect's value increases per player level. 0 for effects that don't scale with level.
+        /// Equivalent to "Points Per Level" in simc's spell dump.
+        /// </summary>
+        public double PointsPerLevel { get; internal set; }
+        /// <summary>
+        /// For player spells, the effect's value at the player level, as simc calculates it:
+        /// <list type="bullet">
+        /// <item>Effects with a <see cref="Coefficient"/> and a scaling class: <see cref="Coefficient"/> × <see cref="ScaleBudget"/></item>
+        /// <item>Otherwise: <see cref="BaseValue"/> plus <see cref="PointsPerLevel"/> for each level from the spell's level
+        /// up to the player level (capped at the spell's max level, if it has one)</item>
+        /// </list>
+        /// Equal to <see cref="BaseValue"/> for effects that don't scale, and for item spells (use <see cref="ScaleBudget"/>
+        /// there). Equivalent to "Scaled Value" in simc's spell dump; where simc shows a range (effects with a
+        /// <see cref="Delta"/>), this is the midpoint.
+        /// </summary>
+        public double ScaledValue { get; internal set; }
+        /// <summary>
         /// Effect misc value 1. Its meaning depends on the effect subtype, e.g. for spell modifiers
         /// (subtypes 107, 108, 218, 219) it is the property being modified; for category effects it is the spell category.
         /// </summary>

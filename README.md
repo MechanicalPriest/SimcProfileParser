@@ -189,12 +189,27 @@ var spellOptions = new SimcSpellOptions()
 
 var spell = await sgs.GenerateSpellAsync(spellOptions);
 
+// The effect's value at level 90, as simc's allspells.txt shows it
+var effect = spell.Effects.FirstOrDefault();
+Console.WriteLine($"Spell: {spell.Name}, Scaled Value: {effect.ScaledValue}");
+
 var json = JsonSerializer.Serialize(spell, new JsonSerializerOptions() { WriteIndented = true });
 await File.WriteAllTextAsync("spell.json", json);
 ```
 
 Each spell effect has a `ScaleBudget` property that should be multiplied with the effect's coefficient to get the final scaled value. 
 For simple cases, the `BaseValue` property contains the unscaled value.
+
+For player spells, `SimcSpellEffect.ScaledValue` is the effect's value at the player level, matching "Scaled Value" in
+simc's `allspells.txt`:
+- Effects with a coefficient: `Coefficient` × `ScaleBudget`
+- Effects with points per level: `BaseValue` + `PointsPerLevel` for each level from the spell's level up to the player
+  level (capped at the spell's max level, if it has one). For example, effect #4 of the Holy Priest aura (137031) has
+  `BaseValue` 0 and `PointsPerLevel` 1, so its `ScaledValue` is 90 at level 90.
+- Anything else: `BaseValue`
+
+Where simc shows a range (effects with a `Delta`), `ScaledValue` is the midpoint. For item spells, `ScaledValue` is
+always `BaseValue`; use `Coefficient` × `ScaleBudget` as above.
 
 **Spell relationships** - Generated spells also list which spells modify each other, matching the "Affected Spells" / "Affecting Spells" output in simc's `allspells.txt`:
 - `SimcSpell.AffectedBySpellIds` - IDs of spells with an effect that modifies this spell (talents, class auras, set bonuses, etc.)
