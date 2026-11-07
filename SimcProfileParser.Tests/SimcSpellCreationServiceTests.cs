@@ -508,5 +508,106 @@ namespace SimcProfileParser.Tests
             Assert.That(spell.Effects, Is.Not.Empty);
             Assert.That(spell.Effects.Select(e => e.AffectedSpellIds), Has.All.Empty);
         }
+
+        [Test]
+        public async Task SSC_Player_Spell_Effect_Has_Talent_Rank_Set_Values()
+        {
+            // Arrange
+            // Light of the Naaru (2 ranks) sets effect #1 to 10 at rank 1 and 20 at rank 2
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 196985,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var effect = spell.Effects.Single(e => e.EffectIndex == 0);
+
+            // Assert
+            Assert.That(effect.RankOperation, Is.EqualTo(SimcTalentRankOperation.Set));
+            Assert.That(effect.RankValues, Is.EqualTo(new double[] { 10, 20 }));
+            Assert.That(effect.BaseValue, Is.EqualTo(10), "BaseValue should stay as the raw spell data value");
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Effect_Has_Talent_Rank_Multiply_Values()
+        {
+            // Arrange
+            // Critical Mass (2 ranks) multiplies effect #1 by the rank
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 117216,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var effect = spell.Effects.Single(e => e.EffectIndex == 0);
+
+            // Assert
+            Assert.That(effect.RankOperation, Is.EqualTo(SimcTalentRankOperation.Multiply));
+            Assert.That(effect.RankValues, Is.EqualTo(new double[] { 1, 2 }));
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Talent_Rank_Values_Are_Not_Float_Rounded()
+        {
+            // Arrange
+            // Curve values are stored as floats; 0.6f and 1.2f should come through as 0.6 and 1.2
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 388511,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var effect = spell.Effects.Single(e => e.EffectIndex == 0);
+
+            // Assert
+            Assert.That(effect.RankValues, Is.EqualTo(new double[] { 0.6, 1.2 }));
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Without_Talent_Rank_Values_Has_None()
+        {
+            // Arrange
+            // Smite is not a talent with per-rank values
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 585,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+
+            // Assert
+            Assert.That(spell.Effects, Is.Not.Empty);
+            Assert.That(spell.Effects.Select(e => e.RankOperation), Has.All.Null);
+            Assert.That(spell.Effects.Select(e => e.RankValues), Has.All.Empty);
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_With_Trigger_Cycle_Stops_Recursing()
+        {
+            // Arrange
+            // 388511 triggers 388512, which triggers 388513, which triggers 388511 again
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 388511,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var second = spell.Effects.Select(e => e.TriggerSpell).Single(s => s?.SpellId == 388512);
+            var third = second.Effects.Select(e => e.TriggerSpell).Single(s => s?.SpellId == 388513);
+            var backToStart = third.Effects.Single(e => e.TriggerSpellId == 388511);
+
+            // Assert
+            Assert.That(backToStart.TriggerSpell, Is.Null, "The cycle back to 388511 should not be generated again");
+        }
     }
 }

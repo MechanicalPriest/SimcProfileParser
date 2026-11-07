@@ -53,11 +53,8 @@ namespace SimcProfileParser.Tests
             ClassicAssert.NotZero(profile.GeneratedItems.Count);
             ClassicAssert.IsTrue(profile.GeneratedItems[0].Equipped);
             ClassicAssert.IsNotNull(profile.Talents);
-            ClassicAssert.AreEqual(0, profile.Talents.Count);
-            //Assert.AreEqual(103775, profile.Talents[0].TraitEntryId);
-            //Assert.AreEqual(2050, profile.Talents[0].SpellId);
-            //Assert.AreEqual("Holy Word: Serenity", profile.Talents[0].Name);
-            //Assert.AreEqual(1, profile.Talents[0].Rank);
+            Assert.That(profile.Talents, Is.Not.Empty);
+            Assert.That(profile.Talents, Has.All.Matches<SimcTalent>(t => t.SpellId > 0 && !string.IsNullOrEmpty(t.Name) && t.Rank > 0));
             return;
         }
 

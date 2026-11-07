@@ -6,9 +6,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Not every public member has XML docs yet; do not warn about missing ones -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <Version>4.2.0</Version>
-	<AssemblyVersion>4.2.0</AssemblyVersion>
-	<FileVersion>4.2.0</FileVersion>
+    <Version>4.3.0</Version>
+	<AssemblyVersion>4.3.0</AssemblyVersion>
+	<FileVersion>4.3.0</FileVersion>
 	<Authors>Mechanical Priest</Authors>
 	<Company>Mechanical Priest</Company>
 	<PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
@@ -24,7 +24,7 @@
 	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageIcon>packageIcon.png</PackageIcon>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
-	<PackageReleaseNotes>4.2.0: Label-based spell relationships, plus SimcSpell.Labels and SimcSpellEffect.MiscValue1/MiscValue2. AffectedBySpellIds/AffectedSpellIds may now contain more spells. 4.1.1: GetAvailableTalentsAsync added to ISimcGenerationService, XML documentation included, README fixes. 4.1.0: Spell relationships (SimcSpell.AffectedBySpellIds, SimcSpellEffect.AffectedSpellIds). 4.0.0 (breaking): requires .NET 10 (net9.0 dropped) and Microsoft.Extensions.*.Abstractions 10.x. No public API was removed. Full notes: https://github.com/MechanicalPriest/SimcProfileParser/blob/master/CHANGELOG.md</PackageReleaseNotes>
+	<PackageReleaseNotes>4.3.0: Talent rank values (SimcSpellEffect.RankOperation/RankValues); fixed talent data not being parsed and a stack overflow generating player spells with looping trigger spells. 4.2.0: Label-based spell relationships, plus SimcSpell.Labels and SimcSpellEffect.MiscValue1/MiscValue2. AffectedBySpellIds/AffectedSpellIds may now contain more spells. 4.1.1: GetAvailableTalentsAsync added to ISimcGenerationService, XML documentation included, README fixes. 4.1.0: Spell relationships (SimcSpell.AffectedBySpellIds, SimcSpellEffect.AffectedSpellIds). 4.0.0 (breaking): requires .NET 10 (net9.0 dropped) and Microsoft.Extensions.*.Abstractions 10.x. No public API was removed. Full notes: https://github.com/MechanicalPriest/SimcProfileParser/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

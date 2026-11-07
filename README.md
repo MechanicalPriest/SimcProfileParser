@@ -213,6 +213,16 @@ The raw data is also available so you can do your own matching:
 - `SimcSpell.Labels`: the spell's label IDs
 - `SimcSpellEffect.MiscValue1` / `MiscValue2`: for spell modifiers, `MiscValue1` is the property modified (e.g. damage, duration, cooldown)
 
+**Talent rank values** - For talents whose effect values change per rank, each effect lists the values for every rank,
+matching the "Talent Entry" line (`Effect#1 [op=set, values=(10, 20)]`) in simc's `allspells.txt`:
+- `SimcSpellEffect.RankOperation`: `Set` (the rank value replaces `BaseValue`) or `Multiply` (the rank value multiplies
+  `BaseValue`), or `null` if the effect has no per-rank values
+- `SimcSpellEffect.RankValues`: the raw value for each rank, normally index 0 = rank 1
+
+`BaseValue` is always the unmodified spell data value. For example, Light of the Naaru (196985) has `BaseValue` 10,
+`RankOperation` `Set` and `RankValues` `[10, 20]`, so its effect is 20 at rank 2. Critical Mass (117216) has
+`RankOperation` `Multiply` and `RankValues` `[1, 2]`, so its effect is `BaseValue` × 2 at rank 2.
+
 #### Working with Talents
 
 ```csharp

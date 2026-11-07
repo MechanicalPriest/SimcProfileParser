@@ -192,6 +192,8 @@ namespace SimcProfileParser.DataSync
             {
                 LocalParsedFile = "TraitData.json",
                 ParsedFileType = SimcParsedFileType.TraitData,
+                // 2: fixed parsing of the current trait_data_t layout, added trait definition effects
+                ParserVersion = 2,
                 RawFiles = new Dictionary<string, string>()
                 {
                     { "TraitData.raw", "trait_data" }

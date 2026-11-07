@@ -697,6 +697,73 @@ namespace SimcProfileParser
             return clientDataVersion;
         }
 
+        #region Talent rank values
+
+        private sealed class TalentRankIndex
+        {
+            public List<SimcRawTrait> TraitSource { get; init; }
+            public List<SimcRawCurvePoint> CurveSource { get; init; }
+            /// <summary>
+            /// (Spell id, effect index) => (operation, curve values)
+            /// </summary>
+            public Dictionary<(uint SpellId, uint EffectIndex), (int Operation, List<double> Values)> Values { get; } = [];
+        }
+
+        private TalentRankIndex _talentRankIndex;
+
+        public async Task<(int Operation, List<double> Values)?> GetTalentRankValuesAsync(uint spellId, uint effectIndex)
+        {
+            var index = await GetTalentRankIndexAsync();
+
+            if (index.Values.TryGetValue((spellId, effectIndex), out var result))
+                return (result.Operation, [.. result.Values]);
+
+            return null;
+        }
+
+        private async Task<TalentRankIndex> GetTalentRankIndexAsync()
+        {
+            var traits = await _cacheService.GetParsedFileContentsAsync<List<SimcRawTrait>>(SimcParsedFileType.TraitData);
+            var curvePoints = await _cacheService.GetParsedFileContentsAsync<List<SimcRawCurvePoint>>(SimcParsedFileType.CurvePoints);
+
+            // Rebuild whenever the cache hands back different lists, e.g. after the cache is cleared or refreshed.
+            var index = _talentRankIndex;
+            if (index != null && ReferenceEquals(index.TraitSource, traits) && ReferenceEquals(index.CurveSource, curvePoints))
+                return index;
+
+            index = new TalentRankIndex() { TraitSource = traits, CurveSource = curvePoints };
+
+            var neededCurves = traits
+                .SelectMany(t => t.DefinitionEffects ?? [])
+                .Select(e => e.CurveId)
+                .ToHashSet();
+
+            // Curve values in curve order, matching simc's curve_point_t::find
+            var curveValues = curvePoints
+                .Where(c => neededCurves.Contains(c.CurveId))
+                .GroupBy(c => c.CurveId)
+                .ToDictionary(g => g.Key, g => g.OrderBy(c => c.Index).Select(c => (double)(decimal)c.Primary2).ToList()); // via decimal so 1.2f is 1.2, not 1.2000000476837158
+
+            foreach (var trait in traits)
+            {
+                foreach (var effect in trait.DefinitionEffects ?? [])
+                {
+                    // A spell used by several trait entries shares the same definition effects, so the first one wins
+                    var key = (trait.SpellId, effect.EffectIndex);
+                    if (index.Values.ContainsKey(key))
+                        continue;
+
+                    index.Values[key] = (effect.Operation,
+                        curveValues.TryGetValue(effect.CurveId, out var values) ? values : []);
+                }
+            }
+
+            _talentRankIndex = index;
+            return index;
+        }
+
+        #endregion
+
         public async Task<SimcRawTrait> GetTraitDataAsync(int traitEntryId)
         {
             var talents = await _cacheService.GetParsedFileContentsAsync<List<SimcRawTrait>>(SimcParsedFileType.TraitData);

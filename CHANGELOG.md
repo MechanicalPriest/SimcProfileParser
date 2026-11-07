@@ -3,6 +3,24 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.3.0 - 2026-11-04
+
+### Added
+- **Talent rank values.** `SimcSpellEffect.RankOperation` and `SimcSpellEffect.RankValues` expose the per-rank values
+  Blizzard's talent data defines for some talent effects, matching the "Talent Entry" line
+  (`Effect#1 [op=set, values=(10, 20)]`) in simc's `allspells.txt`. `Set` means the rank value replaces `BaseValue`;
+  `Multiply` means it multiplies `BaseValue`. `BaseValue` itself is unchanged.
+
+### Fixed
+- **Talent data was not being parsed.** simc added fields to its talent data, and the parser skipped every entry, so
+  `GetAvailableTalentsAsync` returned no talents and generated profiles had an empty `Talents` list. Talent names
+  containing commas (e.g. "Cold Steel, Hot Blood") are now parsed correctly too. Cached talent data is re-parsed
+  automatically on upgrade.
+- **Generating a player-scaled spell could crash with a stack overflow.** If a spell's trigger spells looped back to it
+  (e.g. A triggers B triggers A), generation recursed forever. This affected over 1,000 spells in current data. Trigger
+  spells already being generated further up the chain are now left as `TriggerSpell = null` (with `TriggerSpellId`
+  still set), as item spells already did.
+
 ## 4.2.0 - 2026-11-04
 
 ### Added

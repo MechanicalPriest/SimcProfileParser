@@ -1187,105 +1187,112 @@ namespace SimcProfileParser.DataSync
             return gameDataVersion;
         }
 
+        /// <summary>
+        /// trait_data_t entry:
+        /// { tree, class, node entry, node, max ranks, req points, definition, spell, replace spell, override spell,
+        ///   row, col, selection index, "name", { spec x4 }, { spec starter x4 }, sub tree, node type }
+        /// </summary>
+        private static readonly Regex _traitLineRegex = new(
+            @"^\s*\{\s*(?<nums>-?\d+(?:\s*,\s*-?\d+){12})\s*,\s*""(?<name>(?:[^""\\]|\\.)*)""\s*,"
+            + @"\s*\{(?<spec>[^}]*)\}\s*,\s*\{(?<starter>[^}]*)\}\s*,\s*(?<subtree>\d+)\s*,\s*(?<nodetype>\d+)\s*\}",
+            RegexOptions.Compiled);
+
+        /// <summary>
+        /// trait_definition_effect_entry_t entry: { definition, effect index, operation, curve }
+        /// </summary>
+        private static readonly Regex _traitDefinitionEffectLineRegex = new(
+            @"^\s*\{\s*(\d+)\s*,\s*(\d+)\s*,\s*(-?\d+)\s*,\s*(\d+)\s*\}",
+            RegexOptions.Compiled);
+
         internal List<SimcRawTrait> GenerateTraitData(Dictionary<string, string> incomingRawData)
         {
             var rawData = incomingRawData.Where(d => d.Key == "TraitData.raw").FirstOrDefault().Value;
 
-            // Split the raw data to only be the parts we want.
-            string key = "_trait_data_data { {";
-
-            int start = rawData.IndexOf(key) + key.Length;
-            int end = rawData.IndexOf("} };", start);
-
-            var dataChunk = rawData[start..end];
-
-            var lines = dataChunk.Split(
-                new[] { "\r\n", "\r", "\n" },
-                StringSplitOptions.None
-            );
+            static uint[] ParseIds(string value)
+                => value.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(n => Convert.ToUInt32(n.Trim())).ToArray();
 
             var traitEntries = new List<SimcRawTrait>();
 
-            foreach (var line in lines)
+            foreach (var line in GetArrayLines(rawData, "_trait_data_data { {"))
             {
-                // Split the data up
-                var data = line.Split(',');
-
-                // Only process valid lines
-                if (data.Count() != 22)
+                var match = _traitLineRegex.Match(line);
+                if (!match.Success)
                     continue;
 
-                var nameSegment = line.Substring(0, line.LastIndexOf("\""));
+                var nums = match.Groups["nums"].Value.Split(',').Select(n => Convert.ToInt32(n.Trim())).ToArray();
 
-                var trait = new SimcRawTrait();
-
-                // Clean the data up
-                for (var i = 0; i < data.Length; i++)
+                traitEntries.Add(new SimcRawTrait()
                 {
-                    data[i] = data[i].Replace("}", "").Replace("{", "").Trim();
+                    TreeIndex = (uint)nums[0],
+                    ClassId = (uint)nums[1],
+                    TraitNodeEntryId = (uint)nums[2],
+                    NodeId = (uint)nums[3],
+                    MaxRanks = (uint)nums[4],
+                    RequiredPoints = (uint)nums[5],
+                    TraitDefinitionId = (uint)nums[6],
+                    SpellId = (uint)nums[7],
+                    SpellReplaceId = (uint)nums[8],
+                    SpellOverrideId = (uint)nums[9],
+                    Row = nums[10],
+                    Column = nums[11],
+                    SelectionIndex = nums[12],
+                    Name = match.Groups["name"].Value.Replace("\\\"", "\""),
+                    SpecId = ParseIds(match.Groups["spec"].Value),
+                    SpecStarterId = ParseIds(match.Groups["starter"].Value),
+                    SubTreeId = Convert.ToUInt32(match.Groups["subtree"].Value),
+                    NodeType = Convert.ToUInt32(match.Groups["nodetype"].Value),
+                });
+            }
+
+            // Per-rank effect overrides, keyed by trait definition
+            var definitionEffects = new Dictionary<uint, List<SimcRawTraitDefinitionEffect>>();
+            foreach (var line in GetArrayLines(rawData, "_trait_definition_effect_data { {"))
+            {
+                var match = _traitDefinitionEffectLineRegex.Match(line);
+                if (!match.Success)
+                    continue;
+
+                var effect = new SimcRawTraitDefinitionEffect()
+                {
+                    TraitDefinitionId = Convert.ToUInt32(match.Groups[1].Value),
+                    EffectIndex = Convert.ToUInt32(match.Groups[2].Value),
+                    Operation = Convert.ToInt32(match.Groups[3].Value),
+                    CurveId = Convert.ToUInt32(match.Groups[4].Value),
+                };
+
+                if (!definitionEffects.TryGetValue(effect.TraitDefinitionId, out var list))
+                {
+                    list = new List<SimcRawTraitDefinitionEffect>();
+                    definitionEffects[effect.TraitDefinitionId] = list;
                 }
+                list.Add(effect);
+            }
 
-                // 0 is tree index
-                trait.TreeIndex = Convert.ToUInt32(data[0]);
-
-                // 1 is class id
-                trait.ClassId = Convert.ToUInt32(data[1]);
-
-                // 2 is trait node entry id
-                trait.TraitNodeEntryId = Convert.ToUInt32(data[2]);
-
-                // 3 is node id
-                trait.NodeId = Convert.ToUInt32(data[3]);
-
-                // 4 is max ranks
-                trait.MaxRanks = Convert.ToUInt32(data[4]);
-
-                // 5 is required points
-                trait.RequiredPoints = Convert.ToUInt32(data[5]);
-
-                // 6 is trait definition id
-                trait.TraitDefinitionId = Convert.ToUInt32(data[6]);
-
-                // 7 is spell id
-                trait.SpellId = Convert.ToUInt32(data[7]);
-
-                // 8 is override spell id
-                trait.SpellOverrideId = Convert.ToUInt32(data[8]);
-
-                // 9 is row
-                trait.Row = Convert.ToInt32(data[9]);
-
-                // 10 is column
-                trait.Column = Convert.ToInt32(data[10]);
-
-                // 11 is selection index
-                trait.SelectionIndex = Convert.ToInt32(data[11]);
-
-                // 12 is name
-                trait.Name = nameSegment.Substring(nameSegment.IndexOf('\"') + 1);
-
-                // 13 14 15 16 are all spec IDs
-                trait.SpecId = new uint[4]
-                {
-                Convert.ToUInt32(data[13]),
-                Convert.ToUInt32(data[14]),
-                Convert.ToUInt32(data[15]),
-                Convert.ToUInt32(data[16])
-                };
-
-                // 17 18 19 20 are all spec starter IDs
-                trait.SpecStarterId = new uint[4]
-                {
-                Convert.ToUInt32(data[17]),
-                Convert.ToUInt32(data[18]),
-                Convert.ToUInt32(data[19]),
-                Convert.ToUInt32(data[20])
-                };
-
-                traitEntries.Add(trait);
+            foreach (var trait in traitEntries)
+            {
+                if (definitionEffects.TryGetValue(trait.TraitDefinitionId, out var effects))
+                    trait.DefinitionEffects.AddRange(effects);
             }
 
             return traitEntries;
+        }
+
+        /// <summary>
+        /// Get the lines of a generated C++ array, from just after <paramref name="key"/> up to its closing "} };".
+        /// Returns nothing if the array isn't present.
+        /// </summary>
+        private static IEnumerable<string> GetArrayLines(string rawData, string key)
+        {
+            var keyIndex = rawData.IndexOf(key, StringComparison.Ordinal);
+            if (keyIndex < 0)
+                return Enumerable.Empty<string>();
+
+            var start = keyIndex + key.Length;
+            var end = rawData.IndexOf("} };", start, StringComparison.Ordinal);
+            if (end < 0)
+                end = rawData.Length;
+
+            return rawData[start..end].Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
         }
 
         private double ToDoubleClean(string data)

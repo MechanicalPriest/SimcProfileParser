@@ -32,6 +32,11 @@ namespace SimcProfileParser.Interfaces
         /// simc: dbc_t::effects_affecting_spell / dbc_t::effect_categories_affecting_spell
         /// </summary>
         Task<List<uint>> GetSpellIdsAffectingSpellAsync(SimcRawSpell spell);
+        /// <summary>
+        /// Get the talent per-rank operation and raw curve values for a spell effect, or null if there are none.
+        /// simc: trait_definition_effect_entry_t / curve_point_t, as shown on the "Talent Entry" line of spell queries
+        /// </summary>
+        Task<(int Operation, List<double> Values)?> GetTalentRankValuesAsync(uint spellId, uint effectIndex);
         Task<int> GetScaledModValueAsync(SimcItem item, ItemModType modType, int statAllocation, int currentStatValue = 0, int newItemLevel = 0);
         Task<List<SimcRawRppmEntry>> GetSpellRppmModifiersAsync(uint spellId);
         Task<double> GetSpellScalingMultiplierAsync(int scaleIndex, int playerLevel);

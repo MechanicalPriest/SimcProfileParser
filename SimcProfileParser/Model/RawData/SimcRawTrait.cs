@@ -30,7 +30,7 @@ namespace SimcProfileParser.Model.RawData
         /// </summary>
         public uint RequiredPoints { get; set; }
         /// <summary>
-        /// NYI
+        /// Trait definition. Links the trait to its per-rank effect overrides (<see cref="DefinitionEffects"/>)
         /// </summary>
         public uint TraitDefinitionId { get; set; }
         /// <summary>
@@ -38,7 +38,11 @@ namespace SimcProfileParser.Model.RawData
         /// </summary>
         public uint SpellId { get; set; }
         /// <summary>
-        /// NYI
+        /// The spell this trait's spell replaces (id_replace_spell)
+        /// </summary>
+        public uint SpellReplaceId { get; set; }
+        /// <summary>
+        /// Spell that overrides this trait's spell for display/activation in-game (id_override_spell)
         /// </summary>
         public uint SpellOverrideId { get; set; }
         /// <summary>
@@ -67,10 +71,22 @@ namespace SimcProfileParser.Model.RawData
         /// from the SimcProfileParser.Model.RawData.Specialisation enum
         /// </summary>
         public uint[] SpecStarterId { get; set; }
+        /// <summary>
+        /// Hero talent tree id, 0 if not a hero talent
+        /// </summary>
+        public uint SubTreeId { get; set; }
+        /// <summary>
+        /// 0 = normal, 1 = tiered, 2 = choice, 3 = sub tree selection
+        /// </summary>
+        public uint NodeType { get; set; }
+        /// <summary>
+        /// Per-rank overrides for the spell's effects (trait_definition_effect_entry_t)
+        /// </summary>
+        public List<SimcRawTraitDefinitionEffect> DefinitionEffects { get; set; }
 
         public SimcRawTrait()
         {
-
+            DefinitionEffects = new List<SimcRawTraitDefinitionEffect>();
         }
     }
 }

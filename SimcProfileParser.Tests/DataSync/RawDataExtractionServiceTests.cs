@@ -458,38 +458,52 @@ namespace SimcProfileParser.Tests.DataSync
 
             var incomingRawData = new Dictionary<string, string>()
             {
-                { "TraitData.raw", "__trait_data_data { {\r\n" +
-                @"  { 1,  1,  98326, 77889, 1,  8, 103328, 384090,  57755,  5,  7, 200,                     ""Titanic Throw"", {   71,    0,    0,    0 }, {    0,    0,    0,    0 } },\r\n" +
+                { "TraitData.raw", "static constexpr std::array<trait_data_t, 2> __trait_data_data { {\r\n" +
+                @"  { 2,  5, 103764,  82629, 2, 20, 108769,  196985,      0,      0,  9,  2, 100,                     ""Light of the Naaru"", {  257,    0,    0,    0 }, {    0,    0,    0,    0 },   0, 0 }," + "\r\n" +
+                @"  { 2,  1, 112271,  90402, 1,  8, 117276,  383959,      0,      0,  7,  1, 100,                  ""Cold Steel, Hot Blood"", {   72,    0,    0,    0 }, {    0,    0,    0,    0 },   0, 0 }," + "\r\n" +
+                "} };\r\n" +
+                "static constexpr std::array<trait_definition_effect_entry_t, 1> __trait_definition_effect_data { {\r\n" +
+                "  { 108769, 0, 0, 59089 },\r\n" +
                 "} };"
                 }
             };
 
             // Act
             var result = rawDataExtractionService.GenerateTraitData(incomingRawData);
-            var firstResult = result.FirstOrDefault();
+            var lightOfTheNaaru = result.FirstOrDefault(t => t.SpellId == 196985);
+            var coldSteel = result.FirstOrDefault(t => t.SpellId == 383959);
 
             // Assert
-            ClassicAssert.IsNotNull(result);
-            ClassicAssert.AreEqual(1, result.Count);
-            ClassicAssert.IsNotNull(firstResult);
-            ClassicAssert.AreEqual(1, firstResult.TreeIndex);
-            ClassicAssert.AreEqual(1, firstResult.ClassId);
-            ClassicAssert.AreEqual(98326, firstResult.TraitNodeEntryId);
-            ClassicAssert.AreEqual(77889, firstResult.NodeId);
-            ClassicAssert.AreEqual(1, firstResult.MaxRanks);
-            ClassicAssert.AreEqual(8, firstResult.RequiredPoints);
-            ClassicAssert.AreEqual(103328, firstResult.TraitDefinitionId);
-            ClassicAssert.AreEqual(384090, firstResult.SpellId);
-            ClassicAssert.AreEqual(57755, firstResult.SpellOverrideId);
-            ClassicAssert.AreEqual(5, firstResult.Row);
-            ClassicAssert.AreEqual(7, firstResult.Column);
-            ClassicAssert.AreEqual(200, firstResult.SelectionIndex);
-            ClassicAssert.AreEqual("Titanic Throw", firstResult.Name);
-            ClassicAssert.IsNotNull(firstResult.SpecId);
-            ClassicAssert.AreEqual(4, firstResult.SpecId.Count());
-            ClassicAssert.AreEqual(71, firstResult.SpecId[0]);
-            ClassicAssert.AreEqual(4, firstResult.SpecStarterId.Count());
-            ClassicAssert.AreEqual(0, firstResult.SpecStarterId[0]);
+            ClassicAssert.AreEqual(2, result.Count);
+            ClassicAssert.IsNotNull(lightOfTheNaaru);
+            ClassicAssert.AreEqual(2, lightOfTheNaaru.TreeIndex);
+            ClassicAssert.AreEqual(5, lightOfTheNaaru.ClassId);
+            ClassicAssert.AreEqual(103764, lightOfTheNaaru.TraitNodeEntryId);
+            ClassicAssert.AreEqual(82629, lightOfTheNaaru.NodeId);
+            ClassicAssert.AreEqual(2, lightOfTheNaaru.MaxRanks);
+            ClassicAssert.AreEqual(20, lightOfTheNaaru.RequiredPoints);
+            ClassicAssert.AreEqual(108769, lightOfTheNaaru.TraitDefinitionId);
+            ClassicAssert.AreEqual(0, lightOfTheNaaru.SpellReplaceId);
+            ClassicAssert.AreEqual(0, lightOfTheNaaru.SpellOverrideId);
+            ClassicAssert.AreEqual(9, lightOfTheNaaru.Row);
+            ClassicAssert.AreEqual(2, lightOfTheNaaru.Column);
+            ClassicAssert.AreEqual(100, lightOfTheNaaru.SelectionIndex);
+            ClassicAssert.AreEqual("Light of the Naaru", lightOfTheNaaru.Name);
+            ClassicAssert.AreEqual(new uint[] { 257, 0, 0, 0 }, lightOfTheNaaru.SpecId);
+            ClassicAssert.AreEqual(new uint[] { 0, 0, 0, 0 }, lightOfTheNaaru.SpecStarterId);
+            ClassicAssert.AreEqual(0, lightOfTheNaaru.SubTreeId);
+            ClassicAssert.AreEqual(0, lightOfTheNaaru.NodeType);
+
+            ClassicAssert.AreEqual(1, lightOfTheNaaru.DefinitionEffects.Count);
+            ClassicAssert.AreEqual(0, lightOfTheNaaru.DefinitionEffects[0].EffectIndex);
+            ClassicAssert.AreEqual(0, lightOfTheNaaru.DefinitionEffects[0].Operation);
+            ClassicAssert.AreEqual(59089, lightOfTheNaaru.DefinitionEffects[0].CurveId);
+
+            // Names containing commas parse without shifting the other fields
+            ClassicAssert.IsNotNull(coldSteel);
+            ClassicAssert.AreEqual("Cold Steel, Hot Blood", coldSteel.Name);
+            ClassicAssert.AreEqual(72, coldSteel.SpecId[0]);
+            ClassicAssert.AreEqual(0, coldSteel.DefinitionEffects.Count);
         }
     }
 }

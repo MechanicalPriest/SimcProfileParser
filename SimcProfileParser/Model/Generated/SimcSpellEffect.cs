@@ -37,5 +37,17 @@ namespace SimcProfileParser.Model.Generated
         /// Equivalent to "Affected Spells" in simc's spell dump.
         /// </summary>
         public List<uint> AffectedSpellIds { get; internal set; } = new List<uint>();
+        /// <summary>
+        /// For talent spells: how <see cref="RankValues"/> apply to <see cref="BaseValue"/>, or null if the talent
+        /// has no per-rank values for this effect. Equivalent to "op=" on simc's "Talent Entry" line.
+        /// </summary>
+        public SimcTalentRankOperation? RankOperation { get; internal set; }
+        /// <summary>
+        /// For talent spells: the raw per-rank values for this effect, in curve order (normally index 0 = rank 1).
+        /// With <see cref="SimcTalentRankOperation.Set"/> the value replaces <see cref="BaseValue"/>, with
+        /// <see cref="SimcTalentRankOperation.Multiply"/> it multiplies it. Empty if the talent has no per-rank values.
+        /// Equivalent to "values=" on simc's "Talent Entry" line.
+        /// </summary>
+        public List<double> RankValues { get; internal set; } = new List<double>();
     }
 }

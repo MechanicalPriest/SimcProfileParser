@@ -44,12 +44,22 @@ namespace SimcProfileParser
             return spell;
         }
 
-        public async Task<SimcSpell> GeneratePlayerSpellAsync(uint playerLevel, uint spellId)
+        public Task<SimcSpell> GeneratePlayerSpellAsync(uint playerLevel, uint spellId)
+            => GeneratePlayerSpellAsync(playerLevel, spellId, null);
+
+        /// <param name="playerLevel">Player level to scale the spell's effects for</param>
+        /// <param name="spellId">Spell to generate</param>
+        /// <param name="parentSpellIds">Spells already being generated further up this trigger chain,
+        /// used to stop trigger spell cycles (e.g. A triggers B triggers A) recursing forever</param>
+        internal async Task<SimcSpell> GeneratePlayerSpellAsync(uint playerLevel, uint spellId, List<uint> parentSpellIds)
         {
             var spellData = await _simcUtilityService.GetRawSpellDataAsync(spellId);
 
             if (spellData == null)
                 return new();
+
+            parentSpellIds = parentSpellIds == null ? new List<uint>() : parentSpellIds.ToList();
+            parentSpellIds.Add(spellId);
 
             var itemSpell = new SimcSpell()
             {
@@ -103,8 +113,8 @@ namespace SimcProfileParser
             {
                 // Populate the trigger spell if one exists.
                 SimcSpell triggerSpell = null;
-                if (spellEffect.TriggerSpellId > 0)
-                    triggerSpell = await GeneratePlayerSpellAsync(playerLevel, spellEffect.TriggerSpellId);
+                if (spellEffect.TriggerSpellId > 0 && !parentSpellIds.Contains(spellEffect.TriggerSpellId))
+                    triggerSpell = await GeneratePlayerSpellAsync(playerLevel, spellEffect.TriggerSpellId, parentSpellIds);
 
                 // Get the scale budget
 
@@ -125,6 +135,8 @@ namespace SimcProfileParser
                     budget = scaledValue;
                 }
 
+                var rankValues = await _simcUtilityService.GetTalentRankValuesAsync(spellData.Id, spellEffect.EffectIndex);
+
                 itemSpell.Effects.Add(new SimcSpellEffect()
                 {
                     Id = spellEffect.Id,
@@ -144,7 +156,9 @@ namespace SimcProfileParser
                     TriggerSpellId = spellEffect.TriggerSpellId,
                     TriggerSpell = triggerSpell,
                     ScaleBudget = budget,
-                    AffectedSpellIds = await _simcUtilityService.GetSpellIdsAffectedByEffectAsync(spellData, spellEffect)
+                    AffectedSpellIds = await _simcUtilityService.GetSpellIdsAffectedByEffectAsync(spellData, spellEffect),
+                    RankOperation = ToRankOperation(rankValues?.Operation),
+                    RankValues = rankValues?.Values ?? []
                 });
             }
 
@@ -325,6 +339,8 @@ namespace SimcProfileParser
                     }
                 }
 
+                var rankValues = await _simcUtilityService.GetTalentRankValuesAsync(spellData.Id, spellEffect.EffectIndex);
+
                 itemSpell.Effects.Add(new SimcSpellEffect()
                 {
                     Id = spellEffect.Id,
@@ -344,7 +360,9 @@ namespace SimcProfileParser
                     TriggerSpellId = spellEffect.TriggerSpellId,
                     TriggerSpell = triggerSpell,
                     ScaleBudget = budget,
-                    AffectedSpellIds = await _simcUtilityService.GetSpellIdsAffectedByEffectAsync(spellData, spellEffect)
+                    AffectedSpellIds = await _simcUtilityService.GetSpellIdsAffectedByEffectAsync(spellData, spellEffect),
+                    RankOperation = ToRankOperation(rankValues?.Operation),
+                    RankValues = rankValues?.Values ?? []
                 });
             }
 
@@ -354,5 +372,15 @@ namespace SimcProfileParser
             // Then grab the rating then translate value1 to get the stat type
             // and if its an item, apply the combat rating multi for the item.
         }
+
+        /// <summary>
+        /// Map simc's trait_definition_op to <see cref="SimcTalentRankOperation"/>. TRAIT_OP_NONE (-1) and unknown values map to null.
+        /// </summary>
+        private static SimcTalentRankOperation? ToRankOperation(int? operation) => operation switch
+        {
+            0 => SimcTalentRankOperation.Set,
+            1 => SimcTalentRankOperation.Multiply,
+            _ => null
+        };
     }
 }
