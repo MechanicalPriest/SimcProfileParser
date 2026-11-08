@@ -3,6 +3,15 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.5.0 - 2026-11-08
+
+### Added
+- **Chain targets.** `SimcSpellEffect.ChainTargets` and `SimcSpellEffect.ChainMultiplier` are the maximum number of
+  targets the effect chains to and the multiplier applied on each jump, matching "Chain Targets" and "Chain Multiplier"
+  in simc's `allspells.txt`.
+- **Documented `SimcSpellEffect.Delta`**, the effect's spread ("delta=" in simc's `allspells.txt`): the value ranges
+  from average × (1 − `Delta` / 2) to average × (1 + `Delta` / 2).
+
 ## 4.4.0 - 2026-11-07
 
 ### Added

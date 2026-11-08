@@ -677,5 +677,45 @@ namespace SimcProfileParser.Tests
             Assert.That(spell.Effects, Is.Not.Empty);
             Assert.That(spell.Effects.Select(e => e.ScaledValue), Is.EqualTo(spell.Effects.Select(e => e.BaseValue)));
         }
+
+        [Test]
+        public async Task SSC_Player_Spell_Has_Delta()
+        {
+            // Arrange
+            // Light Eruption effect #1 (288951): "Scaled Value: 0 (delta=0.05)" in simc's allspells.txt
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 196812,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var effect = spell.Effects.Single(e => e.Id == 288951);
+
+            // Assert
+            Assert.That(effect.Delta, Is.EqualTo(0.05));
+            Assert.That(effect.SpCoefficient, Is.EqualTo(0.342888));
+        }
+
+        [Test]
+        public async Task SSC_Player_Spell_Has_Chain_Targets()
+        {
+            // Arrange
+            // Blessed Light effect #1 (288952): "Chain Multiplier: 1 | Chain Targets: 5" in simc's allspells.txt
+            var spellOptions = new SimcSpellOptions()
+            {
+                SpellId = 196813,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var spell = await _spellCreationService.GeneratePlayerSpellAsync(spellOptions);
+            var effect = spell.Effects.Single(e => e.Id == 288952);
+
+            // Assert
+            Assert.That(effect.ChainTargets, Is.EqualTo(5));
+            Assert.That(effect.ChainMultiplier, Is.EqualTo(1));
+        }
     }
 }

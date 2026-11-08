@@ -11,8 +11,24 @@ namespace SimcProfileParser.Model.Generated
         public int ScalingType { get; internal set; }
         public double Coefficient { get; internal set; }
         public double SpCoefficient { get; internal set; }
+        /// <summary>
+        /// The effect's spread: the full width of its value range as a fraction of the average value, e.g. 0.05 for ±2.5%.
+        /// The value ranges from average × (1 − Delta / 2) to average × (1 + Delta / 2). 0 for effects with a fixed value.
+        /// Equivalent to "delta=" in simc's spell dump.
+        /// simc: spelleffect_data_t::m_delta / dbc_t::effect_min / dbc_t::effect_max
+        /// </summary>
         public double Delta { get; internal set; }
         public double Amplitude { get; internal set; }
+        /// <summary>
+        /// The maximum number of targets the effect chains or jumps to. 0 if the effect doesn't chain.
+        /// Equivalent to "Chain Targets" in simc's spell dump (simc only shows it when it's greater than 0).
+        /// </summary>
+        public int ChainTargets { get; internal set; }
+        /// <summary>
+        /// The multiplier applied to the effect's value each time it chains to another target, e.g. 0.5 for half on each jump.
+        /// Equivalent to "Chain Multiplier" in simc's spell dump.
+        /// </summary>
+        public double ChainMultiplier { get; internal set; }
         public double Radius { get; internal set; }
         public double RadiusMax { get; internal set; }
         public double BaseValue { get; internal set; }
