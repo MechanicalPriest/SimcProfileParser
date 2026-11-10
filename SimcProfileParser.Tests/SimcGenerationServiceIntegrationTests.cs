@@ -6,6 +6,7 @@ using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.RawData;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser.Tests
@@ -56,6 +57,20 @@ namespace SimcProfileParser.Tests
             Assert.That(profile.Talents, Is.Not.Empty);
             Assert.That(profile.Talents, Has.All.Matches<SimcTalent>(t => t.SpellId > 0 && !string.IsNullOrEmpty(t.Name) && t.Rank > 0));
             return;
+        }
+
+        [Test]
+        public async Task SGS_Generated_Items_Have_Slots()
+        {
+            // Arrange
+
+            // Act
+            var profile = await _sgs.GenerateProfileAsync(_profileString);
+
+            // Assert
+            Assert.That(profile.GeneratedItems.Select(i => i.Slot),
+                Is.EqualTo(profile.ParsedProfile.Items.Select(i => i.Slot)));
+            Assert.That(profile.GeneratedItems.Select(i => i.Slot), Has.None.Null);
         }
 
         [Test]

@@ -3,6 +3,18 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.9.0 - 2026-11-10
+
+### Added
+- `SimcItem.Slot`, the slot a generated profile item is in (e.g. `finger1`, `trinket2`), so items in matching slots
+  can be told apart without relying on their order. Null for items created from `SimcItemOptions`.
+
+### Fixed
+- **Dracthyr, Earthen and Haranir profiles had a `RaceId` of 0.** They now get simc's race IDs: 16/17 for Dracthyr,
+  18/19 for Earthen and 20/21 for Haranir (Horde/Alliance). simc treats a race without a faction, e.g.
+  `race=dracthyr`, as Horde. Other races' IDs are unchanged. The `Race` enum's NPC races that used these numbers
+  (`Vrykul` to `IceTroll`) are now obsolete.
+
 ## 4.8.1 - 2026-11-10
 
 ### Fixed

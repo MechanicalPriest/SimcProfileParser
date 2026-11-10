@@ -62,6 +62,8 @@ namespace SimcProfileParser
                 throw new ArgumentOutOfRangeException(
                     nameof(parsedItemData.ItemId), $"ItemId not found: {parsedItemData.ItemId}");
 
+            item.Slot = parsedItemData.Slot;
+
             // Force item level if provided with ilevel=
             if(parsedItemData.ItemLevel > 0)
             {

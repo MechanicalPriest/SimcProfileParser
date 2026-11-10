@@ -1,4 +1,6 @@
-﻿namespace SimcProfileParser.Model.RawData
+﻿using System;
+
+namespace SimcProfileParser.Model.RawData
 {
     // from sc_enums
     /// <summary>
@@ -416,12 +418,12 @@
         Vulpera,
         MagharOrc,
         Mechagnome,
-        Vrykul,
-        Tuskarr,
-        ForestTroll,
-        Tanuka,
-        Skeleton,
-        IceTroll,
+        DracthyrHorde,
+        DracthyrAlliance,
+        EarthenHorde,
+        EarthenAlliance,
+        HaranirHorde,
+        HaranirAlliance,
         Worgen,
         Gilnean,
         Pandaren,
@@ -433,6 +435,21 @@
         LightforgedDraenei,
         ZandalariTroll,
         KulTiran,
+
+        // simc now uses 16 to 21 for Dracthyr, Earthen and Haranir. These NPC races are kept so code using them
+        // still compiles, but can't come from a profile.
+        [Obsolete("No longer used by simc, 16 is now DracthyrHorde")]
+        Vrykul = 16,
+        [Obsolete("No longer used by simc, 17 is now DracthyrAlliance")]
+        Tuskarr = 17,
+        [Obsolete("No longer used by simc, 18 is now EarthenHorde")]
+        ForestTroll = 18,
+        [Obsolete("No longer used by simc, 19 is now EarthenAlliance")]
+        Tanuka = 19,
+        [Obsolete("No longer used by simc, 20 is now HaranirHorde")]
+        Skeleton = 20,
+        [Obsolete("No longer used by simc, 21 is now HaranirAlliance")]
+        IceTroll = 21,
     }
 
     public enum Class

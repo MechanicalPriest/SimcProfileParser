@@ -6,6 +6,11 @@ namespace SimcProfileParser.Model.Generated
     public class SimcItem
     {
         public uint ItemId { get; internal set; }
+        /// <summary>
+        /// The slot the item is in, from the simc profile, e.g. "head", "finger1" or "trinket2".
+        /// Null for items created from <see cref="SimcItemOptions"/>
+        /// </summary>
+        public string Slot { get; internal set; }
         public string Name { get; internal set; }
 
         public int ItemLevel { get; internal set; }

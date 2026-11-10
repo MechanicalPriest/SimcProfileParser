@@ -370,6 +370,14 @@ namespace SimcProfileParser
                 "lightforged_draenei" => Race.LightforgedDraenei,
                 "zandalari_troll" => Race.ZandalariTroll,
                 "kul_tiran" => Race.KulTiran,
+                // From util::parse_race_type, which treats races without a faction as horde
+                "forsaken" => Race.Undead,
+                "dracthyr" or "dracthyr_horde" => Race.DracthyrHorde,
+                "dracthyr_alliance" => Race.DracthyrAlliance,
+                "earthen" or "earthen_dwarf" or "earthen_horde" => Race.EarthenHorde,
+                "earthen_alliance" => Race.EarthenAlliance,
+                "haranir" or "harronir" or "haranir_horde" or "harronir_horde" => Race.HaranirHorde,
+                "haranir_alliance" or "harronir_alliance" => Race.HaranirAlliance,
                 _ => Race.NoRace,
             };
 

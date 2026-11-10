@@ -380,5 +380,28 @@ namespace SimcProfileParser.Tests
             Assert.That(profile.Items, Has.Count.EqualTo(1));
             Assert.That(profile.Items[0].RedirectedBaseStatsItemId, Is.EqualTo(271874));
         }
+
+        [Test]
+        [TestCase("dracthyr", 16)]
+        [TestCase("dracthyr_alliance", 17)]
+        [TestCase("earthen", 18)]
+        [TestCase("earthen_alliance", 19)]
+        [TestCase("haranir", 20)]
+        [TestCase("haranir_alliance", 21)]
+        [TestCase("kul_tiran", 32)]
+        public void SPS_Parses_RaceId(string race, int raceId)
+        {
+            // Arrange
+            // Race IDs follow simc's util::race_id
+            var simcParser = new SimcParserService(null);
+            var profileLines = new List<string>() { $"race={race}" };
+
+            // Act
+            var profile = simcParser.ParseProfileAsync(profileLines);
+
+            // Assert
+            Assert.That(profile.Race, Is.EqualTo(race));
+            Assert.That(profile.RaceId, Is.EqualTo(raceId));
+        }
     }
 }

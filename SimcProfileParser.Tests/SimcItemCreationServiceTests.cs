@@ -846,6 +846,22 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public async Task ICS_Item_From_Options_Has_No_Slot()
+        {
+            // Arrange
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 239651
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.That(item.Slot, Is.Null);
+        }
+
+        [Test]
         [TestCase("Enchant Helm - Empowered Blessing of Speed |A:Professions-ChatIcon-Quality-12-Tier2:20:20|a", "Enchant Helm - Empowered Blessing of Speed")]
         [TestCase("|cnIQ4:Ancient Hash'ey Battle Art: Heat Wave|r", "Ancient Hash'ey Battle Art: Heat Wave")]
         [TestCase("+$k1 Intellect & +$k2 Stamina", "+$k1 Intellect & +$k2 Stamina")]
