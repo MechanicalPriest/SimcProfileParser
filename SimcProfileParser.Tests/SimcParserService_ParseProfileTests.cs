@@ -362,5 +362,23 @@ namespace SimcProfileParser.Tests
             Assert.That(profile.Items, Has.Count.EqualTo(1));
             Assert.That(profile.Items[0].ContentTuningId, Is.EqualTo(1040));
         }
+
+        [Test]
+        public void SPS_Parses_RedirectedBaseStats()
+        {
+            // Arrange
+            var simcParser = new SimcParserService(null);
+            var profileLines = new List<string>()
+            {
+                "head=,id=271555,enchant_id=7991,gem_id=240908,bonus_id=13334/6652/13846/13695/13692/13698/12854,redirected_base_stats=271874"
+            };
+
+            // Act
+            var profile = simcParser.ParseProfileAsync(profileLines);
+
+            // Assert
+            Assert.That(profile.Items, Has.Count.EqualTo(1));
+            Assert.That(profile.Items[0].RedirectedBaseStatsItemId, Is.EqualTo(271874));
+        }
     }
 }

@@ -563,6 +563,16 @@ namespace SimcProfileParser
 
                         break;
 
+                    case "redirected_base_stats":
+                        if (!uint.TryParse(kvp[1], out uint redirectedBaseStatsItemId))
+                        {
+                            _logger?.LogWarning("Unable to get redirected_base_stats ({part}) from string {line.RawLine}", part, line.RawLine);
+                            continue;
+                        }
+                        itemResult.RedirectedBaseStatsItemId = redirectedBaseStatsItemId;
+
+                        break;
+
                     case "bonus_id":
                         var bonusIds = kvp[1].Split('/');
                         var bonusIdResult = new List<int>();

@@ -69,6 +69,30 @@ namespace SimcProfileParser.Tests.DataSync
         }
 
         [Test]
+        public void RDE_Generates_Stam_Multi_Over_Ten()
+        {
+            // Arrange
+            // Midnight stamina multipliers go above 10, e.g. "    9.989023589,	10.0360075,	10.0832124,"
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ScaleData.raw", "__stamina_mult_by_ilvl[][1300] = { { 9.989023589,\t10.0360075,\t10.0832124, }, "
+                    + "{ 1, 2, }, { 3, 4, }, { 5, 6, }, };" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateStaminaMultipliers(incomingRawData);
+
+            // Assert
+            Assert.That(result[0][0], Is.EqualTo(9.989023589f));
+            Assert.That(result[0][1], Is.EqualTo(10.0360075f));
+            Assert.That(result[0][2], Is.EqualTo(10.0832124f));
+            Assert.That(result[1][0], Is.EqualTo(1f));
+        }
+
+        [Test]
         public void RDE_Generates_ItemData()
         {
             // Arrange

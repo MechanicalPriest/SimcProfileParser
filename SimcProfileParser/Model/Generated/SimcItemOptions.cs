@@ -16,6 +16,11 @@ namespace SimcProfileParser.Model.Generated
         /// The content_tuning= item option from a simc profile. New in Midnight and used to cap the level some items scale to.
         /// </summary>
         public int ContentTuningId { get; set; }
+        /// <summary>
+        /// The redirected_base_stats= item option from a simc profile. Items converted through the catalyst keep the
+        /// base stats of the item they were converted from, which is the item ID given here.
+        /// </summary>
+        public uint RedirectedBaseStatsItemId { get; set; }
 
         public SimcItemOptions()
         {

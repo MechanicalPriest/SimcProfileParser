@@ -80,6 +80,8 @@ namespace SimcProfileParser.DataSync
             {
                 LocalParsedFile = "StaminaMultipliers.json",
                 ParsedFileType = SimcParsedFileType.StaminaMultipliers,
+                // 2: fixed multipliers of 10 or more not being parsed
+                ParserVersion = 2,
                 RawFiles = new Dictionary<string, string>()
                 {
                     { "ScaleData.raw", "sc_scale_data" }

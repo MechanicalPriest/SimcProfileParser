@@ -94,7 +94,8 @@ namespace SimcProfileParser.DataSync
 
         private float[] ParseRatingGroup(Group g)
         {
-            Regex items = new Regex(@"\s+([\d]\.?\d*),");
+            // Values can be 10 or more, e.g. Midnight stamina multipliers: "    9.989023589,	10.0360075,"
+            Regex items = new Regex(@"\s+(\d+(?:\.\d+)?),");
 
             float[] values = new float[1300];
 

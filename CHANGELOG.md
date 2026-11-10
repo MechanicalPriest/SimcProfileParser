@@ -3,6 +3,26 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.7.0 - 2026-11-10
+
+### Added
+- **Catalysed items keep their original base stats.** Items converted through the catalyst are exported with
+  `redirected_base_stats=<item id>`, the item they were converted from. They now take their stat types and allocations
+  from that item, as in game, instead of from the tier item. Exposed as `SimcParsedItem.RedirectedBaseStatsItemId` and
+  `SimcItemOptions.RedirectedBaseStatsItemId`.
+
+### Fixed
+- **Stamina on Midnight items was far too low** (e.g. 283 instead of 3,910). Stamina multipliers of 10 or more weren't
+  being read from simc's data, which covers every item above roughly item level 210. Cached stamina data is re-parsed
+  automatically on upgrade.
+- **Gems with two stats only added the first, at the wrong value.** Gems now add every stat they have (e.g.
+  "+16 Critical Strike & +7 Versatility"), scaled as simc does, instead of the first stat at a fixed level 70 value.
+- **Crafted stats were too high** (e.g. 69 instead of 56). The stats chosen with `crafted_stats=` were applied after
+  the item's stats were scaled, so they missed the combat rating multiplier.
+- **Some crafted items had the wrong secondary stats.** Item bonuses that set a crafted item's stats
+  (`ITEM_BONUS_MOD_ITEM_STAT`) weren't applied, so `crafted_stats=` was used instead even when the bonus had already
+  chosen the stats.
+
 ## 4.6.0 - 2026-11-10
 
 ### Fixed

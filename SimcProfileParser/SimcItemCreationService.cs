@@ -25,6 +25,16 @@ namespace SimcProfileParser
         /// </summary>
         internal const int SquishCurveMidnight = 92181;
 
+        /// <summary>
+        /// ITEM_ENCHANTMENT_STAT from data_enums.hh, an enchantment that adds a stat
+        /// </summary>
+        private const int ItemEnchantmentStatType = 5;
+
+        /// <summary>
+        /// Player level used to scale gem stats, as the player's level isn't available when creating items
+        /// </summary>
+        private const int GemPlayerLevel = 90;
+
         public SimcItemCreationService(ICacheService cacheService,
             ISimcSpellCreationService simcSpellCreationService,
             ISimcUtilityService simcUtilityService,
@@ -56,7 +66,8 @@ namespace SimcProfileParser
                 parsedItemData.GemIds.ToList(),
                 parsedItemData.CraftedStatIds.ToList(),
                 parsedItemData.DropLevel,
-                parsedItemData.ContentTuningId);
+                parsedItemData.ContentTuningId,
+                parsedItemData.RedirectedBaseStatsItemId);
 
             await UpdateItemEffects(item);
 
@@ -86,6 +97,7 @@ namespace SimcProfileParser
                 itemOptions.CraftedStatIds,
                 itemOptions.DropLevel,
                 itemOptions.ContentTuningId,
+                itemOptions.RedirectedBaseStatsItemId,
                 applyItemLevelSquish: itemOptions.ItemLevel <= 0);
 
             await UpdateItemEffects(item);
@@ -137,18 +149,34 @@ namespace SimcProfileParser
         /// <param name="craftedStatIds">Crafted stat IDs to apply</param>
         /// <param name="dropLevel">Character level the item dropped at, used for item level scaling</param>
         /// <param name="contentTuningId">The content_tuning= item option, used for item level scaling</param>
+        /// <param name="redirectedBaseStatsItemId">The redirected_base_stats= item option, the item to take base stats from</param>
         /// <param name="applyItemLevelSquish">Apply the Midnight item level squish to items without Midnight item level bonuses</param>
         internal async Task UpdateItemAsync(SimcItem item,
             IList<int> bonusIds, IList<int> gemIds, IList<int> craftedStatIds, int dropLevel,
-            int contentTuningId = 0, bool applyItemLevelSquish = true)
+            int contentTuningId = 0, uint redirectedBaseStatsItemId = 0, bool applyItemLevelSquish = true)
         {
             var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
 
             // Store the original item level before any modifications
             var originalItemLevel = item.ItemLevel;
 
+            // Items converted through the catalyst keep the base stats of the item they were converted from.
+            // From item_database::load_item_from_data / parsed_item_data_t::init
+            var baseStatsItemData = rawItemData;
+            if (redirectedBaseStatsItemId > 0)
+            {
+                var redirectItemData = await _simcUtilityService.GetRawItemDataAsync(redirectedBaseStatsItemId);
+                if (redirectItemData != null)
+                {
+                    _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} using base stats from item {redirectedBaseStatsItemId}");
+                    baseStatsItemData = redirectItemData;
+                }
+                else
+                    _logger?.LogWarning($"[{item.ItemId}] Item {item.Name} unable to find item {redirectedBaseStatsItemId} to redirect base stats to");
+            }
+
             // Now add the base mods
-            foreach (var mod in rawItemData.ItemMods)
+            foreach (var mod in baseStatsItemData.ItemMods)
             {
                 if (mod.SocketMultiplier > 0)
                     throw new NotImplementedException("Socket Multiplier not yet implemented");
@@ -165,6 +193,10 @@ namespace SimcProfileParser
                 _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} squishing ilvl {item.ItemLevel} => {squishedItemLevel}");
                 item.ItemLevel = squishedItemLevel;
             }
+
+            // Crafted stats need to be set before the stats are scaled, so they get the combat rating multiplier.
+            // From item_t::decode_stats
+            ProcessCraftedIds(item, craftedStatIds);
 
             foreach (var mod in item.Mods)
             {
@@ -187,9 +219,14 @@ namespace SimcProfileParser
             }
 
             await AddGemsAsync(item, gemIds);
-
-            ProcessCraftedIds(item, craftedStatIds);
         }
+
+        /// <summary>
+        /// Placeholder stats on crafted items, replaced by the stats chosen when crafting.
+        /// From item_database::is_crafted_item_mod
+        /// </summary>
+        private static bool IsCraftedItemMod(ItemModType modType)
+            => modType == ItemModType.ITEM_MOD_BONUS_STAT_1 || modType == ItemModType.ITEM_MOD_BONUS_STAT_2;
 
         private void ProcessCraftedIds(SimcItem item, IList<int> craftedStatIds)
         {
@@ -255,25 +292,46 @@ namespace SimcProfileParser
                 else
                 {
                     // 2) raw item enchantment data
-                    var scaleIndex = _simcUtilityService.GetClassId((PlayerScaling)enchantmentProperties.ScalingId);
-
-                    // Because the array is zero indexed, take one off the player level
                     // enchant breakdown from item_database::item_enchantment_effect_stats
-                    // from dbc_t::spell_scaling
-                    // TODO: Pull the players level through to here
-                    var scaledValue = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, 70);
-
-                    //// Grab the stat this gem increases
-                    var stat = (ItemModType)enchantmentProperties.SubEnchantments[0].Property;
-
-                    //// Now add it to the item
-                    // Create a new SimcItemGem with the stat, rating etc.
-                    var newGem = new SimcItemGem
+                    // Gems can have more than one stat, e.g. "+$k1 Critical Strike & +$k2 Versatility"
+                    foreach (var subEnchantment in enchantmentProperties.SubEnchantments)
                     {
-                        StatRating = (int)scaledValue,
-                        Type = stat
-                    };
-                    item.Gems.Add(newGem);
+                        // Only stat enchantments add stats
+                        if (subEnchantment.Type != ItemEnchantmentStatType)
+                            continue;
+
+                        var stat = (ItemModType)subEnchantment.Property;
+
+                        double value;
+                        if (enchantmentProperties.ScalingId == 0)
+                            value = subEnchantment.Amount;
+                        else
+                        {
+                            // Scaled from the spell scaling budget at the player level, capped at the enchantment's
+                            // max scaling level. From dbc_t::spell_scaling
+                            // TODO: Pull the players level through to here
+                            var level = GemPlayerLevel;
+                            if (enchantmentProperties.MaxScalingLevel != 0 && level > enchantmentProperties.MaxScalingLevel)
+                                level = (int)enchantmentProperties.MaxScalingLevel;
+
+                            var scaleIndex = _simcUtilityService.GetClassId((PlayerScaling)enchantmentProperties.ScalingId);
+                            var budget = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, level);
+
+                            value = Math.Round(budget * subEnchantment.Coefficient, MidpointRounding.AwayFromZero);
+                        }
+
+                        if (value == 0)
+                            continue;
+
+                        //// Now add it to the item
+                        // Create a new SimcItemGem with the stat, rating etc.
+                        var newGem = new SimcItemGem
+                        {
+                            StatRating = (int)value,
+                            Type = stat
+                        };
+                        item.Gems.Add(newGem);
+                    }
                 }
             }
         }
@@ -508,6 +566,27 @@ namespace SimcProfileParser
                     _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adding {entry.Value1} with more alloc: {entry.Value2}");
                     AddItemMod(item, (ItemModType)entry.Value1, entry.Value2);
                     break;
+
+                // Change the first crafted stat placeholder to the stat in value 1. Any crafted_stats= on the item
+                // then only applies to the placeholders that are left.
+                case ItemBonusType.ITEM_BONUS_MOD_ITEM_STAT:
+                    {
+                        if (entry.Value1 == 0)
+                            break;
+
+                        var craftedMod = item.Mods.FirstOrDefault(m => IsCraftedItemMod(m.Type));
+                        if (craftedMod == null)
+                            break;
+
+                        // If multiple instances of the same crafted item mod are present, simc replaces them all
+                        var oldType = craftedMod.Type;
+                        foreach (var mod in item.Mods.Where(m => m.Type == oldType))
+                        {
+                            _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} modifying stat type from {oldType} to {(ItemModType)entry.Value1}");
+                            mod.Type = (ItemModType)entry.Value1;
+                        }
+                        break;
+                    }
 
                 case ItemBonusType.ITEM_BONUS_QUALITY:
                     _logger?.LogDebug($"[{item.ItemId}] [{bonusId}:{entry.Type}] Item {item.Name} adjusting quality from {item.Quality} to {(ItemQuality)entry.Value1} ({entry.Value1})");

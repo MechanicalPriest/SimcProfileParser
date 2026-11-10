@@ -185,8 +185,8 @@ namespace SimcProfileParser.Tests
         public async Task ICS_Creates_Item_Crafted_Stats()
         {
             // Arrange
-            // Hopebreakers Badge
-            // trinket1=,id=177813,bonus_id=6907/6652/603/7215,drop_level=50
+            // Bonus 8793 is a missive that sets the crafted stats to mastery and haste, so crafted_stats=36/40
+            // (haste/versatility) has nothing left to change.
             var itemOptions = new SimcItemOptions()
             {
                 ItemId = 193516,
@@ -204,8 +204,9 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
             ClassicAssert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_INTELLECT).Any(), Is.True);
             ClassicAssert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_STAMINA).Any(), Is.True);
+            ClassicAssert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_MASTERY_RATING).Any(), Is.True);
             ClassicAssert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_HASTE_RATING).Any(), Is.True);
-            ClassicAssert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_VERSATILITY_RATING).Any(), Is.True);
+            ClassicAssert.That(item.Mods.Where(m => m.Type == ItemModType.ITEM_MOD_VERSATILITY_RATING).Any(), Is.False);
         }
 
 
@@ -595,6 +596,166 @@ namespace SimcProfileParser.Tests
             // Assert
             Assert.That(item.ItemLevelForced, Is.True);
             Assert.That(item.ItemLevel, Is.EqualTo(300));
+        }
+
+        [Test]
+        public async Task ICS_Redirected_Base_Stats_Uses_Other_Items_Stats()
+        {
+            // Arrange
+            // Cosmic Penitent's Truesight (334), converted through the catalyst from Venomkeeper's Horrific Cowl
+            // head=,id=271555,enchant_id=7991,gem_id=240908,bonus_id=13334/6652/13846/13695/13692/13698/12854,redirected_base_stats=271874
+            // The tier head has crit and mastery, but keeps the cowl's base stats: intellect, stamina and mastery only
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "head",
+                ItemId = 271555,
+                BonusIds = new List<int>() { 13334, 6652, 13846, 13695, 13692, 13698, 12854 },
+                RedirectedBaseStatsItemId = 271874,
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.ItemId, Is.EqualTo(271555), "Item stays the tier head");
+            Assert.That(item.ItemLevel, Is.EqualTo(334));
+            Assert.That(item.Mods.Select(m => m.Type), Is.EqualTo(new[]
+            {
+                ItemModType.ITEM_MOD_INTELLECT,
+                ItemModType.ITEM_MOD_STAMINA,
+                ItemModType.ITEM_MOD_MASTERY_RATING
+            }));
+            Assert.That(item.Mods.Select(m => m.RawStatAllocation), Is.EqualTo(new[] { 5259, 7889, 7000 }));
+            // In game: 189 Intellect, 3910 Stamina, 201 Mastery
+            Assert.That(item.Mods.Select(m => m.StatRating), Is.EqualTo(new[] { 189, 3910, 201 }));
+        }
+
+        [Test]
+        public async Task ICS_Midnight_Item_Matches_Tooltip()
+        {
+            // Arrange
+            // Aqirbane Reliquary (344)
+            // neck=,id=268265,gem_id=240983/240910,bonus_id=6652/13668/13335/13848/13987
+            // In game: 2466 Stamina, 107 Crit, Haste, Versatility and Mastery,
+            // +32 Primary Stat gem and +16 Critical Strike & +7 Versatility gem
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "neck",
+                ItemId = 268265,
+                BonusIds = new List<int>() { 6652, 13668, 13335, 13848, 13987 },
+                GemIds = new List<int>() { 240983, 240910 },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.ItemLevel, Is.EqualTo(344));
+            Assert.That(item.Mods.Select(m => (m.Type, m.StatRating)), Is.EqualTo(new[]
+            {
+                (ItemModType.ITEM_MOD_STAMINA, 2466),
+                (ItemModType.ITEM_MOD_CRIT_RATING, 107),
+                (ItemModType.ITEM_MOD_HASTE_RATING, 107),
+                (ItemModType.ITEM_MOD_VERSATILITY_RATING, 107),
+                (ItemModType.ITEM_MOD_MASTERY_RATING, 107)
+            }));
+            Assert.That(item.Gems.Select(g => (g.Type, g.StatRating)), Is.EqualTo(new[]
+            {
+                (ItemModType.ITEM_MOD_STRENGTH_AGILITY_INTELLECT, 32),
+                (ItemModType.ITEM_MOD_CRIT_RATING, 16),
+                (ItemModType.ITEM_MOD_VERSATILITY_RATING, 7)
+            }));
+        }
+
+        [Test]
+        public async Task ICS_Crafted_Item_Matches_Tooltip()
+        {
+            // Arrange
+            // Martyr's Bindings (331)
+            // wrist=,id=239648,gem_id=240910,bonus_id=12214/13667/13695/12497/13751/14001/8960/12384/8795/13836/13696,crafted_stats=40/32
+            // In game: 103 Intellect, 2124 Stamina, 56 Critical Strike, 56 Versatility
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "wrist",
+                ItemId = 239648,
+                BonusIds = new List<int>() { 12214, 13667, 13695, 12497, 13751, 14001, 8960, 12384, 8795, 13836, 13696 },
+                GemIds = new List<int>() { 240910 },
+                CraftedStatIds = new List<int>() { 40, 32 },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.ItemLevel, Is.EqualTo(331));
+            Assert.That(item.Mods.Select(m => (m.Type, m.StatRating)), Is.EqualTo(new[]
+            {
+                (ItemModType.ITEM_MOD_INTELLECT, 103),
+                (ItemModType.ITEM_MOD_STAMINA, 2124),
+                (ItemModType.ITEM_MOD_CRIT_RATING, 56),
+                (ItemModType.ITEM_MOD_VERSATILITY_RATING, 56)
+            }));
+        }
+
+        [Test]
+        public async Task ICS_Crafted_Item_Mod_Item_Stat_Bonus_Overrides_Crafted_Stats()
+        {
+            // Arrange
+            // Martyr's Leggings (331)
+            // legs=,id=239651,enchant_id=7935,bonus_id=12214/13667/12497/13751/14001/8960/12384/8795/13836,crafted_stats=49/36
+            // Bonus 8795 changes the crafted stats to critical strike and versatility, so crafted_stats=49/36
+            // (mastery/haste) has nothing left to change.
+            // In game: 183 Intellect, 3777 Stamina, 99 Critical Strike, 99 Versatility
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "legs",
+                ItemId = 239651,
+                BonusIds = new List<int>() { 12214, 13667, 12497, 13751, 14001, 8960, 12384, 8795, 13836 },
+                CraftedStatIds = new List<int>() { 49, 36 },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.ItemLevel, Is.EqualTo(331));
+            Assert.That(item.Mods.Select(m => (m.Type, m.StatRating)), Is.EqualTo(new[]
+            {
+                (ItemModType.ITEM_MOD_INTELLECT, 183),
+                (ItemModType.ITEM_MOD_STAMINA, 3777),
+                (ItemModType.ITEM_MOD_CRIT_RATING, 99),
+                (ItemModType.ITEM_MOD_VERSATILITY_RATING, 99)
+            }));
+        }
+
+        [Test]
+        public async Task ICS_Redirected_Base_Stats_Unknown_Item_Keeps_Own_Stats()
+        {
+            // Arrange
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "head",
+                ItemId = 271555,
+                BonusIds = new List<int>() { 13334, 6652, 13846, 13695, 13692, 13698, 12854 },
+                RedirectedBaseStatsItemId = 12333333,
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.Mods.Select(m => m.Type), Is.EqualTo(new[]
+            {
+                ItemModType.ITEM_MOD_INTELLECT,
+                ItemModType.ITEM_MOD_STAMINA,
+                ItemModType.ITEM_MOD_CRIT_RATING,
+                ItemModType.ITEM_MOD_MASTERY_RATING
+            }));
         }
     }
 }
