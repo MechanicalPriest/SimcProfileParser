@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SimcProfileParser
@@ -25,15 +26,22 @@ namespace SimcProfileParser
         /// </summary>
         internal const int SquishCurveMidnight = 92181;
 
-        /// <summary>
-        /// ITEM_ENCHANTMENT_STAT from data_enums.hh, an enchantment that adds a stat
-        /// </summary>
-        private const int ItemEnchantmentStatType = 5;
+        // Item enchantment types from data_enums.hh (item_enchantment)
+        private const uint ItemEnchantmentCombatSpell = 1;
+        private const uint ItemEnchantmentEquipSpell = 3;
+        private const uint ItemEnchantmentResistance = 4;
+        private const uint ItemEnchantmentStat = 5;
+        private const uint ItemEnchantmentUseSpell = 7;
 
         /// <summary>
-        /// Player level used to scale gem stats, as the player's level isn't available when creating items
+        /// E_ENCHANT_ITEM from data_enums.hh, the spell effect an enchant's spell uses for its stat value
         /// </summary>
-        private const int GemPlayerLevel = 90;
+        private const uint SpellEffectEnchantItem = 53;
+
+        /// <summary>
+        /// Max player level, used to scale gems and enchants when no player level is provided
+        /// </summary>
+        internal const int DefaultPlayerLevel = 90;
 
         public SimcItemCreationService(ICacheService cacheService,
             ISimcSpellCreationService simcSpellCreationService,
@@ -46,7 +54,7 @@ namespace SimcProfileParser
             _logger = logger;
         }
 
-        async Task<SimcItem> ISimcItemCreationService.CreateItemAsync(SimcParsedItem parsedItemData)
+        async Task<SimcItem> ISimcItemCreationService.CreateItemAsync(SimcParsedItem parsedItemData, int playerLevel)
         {
             var item = await BuildItemAsync(parsedItemData.ItemId);
 
@@ -67,7 +75,9 @@ namespace SimcProfileParser
                 parsedItemData.CraftedStatIds.ToList(),
                 parsedItemData.DropLevel,
                 parsedItemData.ContentTuningId,
-                parsedItemData.RedirectedBaseStatsItemId);
+                parsedItemData.RedirectedBaseStatsItemId,
+                enchantId: parsedItemData.EnchantId,
+                playerLevel: playerLevel);
 
             await UpdateItemEffects(item);
 
@@ -98,7 +108,9 @@ namespace SimcProfileParser
                 itemOptions.DropLevel,
                 itemOptions.ContentTuningId,
                 itemOptions.RedirectedBaseStatsItemId,
-                applyItemLevelSquish: itemOptions.ItemLevel <= 0);
+                applyItemLevelSquish: itemOptions.ItemLevel <= 0,
+                enchantId: itemOptions.EnchantId,
+                playerLevel: itemOptions.PlayerLevel);
 
             await UpdateItemEffects(item);
 
@@ -151,9 +163,12 @@ namespace SimcProfileParser
         /// <param name="contentTuningId">The content_tuning= item option, used for item level scaling</param>
         /// <param name="redirectedBaseStatsItemId">The redirected_base_stats= item option, the item to take base stats from</param>
         /// <param name="applyItemLevelSquish">Apply the Midnight item level squish to items without Midnight item level bonuses</param>
+        /// <param name="enchantId">The enchant_id= item option, the permanent enchant to add</param>
+        /// <param name="playerLevel">Player level to scale gems and enchants to, or 0 for the max player level</param>
         internal async Task UpdateItemAsync(SimcItem item,
             IList<int> bonusIds, IList<int> gemIds, IList<int> craftedStatIds, int dropLevel,
-            int contentTuningId = 0, uint redirectedBaseStatsItemId = 0, bool applyItemLevelSquish = true)
+            int contentTuningId = 0, uint redirectedBaseStatsItemId = 0, bool applyItemLevelSquish = true,
+            int enchantId = 0, int playerLevel = 0)
         {
             var rawItemData = await _simcUtilityService.GetRawItemDataAsync(item.ItemId);
 
@@ -218,7 +233,9 @@ namespace SimcProfileParser
                 }
             }
 
-            await AddGemsAsync(item, gemIds);
+            await AddGemsAsync(item, gemIds, playerLevel);
+
+            await AddEnchantAsync(item, enchantId, playerLevel);
         }
 
         /// <summary>
@@ -271,7 +288,7 @@ namespace SimcProfileParser
             item.Effects.Add(newEffect);
         }
 
-        internal async Task AddGemsAsync(SimcItem item, IList<int> gemIds)
+        internal async Task AddGemsAsync(SimcItem item, IList<int> gemIds, int playerLevel = 0)
         {
             foreach (var gemId in gemIds)
             {
@@ -281,59 +298,148 @@ namespace SimcProfileParser
 
                 var enchantmentProperties = await _simcUtilityService.GetItemEnchantmentAsync(gemProperty.EnchantId);
 
-                // Here we can either veer off and grab enchant details from the spell id
-                // 1) If there is an enchantmentProperties.spellid
-                // 2) otherwise process it with raw item enchantment data
-
-                if (enchantmentProperties.SpellId > 0)
+                // Gems can have more than one stat, e.g. "+$k1 Critical Strike & +$k2 Versatility"
+                foreach (var (stat, value) in await GetEnchantmentStatsAsync(enchantmentProperties, playerLevel))
                 {
-                    throw new NotImplementedException("Enchantments with attached spells not yet implemented.");
-                }
-                else
-                {
-                    // 2) raw item enchantment data
-                    // enchant breakdown from item_database::item_enchantment_effect_stats
-                    // Gems can have more than one stat, e.g. "+$k1 Critical Strike & +$k2 Versatility"
-                    foreach (var subEnchantment in enchantmentProperties.SubEnchantments)
+                    //// Now add it to the item
+                    // Create a new SimcItemGem with the stat, rating etc.
+                    var newGem = new SimcItemGem
                     {
-                        // Only stat enchantments add stats
-                        if (subEnchantment.Type != ItemEnchantmentStatType)
-                            continue;
-
-                        var stat = (ItemModType)subEnchantment.Property;
-
-                        double value;
-                        if (enchantmentProperties.ScalingId == 0)
-                            value = subEnchantment.Amount;
-                        else
-                        {
-                            // Scaled from the spell scaling budget at the player level, capped at the enchantment's
-                            // max scaling level. From dbc_t::spell_scaling
-                            // TODO: Pull the players level through to here
-                            var level = GemPlayerLevel;
-                            if (enchantmentProperties.MaxScalingLevel != 0 && level > enchantmentProperties.MaxScalingLevel)
-                                level = (int)enchantmentProperties.MaxScalingLevel;
-
-                            var scaleIndex = _simcUtilityService.GetClassId((PlayerScaling)enchantmentProperties.ScalingId);
-                            var budget = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, level);
-
-                            value = Math.Round(budget * subEnchantment.Coefficient, MidpointRounding.AwayFromZero);
-                        }
-
-                        if (value == 0)
-                            continue;
-
-                        //// Now add it to the item
-                        // Create a new SimcItemGem with the stat, rating etc.
-                        var newGem = new SimcItemGem
-                        {
-                            StatRating = (int)value,
-                            Type = stat
-                        };
-                        item.Gems.Add(newGem);
-                    }
+                        StatRating = value,
+                        Type = stat
+                    };
+                    item.Gems.Add(newGem);
                 }
             }
+        }
+
+        /// <summary>
+        /// Add the permanent enchant from enchant_id= to the item
+        /// </summary>
+        internal async Task AddEnchantAsync(SimcItem item, int enchantId, int playerLevel = 0)
+        {
+            if (enchantId <= 0)
+                return;
+
+            var enchantment = await _simcUtilityService.GetItemEnchantmentAsync((uint)enchantId);
+
+            if (enchantment == null)
+            {
+                _logger?.LogWarning($"[{item.ItemId}] Item {item.Name} unable to find enchant {enchantId}");
+                return;
+            }
+
+            var enchant = new SimcItemEnchant
+            {
+                EnchantId = enchantment.Id,
+                Name = CleanEnchantmentName(enchantment.Name)
+            };
+
+            foreach (var (stat, value) in await GetEnchantmentStatsAsync(enchantment, playerLevel))
+            {
+                enchant.Stats.Add(new SimcItemEnchantStat
+                {
+                    Type = stat,
+                    StatRating = value
+                });
+            }
+
+            // Enchants that proc, or have an equip or use effect, hold the spell ID in the property
+            foreach (var subEnchantment in enchantment.SubEnchantments)
+            {
+                if ((subEnchantment.Type == ItemEnchantmentCombatSpell
+                    || subEnchantment.Type == ItemEnchantmentEquipSpell
+                    || subEnchantment.Type == ItemEnchantmentUseSpell)
+                    && subEnchantment.Property > 0)
+                {
+                    enchant.SpellIds.Add(subEnchantment.Property);
+                }
+            }
+
+            _logger?.LogDebug($"[{item.ItemId}] Item {item.Name} adding enchant {enchant.EnchantId} {enchant.Name}");
+            item.Enchant = enchant;
+        }
+
+        /// <summary>
+        /// Get the stats an item enchantment (an enchant or a gem's enchantment) adds.
+        /// From item_database::item_enchantment_effect_stats
+        /// </summary>
+        /// <param name="enchantment">The enchantment to get stats for</param>
+        /// <param name="playerLevel">Player level to scale the stats to, or 0 for the max player level</param>
+        internal async Task<List<(ItemModType Stat, int Value)>> GetEnchantmentStatsAsync(SimcRawItemEnchantment enchantment, int playerLevel)
+        {
+            var stats = new List<(ItemModType Stat, int Value)>();
+
+            if (enchantment == null)
+                return stats;
+
+            if (playerLevel <= 0)
+                playerLevel = DefaultPlayerLevel;
+
+            foreach (var subEnchantment in enchantment.SubEnchantments)
+            {
+                // Only stat and resistance (bonus armor) enchantments add stats
+                ItemModType stat;
+                if (subEnchantment.Type == ItemEnchantmentStat)
+                    stat = (ItemModType)subEnchantment.Property;
+                else if (subEnchantment.Type == ItemEnchantmentResistance)
+                    stat = ItemModType.ITEM_MOD_EXTRA_ARMOR;
+                else
+                    continue;
+
+                double value = 0;
+
+                // First try to figure out the stat enchant through the spell that is associated with it (e.g.,
+                // the enchant spell). Use the first Enchant Item effect found in the spell
+                if (enchantment.SpellId > 0)
+                {
+                    var spell = await _simcSpellCreationService.GeneratePlayerSpellAsync((uint)playerLevel, enchantment.SpellId);
+                    var enchantItemEffect = spell.Effects.FirstOrDefault(e => e.EffectType == SpellEffectEnchantItem);
+                    if (enchantItemEffect != null)
+                        value = Math.Round(enchantItemEffect.ScaledValue, MidpointRounding.AwayFromZero);
+                }
+
+                // If we cannot find any value through spell data, revert back to using item enchantment data
+                if (value == 0)
+                {
+                    if (enchantment.ScalingId == 0)
+                        value = subEnchantment.Amount;
+                    else
+                    {
+                        // Scaled from the spell scaling budget at the player level, capped at the enchantment's
+                        // max scaling level. From dbc_t::spell_scaling
+                        var level = playerLevel;
+                        if (enchantment.MaxScalingLevel != 0 && level > enchantment.MaxScalingLevel)
+                            level = (int)enchantment.MaxScalingLevel;
+
+                        var scaleIndex = _simcUtilityService.GetClassId((PlayerScaling)enchantment.ScalingId);
+                        var budget = await _simcUtilityService.GetSpellScalingMultiplierAsync(scaleIndex, level);
+
+                        value = Math.Round(budget * subEnchantment.Coefficient, MidpointRounding.AwayFromZero);
+                    }
+                }
+
+                if (value != 0)
+                    stats.Add((stat, (int)value));
+            }
+
+            return stats;
+        }
+
+        /// <summary>
+        /// Remove the client's formatting codes from an enchantment name, e.g. the crafting quality icon
+        /// "|A:Professions-ChatIcon-Quality-12-Tier2:20:20|a" and colours "|cnIQ4:Name|r"
+        /// </summary>
+        internal static string CleanEnchantmentName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return name;
+
+            name = Regex.Replace(name, @"\|A[^|]*\|a", "");
+            name = Regex.Replace(name, @"\|c[^:|]*:", "");
+            name = name.Replace("|r", "");
+
+            return name.Trim();
         }
 
         /// <summary>

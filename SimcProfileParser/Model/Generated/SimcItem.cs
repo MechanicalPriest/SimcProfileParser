@@ -17,6 +17,10 @@ namespace SimcProfileParser.Model.Generated
         public List<ItemSocketColor> Sockets { get; internal set; }
         public List<SimcItemGem> Gems { get; set; }
         public List<SimcItemEffect> Effects { get; set; }
+        /// <summary>
+        /// The item's permanent enchant from enchant_id=, or null if it has none
+        /// </summary>
+        public SimcItemEnchant Enchant { get; internal set; }
 
         public InventoryType InventoryType { get; internal set; }
         public ItemClass ItemClass { get; internal set; }

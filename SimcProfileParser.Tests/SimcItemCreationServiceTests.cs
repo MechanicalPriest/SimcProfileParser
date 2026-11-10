@@ -733,6 +733,134 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public async Task ICS_Adds_Stat_Enchant()
+        {
+            // Arrange
+            // Martyr's Leggings with Sunfire Silk Spellthread
+            // legs=,id=239651,enchant_id=7935,bonus_id=12214/13667/12497/13751/14001/8960/12384/8795/13836,crafted_stats=49/36
+            // In game: "Enchanted: +41 Intellect & +115 Stamina". The enchant caps at level 80.
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "legs",
+                ItemId = 239651,
+                EnchantId = 7935,
+                BonusIds = new List<int>() { 12214, 13667, 12497, 13751, 14001, 8960, 12384, 8795, 13836 },
+                CraftedStatIds = new List<int>() { 49, 36 },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData, 90);
+
+            // Assert
+            Assert.That(item.Enchant, Is.Not.Null);
+            Assert.That(item.Enchant.EnchantId, Is.EqualTo(7935));
+            Assert.That(item.Enchant.Stats.Select(s => (s.Type, s.StatRating)), Is.EqualTo(new[]
+            {
+                (ItemModType.ITEM_MOD_INTELLECT, 41),
+                (ItemModType.ITEM_MOD_STAMINA, 115)
+            }));
+            Assert.That(item.Enchant.SpellIds, Is.Empty);
+        }
+
+        [Test]
+        [TestCase(7991, "Enchant Helm - Empowered Blessing of Speed", ItemModType.ITEM_MOD_SPEED_RATING, 22)]
+        [TestCase(7973, "Enchant Shoulders - Akil'zon's Swiftness", ItemModType.ITEM_MOD_SPEED_RATING, 65)]
+        [TestCase(8013, "Enchant Chest - Mark of the Magister", ItemModType.ITEM_MOD_INTELLECT, 40)]
+        [TestCase(8019, "Enchant Boots - Farstrider's Hunt", ItemModType.ITEM_MOD_SPEED_RATING, 11)]
+        public async Task ICS_Enchant_Stats(int enchantId, string name, ItemModType stat, int value)
+        {
+            // Arrange
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 271553,
+                EnchantId = enchantId,
+                PlayerLevel = 90
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.That(item.Enchant.Name, Is.EqualTo(name));
+            Assert.That(item.Enchant.Stats.Single(s => s.Type == stat).StatRating, Is.EqualTo(value));
+        }
+
+        [Test]
+        public async Task ICS_Adds_Spell_Enchant()
+        {
+            // Arrange
+            // Enchant Ring - Eyes of the Eagle, which increases critical strike damage and healing through a spell
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 251136,
+                EnchantId = 7967
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.That(item.Enchant.Name, Is.EqualTo("Enchant Ring - Eyes of the Eagle"));
+            Assert.That(item.Enchant.Stats, Is.Empty);
+            Assert.That(item.Enchant.SpellIds, Is.EqualTo(new[] { 1236701u }));
+        }
+
+        [Test]
+        public async Task ICS_Enchant_Scales_With_Player_Level()
+        {
+            // Arrange
+            // Sunfire Silk Spellthread at level 70, below its max scaling level of 80
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 239651,
+                EnchantId = 7935,
+                PlayerLevel = 70
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.That(item.Enchant.Stats.Select(s => (s.Type, s.StatRating)), Is.EqualTo(new[]
+            {
+                (ItemModType.ITEM_MOD_INTELLECT, 37),
+                (ItemModType.ITEM_MOD_STAMINA, 102)
+            }));
+        }
+
+        [Test]
+        public async Task ICS_No_Enchant_Is_Null()
+        {
+            // Arrange
+            var itemOptions = new SimcItemOptions()
+            {
+                ItemId = 239651
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(itemOptions);
+
+            // Assert
+            Assert.That(item.Enchant, Is.Null);
+        }
+
+        [Test]
+        [TestCase("Enchant Helm - Empowered Blessing of Speed |A:Professions-ChatIcon-Quality-12-Tier2:20:20|a", "Enchant Helm - Empowered Blessing of Speed")]
+        [TestCase("|cnIQ4:Ancient Hash'ey Battle Art: Heat Wave|r", "Ancient Hash'ey Battle Art: Heat Wave")]
+        [TestCase("+$k1 Intellect & +$k2 Stamina", "+$k1 Intellect & +$k2 Stamina")]
+        public void ICS_Cleans_Enchant_Names(string name, string expected)
+        {
+            // Arrange
+
+            // Act
+            var result = SimcItemCreationService.CleanEnchantmentName(name);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [Test]
         public async Task ICS_Redirected_Base_Stats_Unknown_Item_Keeps_Own_Stats()
         {
             // Arrange

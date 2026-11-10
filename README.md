@@ -105,7 +105,7 @@ await File.WriteAllTextAsync("profile.json", json);
 
 **Understanding Profile Output:**
 - `ParsedProfile` - Raw parsed character data (name, class, spec, level, etc.)
-- `GeneratedItems` - Fully enriched items with calculated stats, gems, sockets, and effects
+- `GeneratedItems` - Fully enriched items with calculated stats, gems, enchants, sockets, and effects
 - `Talents` - Talent details including spell IDs, names, and ranks
 
 #### Creating a single item
@@ -133,18 +133,23 @@ await File.WriteAllTextAsync("item.json", json);
 Available item options:
 
 ```csharp
-public uint ItemId { get; set; }                // Required: The game item ID
-public int ItemLevel { get; set; }              // Override item level (takes precedence over bonus IDs)
-public IList<int> BonusIds { get; set; }        // Bonus IDs that modify stats, sockets, or item level
-public IList<int> GemIds { get; set; }          // Gem item IDs to socket into the item
-public IList<int> CraftedStatIds { get; set; }  // Stat IDs for player-crafted items
-public ItemQuality Quality { get; set; }        // Override item quality
-public int DropLevel { get; set; }              // Character level when item dropped (affects scaling)
+public uint ItemId { get; set; }                    // Required: The game item ID
+public int ItemLevel { get; set; }                  // Override the base item level (Midnight item level bonuses can still change it)
+public IList<int> BonusIds { get; set; }            // Bonus IDs that modify stats, sockets, or item level
+public IList<int> GemIds { get; set; }              // Gem item IDs to socket into the item
+public IList<int> CraftedStatIds { get; set; }      // Stat IDs for player-crafted items
+public ItemQuality Quality { get; set; }            // Override item quality
+public int DropLevel { get; set; }                  // Character level when item dropped (affects scaling)
+public int ContentTuningId { get; set; }            // content_tuning= from a simc profile (affects scaling)
+public uint RedirectedBaseStatsItemId { get; set; } // redirected_base_stats= from a simc profile, for catalysed items
+public int EnchantId { get; set; }                  // Permanent enchant (enchant_id=)
+public int PlayerLevel { get; set; }                // Player level to scale gems and enchants to (default: max level)
 ```
 
 **Item Generation Details:**
 - **Bonus IDs**: Modify items by adding stats, sockets, changing item level, or quality
 - **Gems**: Add secondary stats when socketed into items with sockets
+- **Enchants**: `SimcItem.Enchant` lists the stats a permanent enchant adds, kept separate from the item's own stats in `Mods`, and the IDs of any spells it applies (procs, equip and use effects)
 - **Drop Level**: Affects item level scaling for items with dynamic scaling curves
 - **Crafted Stats**: Specify which secondary stats player-crafted gear should have
 - **Explicit ItemLevel**: If set, overrides any item level modifications from bonus IDs

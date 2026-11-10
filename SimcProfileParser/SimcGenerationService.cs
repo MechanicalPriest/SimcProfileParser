@@ -174,7 +174,7 @@ namespace SimcProfileParser
             // Now build up the items
             foreach (var item in newProfile.ParsedProfile.Items)
             {
-                var newItem = await _simcItemCreationService.CreateItemAsync(item);
+                var newItem = await _simcItemCreationService.CreateItemAsync(item, newProfile.ParsedProfile.Level);
                 newProfile.GeneratedItems.Add(newItem);
 
                 newItem.Equipped = item.Equipped;

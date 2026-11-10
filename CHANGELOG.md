@@ -3,6 +3,18 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.8.0 - 2026-11-10
+
+### Added
+- **Enchants.** Items now include their permanent enchant (`enchant_id=`) as `SimcItem.Enchant`, with the stats it
+  adds (e.g. "+41 Intellect & +115 Stamina") scaled as simc does, and the IDs of any spells it applies for enchants
+  that proc or have an equip or use effect. `SimcItemOptions.EnchantId` sets the enchant when creating a single item.
+- `SimcItemOptions.PlayerLevel`, the player level to scale gems and enchants to. Profiles use the character's level.
+
+### Fixed
+- **Gems and enchants now scale to the player's level** instead of an assumed level, up to their max scaling level.
+- Gems whose enchantment has a spell no longer throw an exception; their value comes from the spell, as in simc.
+
 ## 4.7.0 - 2026-11-10
 
 ### Added

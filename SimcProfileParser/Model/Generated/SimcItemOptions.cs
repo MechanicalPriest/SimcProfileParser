@@ -21,6 +21,14 @@ namespace SimcProfileParser.Model.Generated
         /// base stats of the item they were converted from, which is the item ID given here.
         /// </summary>
         public uint RedirectedBaseStatsItemId { get; set; }
+        /// <summary>
+        /// The enchant_id= item option from a simc profile, the item's permanent enchant
+        /// </summary>
+        public int EnchantId { get; set; }
+        /// <summary>
+        /// Player level to scale gems and enchants to. Defaults to the max player level if not set
+        /// </summary>
+        public int PlayerLevel { get; set; }
 
         public SimcItemOptions()
         {

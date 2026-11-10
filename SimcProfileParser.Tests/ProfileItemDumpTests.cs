@@ -87,12 +87,23 @@ namespace SimcProfileParser.Tests
                     totals[gem.Type] = totals.GetValueOrDefault(gem.Type) + gem.StatRating;
                 }
 
+                if (item.Enchant != null)
+                {
+                    output.AppendLine($"    enchant {item.Enchant.EnchantId} {item.Enchant.Name}"
+                        + (item.Enchant.SpellIds.Count > 0 ? $" (spells {string.Join("/", item.Enchant.SpellIds)})" : ""));
+                    foreach (var stat in item.Enchant.Stats)
+                    {
+                        output.AppendLine($"    enchant {stat.Type,-24} {stat.StatRating,7}");
+                        totals[stat.Type] = totals.GetValueOrDefault(stat.Type) + stat.StatRating;
+                    }
+                }
+
                 foreach (var effect in item.Effects)
                     output.AppendLine($"    effect {effect.EffectId} spell {effect.Spell?.SpellId} {effect.Spell?.Name}");
             }
 
             output.AppendLine();
-            output.AppendLine("Totals from item mods and gems (no enchants, base stats or effects):");
+            output.AppendLine("Totals from item mods, gems and enchants (no base stats or effects):");
             foreach (var (type, value) in totals)
                 output.AppendLine($"    {type,-32} {value,7}");
 
