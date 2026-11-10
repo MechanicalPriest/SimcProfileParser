@@ -443,7 +443,7 @@ namespace SimcProfileParser
 
         /// <summary>
         /// Gets or sets the GitHub branch name to use when fetching game data files from SimulationCraft's repository.
-        /// Defaults to <c>"thewarwithin"</c>.
+        /// Defaults to <c>"midnight"</c>.
         /// </summary>
         /// <value>
         /// The branch name as a string (e.g., "midnight", "thewarwithin", "dragonflight").

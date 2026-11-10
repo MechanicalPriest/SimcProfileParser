@@ -3,6 +3,12 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.8.1 - 2026-11-10
+
+### Fixed
+- The XML docs for `SimcGenerationService.UseBranchName` gave the default branch as `"thewarwithin"`; it is
+  `"midnight"`.
+
 ## 4.8.0 - 2026-11-10
 
 ### Added
