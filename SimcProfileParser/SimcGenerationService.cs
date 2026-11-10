@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using SimcProfileParser.DataSync;
 using SimcProfileParser.Interfaces;
 using SimcProfileParser.Interfaces.DataSync;
+using SimcProfileParser.Model.DataSync;
 using SimcProfileParser.Model.Generated;
 using SimcProfileParser.Model.Profile;
 using System;
@@ -414,6 +415,109 @@ namespace SimcProfileParser
         {
             return await _simcTalentService.GetAvailableTalentsAsync(classId, specId);
         }
+
+        /// <inheritdoc/>
+        public async Task<SimcBaseStats> GetClassBaseStatsAsync(int classId, int level)
+        {
+            var classStats = await _cacheService.GetParsedFileContentsAsync<int[][][]>(SimcParsedFileType.ClassBaseStats);
+
+            if (classId < 0 || classId >= classStats.Length || level < 1 || level > classStats[classId].Length)
+                return null;
+
+            var stats = classStats[classId][level - 1];
+
+            // simc hasn't filled in every level, e.g. levels above the current max level are all 0
+            if (stats.All(s => s == 0))
+                return null;
+
+            return ToBaseStats(stats);
+        }
+
+        /// <inheritdoc/>
+        public async Task<SimcBaseStats> GetRaceBaseStatsAsync(int raceId)
+        {
+            // Indexed by simc's race ID (util::race_id), the same ID SimcParsedProfile.RaceId uses
+            var raceStats = await _cacheService.GetParsedFileContentsAsync<int[][]>(SimcParsedFileType.RaceBaseStats);
+
+            if (raceId < 0 || raceId >= raceStats.Length)
+                return null;
+
+            return ToBaseStats(raceStats[raceId]);
+        }
+
+        /// <inheritdoc/>
+        public async Task<double?> GetBaseManaAsync(int classId, int level)
+        {
+            var baseMana = await _cacheService.GetParsedFileContentsAsync<double[][]>(SimcParsedFileType.BaseMana);
+
+            if (classId < 0 || classId >= baseMana.Length || level < 1 || level > baseMana[classId].Length)
+                return null;
+
+            return baseMana[classId][level - 1];
+        }
+
+        /// <inheritdoc/>
+        public async Task<SimcCombatRatings> GetCombatRatingsAsync(int level)
+        {
+            var ratings = await _cacheService.GetParsedFileContentsAsync<double[][]>(SimcParsedFileType.CombatRatings);
+
+            // Ratings are in simc's rating_e order (RATING_DODGE = 0 ...)
+            if (ratings.Length <= (int)CombatRating.Avoidance || level < 1 || level > ratings[0].Length)
+                return null;
+
+            double Rating(CombatRating rating) => ratings[(int)rating][level - 1];
+
+            return new SimcCombatRatings()
+            {
+                Dodge = Rating(CombatRating.Dodge),
+                Parry = Rating(CombatRating.Parry),
+                Block = Rating(CombatRating.Block),
+                CritMelee = Rating(CombatRating.CritMelee),
+                CritRanged = Rating(CombatRating.CritRanged),
+                CritSpell = Rating(CombatRating.CritSpell),
+                Leech = Rating(CombatRating.Leech),
+                HasteMelee = Rating(CombatRating.HasteMelee),
+                HasteRanged = Rating(CombatRating.HasteRanged),
+                HasteSpell = Rating(CombatRating.HasteSpell),
+                Mastery = Rating(CombatRating.Mastery),
+                VersatilityDamageDone = Rating(CombatRating.VersatilityDamageDone),
+                VersatilityHealingDone = Rating(CombatRating.VersatilityHealingDone),
+                VersatilityDamageTaken = Rating(CombatRating.VersatilityDamageTaken),
+                Speed = Rating(CombatRating.Speed),
+                Avoidance = Rating(CombatRating.Avoidance),
+            };
+        }
+
+        /// <summary>
+        /// Index of each combat rating in simc's __combat_ratings table. From rating_e in sc_enums.hpp
+        /// </summary>
+        private enum CombatRating
+        {
+            Dodge = 0,
+            Parry = 1,
+            Block = 2,
+            CritMelee = 6,
+            CritRanged = 7,
+            CritSpell = 8,
+            Leech = 10,
+            HasteMelee = 11,
+            HasteRanged = 12,
+            HasteSpell = 13,
+            Mastery = 15,
+            VersatilityDamageDone = 17,
+            VersatilityHealingDone = 18,
+            VersatilityDamageTaken = 19,
+            Speed = 20,
+            Avoidance = 21,
+        }
+
+        private static SimcBaseStats ToBaseStats(int[] stats) => new SimcBaseStats()
+        {
+            Strength = stats[0],
+            Agility = stats[1],
+            Stamina = stats[2],
+            Intellect = stats[3]
+        };
 
         /// <summary>
         /// Gets or sets whether to use PTR (Public Test Realm) data files instead of live game data.

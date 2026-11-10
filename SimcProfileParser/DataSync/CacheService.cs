@@ -231,6 +231,47 @@ namespace SimcProfileParser.DataSync
                     { "ContentTuning.raw", "content_tuning" }
                 }
             });
+
+            RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "ClassBaseStats.json",
+                ParsedFileType = SimcParsedFileType.ClassBaseStats,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    // sc_extra_data.inc isn't generated, so lives in engine/dbc/ rather than engine/dbc/generated/
+                    { "ExtraData.raw", "dbc/sc_extra_data" }
+                }
+            });
+
+            RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "RaceBaseStats.json",
+                ParsedFileType = SimcParsedFileType.RaceBaseStats,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ExtraData.raw", "dbc/sc_extra_data" }
+                }
+            });
+
+            RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "BaseMana.json",
+                ParsedFileType = SimcParsedFileType.BaseMana,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ScaleData.raw", "sc_scale_data" }
+                }
+            });
+
+            RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "CombatRatings.json",
+                ParsedFileType = SimcParsedFileType.CombatRatings,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ScaleData.raw", "sc_scale_data" }
+                }
+            });
         }
 
         /// <summary>

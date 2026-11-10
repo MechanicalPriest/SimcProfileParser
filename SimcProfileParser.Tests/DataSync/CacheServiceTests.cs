@@ -253,7 +253,11 @@ namespace SimcProfileParser.Tests.DataSync
                 SimcParsedFileType.TraitData,
                 SimcParsedFileType.ItemScalingConfigData,
                 SimcParsedFileType.ItemOffsetCurveData,
-                SimcParsedFileType.ContentTuningData
+                SimcParsedFileType.ContentTuningData,
+                SimcParsedFileType.ClassBaseStats,
+                SimcParsedFileType.RaceBaseStats,
+                SimcParsedFileType.BaseMana,
+                SimcParsedFileType.CombatRatings
             };
 
             foreach (var expectedType in expectedTypes)

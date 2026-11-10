@@ -46,6 +46,10 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.ItemScalingConfigData => GenerateItemScalingConfigData(incomingRawData),
                 SimcParsedFileType.ItemOffsetCurveData => GenerateItemOffsetCurveData(incomingRawData),
                 SimcParsedFileType.ContentTuningData => GenerateContentTuningData(incomingRawData),
+                SimcParsedFileType.ClassBaseStats => GenerateClassBaseStats(incomingRawData),
+                SimcParsedFileType.RaceBaseStats => GenerateRaceBaseStats(incomingRawData),
+                SimcParsedFileType.BaseMana => GenerateBaseMana(incomingRawData),
+                SimcParsedFileType.CombatRatings => GenerateCombatRatings(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -1279,6 +1283,97 @@ namespace SimcProfileParser.DataSync
             }
 
             return traitEntries;
+        }
+
+        /// <summary>
+        /// Class base attributes by level: [class][level - 1] = { Str, Agi, Sta, Int }.
+        /// From __gt_class_stats_by_level in sc_extra_data.inc
+        /// </summary>
+        internal int[][][] GenerateClassBaseStats(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ExtraData.raw").FirstOrDefault().Value;
+
+            // __ptr_gt_class_stats_by_level on PTR
+            const string key = "_gt_class_stats_by_level";
+            var rows = GetTableRows(rawData, key);
+
+            // Each class has a row per level, e.g. "__gt_class_stats_by_level[][120]"
+            var levels = int.Parse(Regex.Match(rawData[rawData.IndexOf(key, StringComparison.Ordinal)..], @"\[\]\[(\d+)\]").Groups[1].Value);
+
+            // Each row is Str, Agi, Sta, Int, Spi. Spirit is no longer used.
+            return rows
+                .Select(r => r.Take(4).Select(v => (int)v).ToArray())
+                .Chunk(levels)
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Race attribute modifiers: [race] = { Str, Agi, Sta, Int }, indexed by simc's race id (util::race_id).
+        /// From __gt_race_stats in sc_extra_data.inc
+        /// </summary>
+        internal int[][] GenerateRaceBaseStats(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ExtraData.raw").FirstOrDefault().Value;
+
+            // __ptr_gt_race_stats on PTR. Each row is Str, Agi, Sta, Int, Spi. Spirit is no longer used.
+            return GetTableRows(rawData, "_gt_race_stats")
+                .Select(r => r.Take(4).Select(v => (int)v).ToArray())
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Base mana by class and level: [class][level - 1].
+        /// From __base_mp in sc_scale_data.inc
+        /// </summary>
+        internal double[][] GenerateBaseMana(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
+
+            // _ptr__base_mp on PTR
+            return GetTableRows(rawData, "__base_mp").ToArray();
+        }
+
+        /// <summary>
+        /// Combat rating needed for 1% by rating and level: [rating][level - 1], in simc's rating_e order.
+        /// From __combat_ratings in sc_scale_data.inc
+        /// </summary>
+        internal double[][] GenerateCombatRatings(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ScaleData.raw").FirstOrDefault().Value;
+
+            // _ptr__combat_ratings on PTR. Include the [ so this doesn't match __combat_ratings_mult_by_ilvl
+            return GetTableRows(rawData, "__combat_ratings[").ToArray();
+        }
+
+        /// <summary>
+        /// Get the rows of a generated C++ table, e.g. "static constexpr double __base_mp[][90] = { { 0, 0, ... }, ... };".
+        /// Each innermost { } is a row. Returns nothing if the table isn't present.
+        /// </summary>
+        private static List<double[]> GetTableRows(string rawData, string key)
+        {
+            var rows = new List<double[]>();
+
+            var keyIndex = rawData.IndexOf(key, StringComparison.Ordinal);
+            if (keyIndex < 0)
+                return rows;
+
+            var start = rawData.IndexOf('{', keyIndex);
+            var end = rawData.IndexOf("};", start, StringComparison.Ordinal);
+            if (end < 0)
+                end = rawData.Length;
+
+            // Comments label rows, e.g. "// Priest" or "//   15", so remove them first
+            var body = Regex.Replace(rawData[start..end], @"//[^\n]*", "");
+
+            foreach (Match row in Regex.Matches(body, @"\{([^{}]*)\}"))
+            {
+                rows.Add(row.Groups[1].Value
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(v => double.Parse(v, System.Globalization.CultureInfo.InvariantCulture))
+                    .ToArray());
+            }
+
+            return rows;
         }
 
         // Matches a line of a simc data array made up only of integers, e.g. "  {   1, 12, 70, 70, 0 },"

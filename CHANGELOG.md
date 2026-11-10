@@ -3,6 +3,22 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.10.0 - 2026-11-10
+
+### Added
+- **Base character stats.** New `ISimcGenerationService` methods return the base values simc builds a character's
+  stats from:
+  - `GetClassBaseStatsAsync(classId, level)`: a class's base Strength, Agility, Stamina and Intellect at a level.
+    Null for levels simc has no data for.
+  - `GetRaceBaseStatsAsync(raceId)`: a race's attribute modifiers, by the same race ID `SimcParsedProfile.RaceId`
+    returns.
+  - `GetBaseManaAsync(classId, level)`: a class's base mana at a level.
+  - `GetCombatRatingsAsync(level)`: the rating needed for 1% of each stat at a level, before class or
+    specialization multipliers.
+
+  These use the same branch and PTR settings as other data. Class and race stats come from simc's
+  `engine/dbc/sc_extra_data.inc`, a new file the library downloads.
+
 ## 4.9.0 - 2026-11-10
 
 ### Added

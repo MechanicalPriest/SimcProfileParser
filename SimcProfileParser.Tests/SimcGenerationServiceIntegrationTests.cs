@@ -74,6 +74,103 @@ namespace SimcProfileParser.Tests
         }
 
         [Test]
+        public async Task SGS_Gets_Class_Base_Stats()
+        {
+            // Arrange
+            // Priest (5) at level 90
+
+            // Act
+            var stats = await _sgs.GetClassBaseStatsAsync(5, 90);
+
+            // Assert
+            Assert.That(stats, Is.Not.Null);
+            Assert.That((stats.Strength, stats.Agility, stats.Stamina, stats.Intellect), Is.EqualTo((360, 515, 4600, 620)));
+        }
+
+        [Test]
+        [TestCase(5, 91, TestName = "SGS_Class_Base_Stats_Unfilled_Level_Is_Null")]
+        [TestCase(5, 0, TestName = "SGS_Class_Base_Stats_Level_Zero_Is_Null")]
+        [TestCase(99, 90, TestName = "SGS_Class_Base_Stats_Unknown_Class_Is_Null")]
+        public async Task SGS_Class_Base_Stats_Without_Data_Is_Null(int classId, int level)
+        {
+            // Arrange
+
+            // Act
+            var stats = await _sgs.GetClassBaseStatsAsync(classId, level);
+
+            // Assert
+            Assert.That(stats, Is.Null);
+        }
+
+        [Test]
+        [TestCase(7, -3, 1, -1, 3, TestName = "SGS_Race_Base_Stats_Gnome")]
+        [TestCase(1, 0, 0, 0, 0, TestName = "SGS_Race_Base_Stats_Human")]
+        [TestCase(16, 0, 0, 0, 0, TestName = "SGS_Race_Base_Stats_Dracthyr_Horde")]
+        [TestCase(17, 0, 0, 0, 0, TestName = "SGS_Race_Base_Stats_Dracthyr_Alliance")]
+        [TestCase(12, 2, -2, 1, -1, TestName = "SGS_Race_Base_Stats_Dark_Iron_Dwarf")]
+        [TestCase(0, 0, 0, 0, 0, TestName = "SGS_Race_Base_Stats_No_Race")]
+        public async Task SGS_Gets_Race_Base_Stats(int raceId, int strength, int agility, int stamina, int intellect)
+        {
+            // Arrange
+            // Race IDs are simc's, the same as SimcParsedProfile.RaceId
+
+            // Act
+            var stats = await _sgs.GetRaceBaseStatsAsync(raceId);
+
+            // Assert
+            Assert.That(stats, Is.Not.Null);
+            Assert.That((stats.Strength, stats.Agility, stats.Stamina, stats.Intellect), Is.EqualTo((strength, agility, stamina, intellect)));
+        }
+
+        [Test]
+        public async Task SGS_Race_Base_Stats_Unknown_Race_Is_Null()
+        {
+            // Arrange
+
+            // Act
+            var stats = await _sgs.GetRaceBaseStatsAsync(999);
+
+            // Assert
+            Assert.That(stats, Is.Null);
+        }
+
+        [Test]
+        public async Task SGS_Gets_Base_Mana()
+        {
+            // Arrange
+            // Priest (5) at level 90
+
+            // Act
+            var mana = await _sgs.GetBaseManaAsync(5, 90);
+            var unknownLevel = await _sgs.GetBaseManaAsync(5, 200);
+
+            // Assert
+            Assert.That(mana, Is.EqualTo(250000));
+            Assert.That(unknownLevel, Is.Null);
+        }
+
+        [Test]
+        public async Task SGS_Gets_Combat_Ratings()
+        {
+            // Arrange
+
+            // Act
+            var ratings = await _sgs.GetCombatRatingsAsync(90);
+            var unknownLevel = await _sgs.GetCombatRatingsAsync(200);
+
+            // Assert
+            Assert.That(ratings, Is.Not.Null);
+            Assert.That(ratings.CritSpell, Is.EqualTo(46));
+            Assert.That(ratings.HasteSpell, Is.EqualTo(44));
+            Assert.That(ratings.Mastery, Is.EqualTo(46));
+            Assert.That(ratings.VersatilityHealingDone, Is.EqualTo(54));
+            Assert.That(ratings.Leech, Is.EqualTo(69).Within(0.01));
+            Assert.That(ratings.Speed, Is.EqualTo(11.5).Within(0.01));
+            Assert.That(ratings.Avoidance, Is.EqualTo(36.8).Within(0.01));
+            Assert.That(unknownLevel, Is.Null);
+        }
+
+        [Test]
         public async Task SGS_Creates_Item()
         {
             // Arrange

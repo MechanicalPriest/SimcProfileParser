@@ -255,6 +255,34 @@ var talents = await sgs.GetAvailableTalentsAsync(classId: 5, specId: 257);
 Console.WriteLine($"Found {talents.Count} talents for Holy Priest");
 ```
 
+#### Base character stats
+
+Base attributes, racial modifiers, base mana and combat rating conversions come from simc's data, using the same
+branch and PTR settings as everything else.
+
+```csharp
+ISimcGenerationService sgs = new SimcGenerationService();
+
+// Class base attributes at a level, before racial modifiers. Priest (5) at level 90: 360 / 515 / 4600 / 620
+var classStats = await sgs.GetClassBaseStatsAsync(classId: 5, level: 90);
+
+// Racial modifiers, by the same race ID SimcParsedProfile.RaceId returns. Gnome (7): -3 / +1 / -1 / +3
+var raceStats = await sgs.GetRaceBaseStatsAsync(raceId: 7);
+
+// Base mana. Priest at level 90: 250,000
+var baseMana = await sgs.GetBaseManaAsync(classId: 5, level: 90);
+
+// Rating needed for 1% at a level, e.g. 46 crit rating per 1% crit at level 90
+var ratings = await sgs.GetCombatRatingsAsync(level: 90);
+
+Console.WriteLine($"Intellect: {classStats.Intellect + raceStats.Intellect}, crit rating per 1%: {ratings.CritSpell}");
+```
+
+- `GetClassBaseStatsAsync` returns null for levels simc has no data for, e.g. above the current max level.
+- `GetRaceBaseStatsAsync` uses simc's race IDs (`util::race_id`), which match `SimcParsedProfile.RaceId` but differ
+  from the game's race IDs for some races, e.g. Dark Iron Dwarf is 12 rather than 34.
+- Combat ratings are before any class or specialization multiplier, such as a specialization's mastery coefficient.
+
 ## Configuration
 
 ### Switching Game Data Versions
@@ -297,6 +325,7 @@ Cache location: `Path.GetTempPath() + "SimcProfileParserData"`
 - **Spell data**: Effects, scaling, cooldowns, durations, proc rates (RPPM)
 - **Talent data**: Talent trees, spell IDs, ranks, requirements
 - **Scaling data**: Combat rating multipliers, stamina multipliers, spell scaling by level
+- **Character data**: Class base attributes, racial modifiers, base mana and combat ratings by level
 
 ### Limitations
 - Some newer bonus ID types may not be fully implemented

@@ -6,9 +6,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Not every public member has XML docs yet; do not warn about missing ones -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <Version>4.9.0</Version>
-	<AssemblyVersion>4.9.0</AssemblyVersion>
-	<FileVersion>4.9.0</FileVersion>
+    <Version>4.10.0</Version>
+	<AssemblyVersion>4.10.0</AssemblyVersion>
+	<FileVersion>4.10.0</FileVersion>
 	<Authors>Mechanical Priest</Authors>
 	<Company>Mechanical Priest</Company>
 	<PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
@@ -24,7 +24,7 @@
 	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageIcon>packageIcon.png</PackageIcon>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
-	<PackageReleaseNotes>4.9.0: Added SimcItem.Slot; fixed RaceId for Dracthyr, Earthen and Haranir. 4.8.1: Fixed the documented default branch name (midnight). 4.8.0: Item enchants (SimcItem.Enchant, SimcItemOptions.EnchantId); gems and enchants scale to the player level (SimcItemOptions.PlayerLevel). 4.7.0: Catalysed items use their redirected_base_stats item's base stats (RedirectedBaseStatsItemId); fixed stamina on Midnight items, gems with two stats and crafted item stats. 4.6.0: Fixed item levels for Midnight items (item scaling config, crafting quality and squish bonuses) and squished item levels for older items; added ContentTuningId. 4.5.0: Spell effect ChainTargets and ChainMultiplier; documented Delta. 4.4.0: Player spell effect ScaledValue and PointsPerLevel; fixed scale budget for scaling classes -9/-10 and spells with a max scaling level. 4.3.0: Talent rank values (SimcSpellEffect.RankOperation/RankValues); fixed talent data not being parsed and a stack overflow generating player spells with looping trigger spells. 4.2.0: Label-based spell relationships, plus SimcSpell.Labels and SimcSpellEffect.MiscValue1/MiscValue2. AffectedBySpellIds/AffectedSpellIds may now contain more spells. 4.1.1: GetAvailableTalentsAsync added to ISimcGenerationService, XML documentation included, README fixes. 4.1.0: Spell relationships (SimcSpell.AffectedBySpellIds, SimcSpellEffect.AffectedSpellIds). 4.0.0 (breaking): requires .NET 10 (net9.0 dropped) and Microsoft.Extensions.*.Abstractions 10.x. No public API was removed. Full notes: https://github.com/MechanicalPriest/SimcProfileParser/blob/master/CHANGELOG.md</PackageReleaseNotes>
+	<PackageReleaseNotes>4.10.0: Base character stats (GetClassBaseStatsAsync, GetRaceBaseStatsAsync, GetBaseManaAsync, GetCombatRatingsAsync). 4.9.0: Added SimcItem.Slot; fixed RaceId for Dracthyr, Earthen and Haranir. 4.8.1: Fixed the documented default branch name (midnight). 4.8.0: Item enchants (SimcItem.Enchant, SimcItemOptions.EnchantId); gems and enchants scale to the player level (SimcItemOptions.PlayerLevel). 4.7.0: Catalysed items use their redirected_base_stats item's base stats (RedirectedBaseStatsItemId); fixed stamina on Midnight items, gems with two stats and crafted item stats. 4.6.0: Fixed item levels for Midnight items (item scaling config, crafting quality and squish bonuses) and squished item levels for older items; added ContentTuningId. 4.5.0: Spell effect ChainTargets and ChainMultiplier; documented Delta. 4.4.0: Player spell effect ScaledValue and PointsPerLevel; fixed scale budget for scaling classes -9/-10 and spells with a max scaling level. 4.3.0: Talent rank values (SimcSpellEffect.RankOperation/RankValues); fixed talent data not being parsed and a stack overflow generating player spells with looping trigger spells. 4.2.0: Label-based spell relationships, plus SimcSpell.Labels and SimcSpellEffect.MiscValue1/MiscValue2. AffectedBySpellIds/AffectedSpellIds may now contain more spells. 4.1.1: GetAvailableTalentsAsync added to ISimcGenerationService, XML documentation included, README fixes. 4.1.0: Spell relationships (SimcSpell.AffectedBySpellIds, SimcSpellEffect.AffectedSpellIds). 4.0.0 (breaking): requires .NET 10 (net9.0 dropped) and Microsoft.Extensions.*.Abstractions 10.x. No public API was removed. Full notes: https://github.com/MechanicalPriest/SimcProfileParser/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

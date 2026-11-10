@@ -270,6 +270,25 @@ namespace SimcProfileParser.Tests.DataSync
                 "URL with PTR should contain _ptr suffix");
         }
 
+        [Test]
+        public void RFS_URL_Generation_Supports_Non_Generated_Files()
+        {
+            // Arrange
+            var rawFileService = new RawFileService(_loggerFactory.CreateLogger<RawFileService>());
+            rawFileService.SetUseBranchName("midnight");
+
+            // Act
+            var generatedUrl = rawFileService._getUrl("sc_scale_data");
+            var extraDataUrl = rawFileService._getUrl("dbc/sc_extra_data");
+            rawFileService.SetUsePtrData(true);
+            var extraDataPtrUrl = rawFileService._getUrl("dbc/sc_extra_data");
+
+            // Assert
+            Assert.That(generatedUrl, Is.EqualTo("https://raw.githubusercontent.com/simulationcraft/simc/midnight/engine/dbc/generated/sc_scale_data.inc"));
+            Assert.That(extraDataUrl, Is.EqualTo("https://raw.githubusercontent.com/simulationcraft/simc/midnight/engine/dbc/sc_extra_data.inc"));
+            Assert.That(extraDataPtrUrl, Is.EqualTo("https://raw.githubusercontent.com/simulationcraft/simc/midnight/engine/dbc/sc_extra_data_ptr.inc"));
+        }
+
         #endregion
 
         #region ETag Caching Tests

@@ -19,6 +19,10 @@
         TraitData,
         ItemScalingConfigData,
         ItemOffsetCurveData,
-        ContentTuningData
+        ContentTuningData,
+        ClassBaseStats,
+        RaceBaseStats,
+        BaseMana,
+        CombatRatings
     }
 }

@@ -478,6 +478,106 @@ namespace SimcProfileParser.Tests.DataSync
         }
 
         [Test]
+        public void RDE_Generates_ClassBaseStats()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ExtraData.raw", "static constexpr stat_data_t __gt_class_stats_by_level[][2] =\r\n"
+                    + "{\r\n"
+                    + "  { // No Class\r\n"
+                    + "    //    Str     Agi     Sta     Int     Spi\r\n"
+                    + "    {      0,      0,      0,      0,      0 },\r\n"
+                    + "    {      0,      0,      0,      0,      0 }, // 2\r\n"
+                    + "  },\r\n"
+                    + "  { // Warrior\r\n"
+                    + "    {     10,     15,    292,     20,      0 },\r\n"
+                    + "    {    360,    515,   4600,    620,      0 }, // 2\r\n"
+                    + "  },\r\n"
+                    + "};" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateClassBaseStats(incomingRawData);
+
+            // Assert
+            Assert.That(result, Has.Length.EqualTo(2), "Classes");
+            Assert.That(result[1], Has.Length.EqualTo(2), "Levels");
+            Assert.That(result[1][0], Is.EqualTo(new[] { 10, 15, 292, 20 }));
+            Assert.That(result[1][1], Is.EqualTo(new[] { 360, 515, 4600, 620 }));
+        }
+
+        [Test]
+        public void RDE_Generates_RaceBaseStats()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ExtraData.raw", "static constexpr stat_data_t __ptr_gt_race_stats[] =\r\n"
+                    + "{\r\n"
+                    + "  // Str Agi Sta Int Spi\r\n"
+                    + "  {   0,  0,  0,  0,  0 }, // No Race\r\n"
+                    + "  {  -3,  1, -1,  3,  0 }, // Gnome\r\n"
+                    + "};" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateRaceBaseStats(incomingRawData);
+
+            // Assert
+            Assert.That(result, Has.Length.EqualTo(2));
+            Assert.That(result[1], Is.EqualTo(new[] { -3, 1, -1, 3 }));
+        }
+
+        [Test]
+        public void RDE_Generates_BaseMana_And_CombatRatings()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ScaleData.raw", "static constexpr double __base_mp[][2] = {\r\n"
+                    + "  {\r\n"
+                    + "    0,\t0,\t//    2\r\n"
+                    + "  },\r\n"
+                    + "  // Warrior\r\n"
+                    + "  {\r\n"
+                    + "    50000,\t250000,\t//    2\r\n"
+                    + "  },\r\n"
+                    + "};\r\n"
+                    + "static constexpr double __combat_ratings[][2] = {\r\n"
+                    + "  // Dodge\r\n"
+                    + "  {\r\n"
+                    + "    3.455208736,\t52,\t//    2\r\n"
+                    + "  },\r\n"
+                    + "};\r\n"
+                    + "static constexpr double __combat_ratings_mult_by_ilvl[][2] = {\r\n"
+                    + "  {\r\n"
+                    + "    1,\t1,\t//    2\r\n"
+                    + "  },\r\n"
+                    + "};" }
+            };
+
+            // Act
+            var baseMana = rawDataExtractionService.GenerateBaseMana(incomingRawData);
+            var combatRatings = rawDataExtractionService.GenerateCombatRatings(incomingRawData);
+
+            // Assert
+            Assert.That(baseMana, Has.Length.EqualTo(2));
+            Assert.That(baseMana[1], Is.EqualTo(new[] { 50000d, 250000d }));
+            Assert.That(combatRatings, Has.Length.EqualTo(1));
+            Assert.That(combatRatings[0], Is.EqualTo(new[] { 3.455208736, 52d }));
+        }
+
+        [Test]
         public void RDE_Generates_RppmData()
         {
             // Arrange

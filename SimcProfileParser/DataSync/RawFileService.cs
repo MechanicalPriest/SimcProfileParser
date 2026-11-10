@@ -25,9 +25,10 @@ namespace SimcProfileParser.DataSync
         private readonly string rawDataFileExtension = "raw";
         private bool usePtrData = false;
         private string useBranchName = "midnight";
+        // File names are relative to engine/dbc/generated/, or to engine/ if they include a path, e.g. "dbc/sc_extra_data"
         internal string _getUrl(string fileName) => "https://raw.githubusercontent.com/simulationcraft/simc/"
-                + useBranchName + "/engine/dbc/generated/"
-                + fileName
+                + useBranchName + "/engine/"
+                + (fileName.Contains('/') ? fileName : "dbc/generated/" + fileName)
                 + (usePtrData ? "_ptr" : "")
                 + ".inc";
 
