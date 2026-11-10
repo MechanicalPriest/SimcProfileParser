@@ -199,6 +199,36 @@ namespace SimcProfileParser.DataSync
                     { "TraitData.raw", "trait_data" }
                 }
             });
+
+            RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "ItemScalingConfigData.json",
+                ParsedFileType = SimcParsedFileType.ItemScalingConfigData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "CurveData.raw", "item_scaling" }
+                }
+            });
+
+            RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "ItemOffsetCurveData.json",
+                ParsedFileType = SimcParsedFileType.ItemOffsetCurveData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "CurveData.raw", "item_scaling" }
+                }
+            });
+
+            RegisterFileConfiguration(new CacheFileConfiguration()
+            {
+                LocalParsedFile = "ContentTuningData.json",
+                ParsedFileType = SimcParsedFileType.ContentTuningData,
+                RawFiles = new Dictionary<string, string>()
+                {
+                    { "ContentTuning.raw", "content_tuning" }
+                }
+            });
         }
 
         /// <summary>

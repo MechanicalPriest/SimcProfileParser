@@ -374,6 +374,86 @@ namespace SimcProfileParser.Tests.DataSync
         }
 
         [Test]
+        public void RDE_Generates_ItemScalingConfigData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "CurveData.raw", "static constexpr std::array<item_scaling_config_data_t, 1> __item_scaling_config_data { {\r\n"
+                    + "  { 323, 47, 334, 90, 2 },\r\n"
+                    + "} };" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateItemScalingConfigData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.That(result, Has.Count.EqualTo(1));
+            Assert.That(firstResult.Id, Is.EqualTo(323), "Id");
+            Assert.That(firstResult.ItemOffsetCurveId, Is.EqualTo(47), "Item Offset Curve Id");
+            Assert.That(firstResult.ItemLevel, Is.EqualTo(334), "Item Level");
+            Assert.That(firstResult.PlayerLevel, Is.EqualTo(90), "Player Level");
+            Assert.That(firstResult.SquishEraId, Is.EqualTo(2), "Squish Era Id");
+        }
+
+        [Test]
+        public void RDE_Generates_ItemOffsetCurveData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "CurveData.raw", "static constexpr std::array<item_offset_curve_data_t, 1> __item_offset_curve_data { {\r\n"
+                    + "  {  2, 6243, -6 },\r\n"
+                    + "} };" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateItemOffsetCurveData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.That(result, Has.Count.EqualTo(1));
+            Assert.That(firstResult.Id, Is.EqualTo(2), "Id");
+            Assert.That(firstResult.CurveId, Is.EqualTo(6243), "Curve Id");
+            Assert.That(firstResult.Offset, Is.EqualTo(-6), "Offset");
+        }
+
+        [Test]
+        public void RDE_Generates_ContentTuningData()
+        {
+            // Arrange
+            RawDataExtractionService rawDataExtractionService =
+                new RawDataExtractionService(null);
+
+            var incomingRawData = new Dictionary<string, string>()
+            {
+                { "ContentTuning.raw", "static constexpr std::array<content_tuning_data_t, 1> __content_tuning_data { {\r\n"
+                    + "  {    1, 0, -3, 1, 30, 0 },\r\n"
+                    + "} };" }
+            };
+
+            // Act
+            var result = rawDataExtractionService.GenerateContentTuningData(incomingRawData);
+            var firstResult = result.FirstOrDefault();
+
+            // Assert
+            Assert.That(result, Has.Count.EqualTo(1));
+            Assert.That(firstResult.Id, Is.EqualTo(1), "Id");
+            Assert.That(firstResult.Flags, Is.EqualTo(0), "Flags");
+            Assert.That(firstResult.ExpansionId, Is.EqualTo(-3), "Expansion Id");
+            Assert.That(firstResult.MinLevelSquish, Is.EqualTo(1), "Min Level Squish");
+            Assert.That(firstResult.MaxLevelSquish, Is.EqualTo(30), "Max Level Squish");
+            Assert.That(firstResult.ItemLevel, Is.EqualTo(0), "Item Level");
+        }
+
+        [Test]
         public void RDE_Generates_RppmData()
         {
             // Arrange

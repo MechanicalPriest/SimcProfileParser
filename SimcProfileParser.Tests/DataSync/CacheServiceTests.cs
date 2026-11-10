@@ -250,7 +250,10 @@ namespace SimcProfileParser.Tests.DataSync
                 SimcParsedFileType.RppmData,
                 SimcParsedFileType.ItemEffectData,
                 SimcParsedFileType.GameDataVersion,
-                SimcParsedFileType.TraitData
+                SimcParsedFileType.TraitData,
+                SimcParsedFileType.ItemScalingConfigData,
+                SimcParsedFileType.ItemOffsetCurveData,
+                SimcParsedFileType.ContentTuningData
             };
 
             foreach (var expectedType in expectedTypes)

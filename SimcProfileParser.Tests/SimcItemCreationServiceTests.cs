@@ -103,6 +103,7 @@ namespace SimcProfileParser.Tests
             // Etchings of the Captive Revenant (519)
             // back =,id = 202573,bonus_id = 6652 / 10874 / 7981 / 10335 / 10884 / 1576 / 8767
             // 702 Armor, 3422 Stamina, 460 Crit, 211 Haste
+            // Midnight: bonus 10335 applies bonus list 13499, whose item scaling config (140) squishes this to 38
             var itemOptions = new SimcItemOptions()
             {
                 ItemId = 202573,
@@ -117,19 +118,19 @@ namespace SimcProfileParser.Tests
 
             // Assert
             ClassicAssert.IsNotNull(item);
-            ClassicAssert.AreEqual(519, item.ItemLevel);
+            ClassicAssert.AreEqual(38, item.ItemLevel);
             ClassicAssert.AreEqual(ItemQuality.ITEM_QUALITY_EPIC, item.Quality);
             ClassicAssert.AreEqual(InventoryType.INVTYPE_CLOAK, item.InventoryType);
             ClassicAssert.AreEqual(202573, item.ItemId);
 
             // Stam
-            ClassicAssert.AreEqual(892, item.Mods[0].StatRating);
+            ClassicAssert.AreEqual(7, item.Mods[0].StatRating);
             ClassicAssert.AreEqual(ItemModType.ITEM_MOD_STAMINA, item.Mods[0].Type);
             // Crit rating
-            ClassicAssert.AreEqual(269, item.Mods[1].StatRating);
+            ClassicAssert.AreEqual(6, item.Mods[1].StatRating);
             ClassicAssert.AreEqual(ItemModType.ITEM_MOD_CRIT_RATING, item.Mods[1].Type);
             // Haste rating
-            ClassicAssert.AreEqual(123, item.Mods[2].StatRating);
+            ClassicAssert.AreEqual(3, item.Mods[2].StatRating);
             ClassicAssert.AreEqual(ItemModType.ITEM_MOD_HASTE_RATING, item.Mods[2].Type);
         }
 
@@ -265,6 +266,7 @@ namespace SimcProfileParser.Tests
             // Flame of Battle (226)
             // trinket1=,id=181501,bonus_id=6652/7215,drop_level=50
             // 226 ilvl. 77 int, 1211 vers proc for 6s (90s cd)
+            // Midnight: items from before the expansion have their item level squished, so this 226 item is now 49
             var parsedData = new SimcParsedItem()
             {
                 ItemId = 181501,
@@ -287,8 +289,8 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(336841, item.Effects[0].Spell.SpellId);
             ClassicAssert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
             ClassicAssert.AreEqual(12000.0d, item.Effects[0].Spell.Duration);
-            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[0].Spell.CombatRatingMultiplier);
-            ClassicAssert.AreEqual(180.9646759d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.5d, item.Effects[0].Spell.CombatRatingMultiplier);
+            ClassicAssert.AreEqual(6.81122208d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             ClassicAssert.IsNotNull(item.Effects[0].Spell.Effects);
             ClassicAssert.AreEqual(1, item.Effects[0].Spell.Effects.Count);
             ClassicAssert.AreEqual(2.955178d, item.Effects[1].Spell.Effects[0].Coefficient);
@@ -303,6 +305,7 @@ namespace SimcProfileParser.Tests
             // 226 ilvl. 100 vers, 14866 health over 6s split between allies
             // 12001 damage over 6s split between enemies
             // 40yd beam, 90s cd.
+            // Midnight: items from before the expansion have their item level squished, so this 226 item is now 49
             var parsedData = new SimcParsedItem()
             {
                 ItemId = 175733,
@@ -327,14 +330,14 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(336866, item.Effects[0].Spell.SpellId);
             ClassicAssert.AreEqual(90000, item.Effects[0].Spell.Cooldown);
             ClassicAssert.AreEqual(6000, item.Effects[0].Spell.Duration);
-            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[0].Spell.CombatRatingMultiplier);
-            ClassicAssert.AreEqual(180.9646759d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.5d, item.Effects[0].Spell.CombatRatingMultiplier);
+            ClassicAssert.AreEqual(6.81122208d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             // Second effect
             ClassicAssert.AreEqual(135863, item.Effects[1].EffectId);
             ClassicAssert.IsNotNull(item.Effects[1].Spell);
             ClassicAssert.AreEqual(343538, item.Effects[1].Spell.SpellId);
-            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[1].Spell.CombatRatingMultiplier);
-            ClassicAssert.AreEqual(127.8034668d, item.Effects[1].Spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.5d, item.Effects[1].Spell.CombatRatingMultiplier);
+            ClassicAssert.AreEqual(6.81122208d, item.Effects[1].Spell.Effects[0].ScaleBudget);
             ClassicAssert.IsNotNull(item.Effects[1].Spell.Effects);
             ClassicAssert.AreEqual(2, item.Effects[1].Spell.Effects.Count);
             // Second effect's spells first effect
@@ -349,6 +352,7 @@ namespace SimcProfileParser.Tests
             // Misfiring Centurion Controller (226)
             // trinket1=,id=173349,bonus_id=6706/7215,drop_level=50
             // 226 ilvl. 100 crit, 164 int for 15s proc
+            // Midnight: items from before the expansion have their item level squished, so this 226 item is now 49
             var parsedData = new SimcParsedItem()
             {
                 ItemId = 173349,
@@ -366,14 +370,14 @@ namespace SimcProfileParser.Tests
             ClassicAssert.IsNotNull(item);
             ClassicAssert.IsNotNull(item.Effects);
             ClassicAssert.AreEqual(1, item.Effects.Count);
-            ClassicAssert.AreEqual(226, item.ItemLevel);
+            ClassicAssert.AreEqual(49, item.ItemLevel);
             // First effect
             ClassicAssert.AreEqual(135894, item.Effects[0].EffectId);
             ClassicAssert.IsNotNull(item.Effects[0].Spell);
             ClassicAssert.AreEqual(344117, item.Effects[0].Spell.SpellId);
             ClassicAssert.AreEqual(1.5, item.Effects[0].Spell.Rppm);
-            ClassicAssert.AreEqual(1.2376681566238403d, item.Effects[0].Spell.CombatRatingMultiplier);
-            ClassicAssert.AreEqual(180.9646759d, item.Effects[0].Spell.Effects[0].ScaleBudget);
+            ClassicAssert.AreEqual(1.5d, item.Effects[0].Spell.CombatRatingMultiplier);
+            ClassicAssert.AreEqual(6.81122208d, item.Effects[0].Spell.Effects[0].ScaleBudget);
             // First effect's spells first effect trigger spells first effect (lol)
             // This is basically testing that the trigger spell gets linked. This particular spell
             // stores the proc coefficient in the trigger spell and multiplies it by 155.
@@ -453,6 +457,7 @@ namespace SimcProfileParser.Tests
         public async Task ICS_Creates_Premade_Ilvl_Scaling()
         {
             // Arrange
+            // Midnight: bonus 8967 applies bonus list 13471, whose item scaling config (2) squishes this to 30
             var itemOptions = new SimcParsedItem()
             {
                 Slot = "trinket1",
@@ -470,15 +475,16 @@ namespace SimcProfileParser.Tests
             // Assert 
             ClassicAssert.IsNotNull(item);
             ClassicAssert.AreEqual(193748, item.ItemId);
-            ClassicAssert.AreEqual(395, item.ItemLevel);
+            ClassicAssert.AreEqual(30, item.ItemLevel);
             ClassicAssert.AreEqual(1, item.Mods.Count);
-            ClassicAssert.AreEqual(179, item.Mods[0].StatRating);
+            ClassicAssert.AreEqual(10, item.Mods[0].StatRating);
         }
 
         [Test]
         public async Task ICS_Creates_Premade_Ilvl_Scaling_HealEffect()
         {
             // Arrange
+            // Midnight: items from before the expansion have their item level squished
             var itemOptions = new SimcParsedItem()
             {
                 Slot = "trinket1",
@@ -496,9 +502,99 @@ namespace SimcProfileParser.Tests
             // Assert 
             ClassicAssert.IsNotNull(item);
             ClassicAssert.AreEqual(194307, item.ItemId);
-            ClassicAssert.AreEqual(398, item.ItemLevel);
+            ClassicAssert.AreEqual(72, item.ItemLevel);
             ClassicAssert.AreEqual(1, item.Mods.Count);
-            ClassicAssert.AreEqual(325, item.Mods[0].StatRating);
+            ClassicAssert.AreEqual(15, item.Mods[0].StatRating);
+        }
+
+        [Test]
+        public async Task ICS_Midnight_Scale_Config_Sets_Item_Level()
+        {
+            // Arrange
+            // Cosmic Penitent's Truesight (334)
+            // head=,id=271555,enchant_id=7991,gem_id=240908,bonus_id=13334/6652/13846/13695/13692/13698/12854
+            // Bonus 12854 has an item scaling config (323) that sets the item level to 334
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "head",
+                ItemId = 271555,
+                BonusIds = new List<int>() { 13334, 6652, 13846, 13695, 13692, 13698, 12854 },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.ItemLevel, Is.EqualTo(334));
+        }
+
+        [Test]
+        public async Task ICS_Midnight_Crafting_Quality_Applied_After_Scale_Config()
+        {
+            // Arrange
+            // Martyr's Bindings (331)
+            // wrist=,id=239648,bonus_id=12214/13667/13695/12497/13751/14001/8960/12384/8795/13836/13696,crafted_stats=40/32
+            // Bonus 12497 (crafting quality, +13) has a lower ID than the scaling config bonuses 13751 and 13836,
+            // but is applied after them: 318 from scaling config 447 + 13 = 331
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "wrist",
+                ItemId = 239648,
+                BonusIds = new List<int>() { 12214, 13667, 13695, 12497, 13751, 14001, 8960, 12384, 8795, 13836, 13696 },
+                CraftedStatIds = new List<int>() { 40, 32 },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.ItemLevel, Is.EqualTo(331));
+        }
+
+        [Test]
+        public async Task ICS_Midnight_Scale_Config_Ignores_Old_Item_Level_Bonus()
+        {
+            // Arrange
+            // Cosmic Penitent's Celestial Grips (344)
+            // hands=,id=271556,enchant_id=8729,bonus_id=6652/13335/13848/13691/13697/1597
+            // Bonus 1597 adds 125 item levels, but doesn't apply once scaling config bonus 13848 sets the item level
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "hands",
+                ItemId = 271556,
+                BonusIds = new List<int>() { 6652, 13335, 13848, 13691, 13697, 1597 },
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.ItemLevel, Is.EqualTo(344));
+        }
+
+        [Test]
+        public async Task ICS_Forced_Item_Level_Skips_Midnight_Scaling()
+        {
+            // Arrange
+            // Cosmic Penitent's Truesight with ilevel=300
+            var parsedData = new SimcParsedItem()
+            {
+                Slot = "head",
+                ItemId = 271555,
+                BonusIds = new List<int>() { 13334, 6652, 13846, 13695, 13692, 13698, 12854 },
+                ItemLevel = 300,
+                Equipped = true,
+            };
+
+            // Act
+            var item = await _ics.CreateItemAsync(parsedData);
+
+            // Assert
+            Assert.That(item.ItemLevelForced, Is.True);
+            Assert.That(item.ItemLevel, Is.EqualTo(300));
         }
     }
 }

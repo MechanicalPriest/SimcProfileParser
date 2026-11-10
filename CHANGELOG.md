@@ -3,6 +3,26 @@
 All notable changes to the `SimcProfileParser` NuGet package are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## 4.6.0 - 2026-11-10
+
+### Fixed
+- **Midnight items had the wrong item level, and so the wrong stats.** Midnight items set their item level with new
+  bonus types that weren't supported, so most current gear came out well below its real item level (e.g. 219 instead
+  of 334). Item levels are now calculated the way simc does:
+  - Item scaling config bonuses (`ITEM_BONUS_SCALE_CONFIG` / `ITEM_BONUS_SCALE_CONFIG_2`), squish curve bonuses and
+    bonuses that apply another bonus list
+  - Crafting quality and post-squish item level bonuses, applied after the bonuses that set the item level
+  - Older item level bonuses no longer apply once a Midnight bonus has set the item level
+  - Items without Midnight item level bonuses have their item level squished, as in game. **Items from before Midnight
+    now have much lower item levels** (e.g. a 226 Shadowlands trinket is now 49), and their stats scale to match.
+    Items created from `SimcItemOptions` with an `ItemLevel` aren't squished.
+- **Item level curves gave wrong values between curve points.** Interpolating between two points of a curve used 0
+  instead of the value being looked up, and values beyond the end of a curve threw an exception.
+
+### Added
+- `SimcParsedItem.ContentTuningId` and `SimcItemOptions.ContentTuningId`, from the `content_tuning=` item option. simc
+  uses it to cap the level some Midnight items scale to.
+
 ## 4.5.0 - 2026-11-08
 
 ### Added

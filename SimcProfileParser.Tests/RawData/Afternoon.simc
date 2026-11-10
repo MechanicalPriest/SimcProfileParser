@@ -1,0 +1,72 @@
+# Afternoon - Holy - 2026-11-10 12:26 - US/Bloodrage
+# SimC Addon 12.1.5-04
+# WoW 12.1.5.70783, TOC 120105
+# Requires SimulationCraft 1000-01 or newer
+
+priest="Afternoon"
+level=90
+race=dracthyr
+region=us
+server=bloodrage
+role=attack
+professions=alchemy=93/enchanting=55
+spec=holy
+# loot_spec=holy
+
+talents=CEQAR03Gt7xPmcDNOjs2Zlb3yCDAAAAAAYBmZWGzMmZMMDzsMzYGAAAAzMzyMYGzwMMjBMTBwMLYIMmlBYMwiZmZBQzYmxMDmBYmZGYA
+
+# Saved Loadout: 12.1 Oracle Epiph raid
+# talents=CEQAR03Gt7xPmcDNOjs2Zlb3yyYAAAAAAAGjZmlZmZMzMDzMDLzMmBAAAwwsMDzMzMMDzYAzAAzsgBYMbDwYgFGWAYGzMGDzMAzMDYA
+# Saved Loadout: 12.1 Oracle Lightweaver raid
+# talents=CEQAR03Gt7xPmcDNOjs2Zlb3yyYAAAAAAgZBmZWGzMmZmZMzMsMDzAAAAYYWmhZmZGmhZMgZAgZWwAMmtBYMwCjZDgZMzYMMzAMzMgB
+# Saved Loadout: 12.1 Archon Raid
+# talents=CEQAR03Gt7xPmcDNOjs2Zlb3yyYAAAAAAAgZmlxYMzMDzMzYZGmBAAAwMmlZwMzMMDzAYGAAzsYGmNDAMGsZmZWAYGzMGDzMbLDwMwA
+# Saved Loadout: 12.1 Oracle easy raid
+# talents=CEQAR03Gt7xPmcDNOjs2Zlb3yCDAAAAAAYBmZWGzMmZMMDzsMzYGAAAAzMzyMYGzwMMjBMDAMzCGgxsMAjBWMzMLAMjZGzMYGgZmZgB
+# Saved Loadout: oracle midnight open world
+# talents=CEQAR03Gt7xPmcDNOjs2Zlb3yyYAAAAAAgZzwYWGjxMjZMzMsMzMzAAAAYMWmBzMzwMjZAMDAMzCGgxsMAjBWMGbAMjxYmhZGgZmZgB
+# Saved Loadout: Oracle m+
+# talents=CEQAR03Gt7xPmcDNOjs2Zlb3yCDAAAAAAgZmxsMMjZGDzwYZmZmBAAAwYmlZwMzMYMzYAzAAzsgBYMbDwYgFzMzCAzYmxYwMAzMzAD
+# Saved Loadout: di
+# talents=CEQAR03Gt7xPmcDNOjs2Zlb3yyYAAAAAAAMm5BmlhZMzYYGGLzMzMAAAAGzsMDmZmxmxMjBMDAMzCGgxsNAjBWMmZBgZMzYMYGgZmBMA
+
+omnium_talents=136814:1/136815:1/136817:1/136819:1/136822:1
+
+# Cosmic Penitent's Truesight (334)
+head=,id=271555,enchant_id=7991,gem_id=240908,bonus_id=13334/6652/13846/13695/13692/13698/12854,redirected_base_stats=271874
+# Aqirbane Reliquary (344)
+neck=,id=268265,gem_id=240983/240910,bonus_id=6652/13668/13335/13848/13987
+# Cosmic Penitent's Echoing Screams (334)
+shoulder=,id=271553,enchant_id=7973,bonus_id=13335/13694/6652/13697/12854,content_tuning=1040
+# Silken Voodoo Drape (344)
+back=,id=268253,bonus_id=6652/13662/13335/13848
+# Cosmic Penitent's Eclipsing Robes (334)
+chest=,id=271558,enchant_id=8013,bonus_id=6652/13335/13690/13698/12854,redirected_base_stats=268221
+# Blinky's Collar (1)
+shirt=,id=268274,content_tuning=3605
+# Tabard of the Lightbringer (14)
+tabard=,id=52252,content_tuning=1023
+# Martyr's Bindings (331)
+wrist=,id=239648,gem_id=240910,bonus_id=12214/13667/13695/12497/13751/14001/8960/12384/8795/13836/13696,content_tuning=3615,crafted_stats=40/32,crafting_quality=5
+# Cosmic Penitent's Celestial Grips (344)
+hands=,id=271556,enchant_id=8729,bonus_id=6652/13335/13848/13691/13697/1597,redirected_base_stats=268243
+# Cosmic Penitent's Orbiting Cinch (324)
+waist=,id=271552,gem_id=240910,bonus_id=12851/6652/13335/13696/13695/1577,redirected_base_stats=268257
+# Martyr's Leggings (331)
+legs=,id=239651,enchant_id=7935,bonus_id=12214/13667/12497/13751/14001/8960/12384/8795/13836,content_tuning=3615,crafted_stats=49/36,crafting_quality=5
+# Trail of the Cosmic Penitent (321)
+feet=,id=271557,enchant_id=8019,bonus_id=12846/13334/41/1574,redirected_base_stats=268255
+# Signet of Snarling Servitude (321)
+finger1=,id=251136,enchant_id=7967,gem_id=240910,bonus_id=13440/6652/13668/12699/12846,content_tuning=1279
+# Masterwork Sin'dorei Band (331)
+finger2=,id=240949,enchant_id=7967,gem_id=240910,bonus_id=12214/13667/12497/13751/14001/8795/13836,content_tuning=3615,crafted_stats=49/32,crafting_quality=5
+# Soulcoiler Ritual Vessel (334)
+trinket1=,id=270162,bonus_id=6652/13335/12854
+# Gebbo's Bottomless Bag (334)
+trinket2=,id=270164,bonus_id=6652/13335/12854,content_tuning=7359
+# Jan'thrazet, the Soul Fang (334)
+main_hand=,id=271092,enchant_id=8689,bonus_id=6652/13334/12854
+# Frostscale's Mystic Frond (334)
+off_hand=,id=268263,bonus_id=6652/13335/12854
+
+# Checksum: b95e767b

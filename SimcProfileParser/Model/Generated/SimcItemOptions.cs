@@ -12,6 +12,10 @@ namespace SimcProfileParser.Model.Generated
         public IList<int> CraftedStatIds { get; set; }
         public ItemQuality Quality { get; set; }
         public int DropLevel { get; set; }
+        /// <summary>
+        /// The content_tuning= item option from a simc profile. New in Midnight and used to cap the level some items scale to.
+        /// </summary>
+        public int ContentTuningId { get; set; }
 
         public SimcItemOptions()
         {

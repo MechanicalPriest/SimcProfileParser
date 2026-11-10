@@ -553,6 +553,16 @@ namespace SimcProfileParser
 
                         break;
 
+                    case "content_tuning":
+                        if (!int.TryParse(kvp[1], out int contentTuningId))
+                        {
+                            _logger?.LogWarning("Unable to get content_tuning ({part}) from string {line.RawLine}", part, line.RawLine);
+                            continue;
+                        }
+                        itemResult.ContentTuningId = contentTuningId;
+
+                        break;
+
                     case "bonus_id":
                         var bonusIds = kvp[1].Split('/');
                         var bonusIdResult = new List<int>();

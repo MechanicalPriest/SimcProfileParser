@@ -344,5 +344,23 @@ namespace SimcProfileParser.Tests
             ClassicAssert.AreEqual(expectedItem, actualItem);
 
         }
+
+        [Test]
+        public void SPS_Parses_ContentTuning()
+        {
+            // Arrange
+            var simcParser = new SimcParserService(null);
+            var profileLines = new List<string>()
+            {
+                "shoulder=,id=271553,enchant_id=7973,bonus_id=13335/13694/6652/13697/12854,content_tuning=1040"
+            };
+
+            // Act
+            var profile = simcParser.ParseProfileAsync(profileLines);
+
+            // Assert
+            Assert.That(profile.Items, Has.Count.EqualTo(1));
+            Assert.That(profile.Items[0].ContentTuningId, Is.EqualTo(1040));
+        }
     }
 }

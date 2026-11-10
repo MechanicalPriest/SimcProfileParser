@@ -43,6 +43,9 @@ namespace SimcProfileParser.DataSync
                 SimcParsedFileType.ItemEffectData => GenerateItemEffectData(incomingRawData),
                 SimcParsedFileType.GameDataVersion => GenerateGameDataVersion(incomingRawData),
                 SimcParsedFileType.TraitData => GenerateTraitData(incomingRawData),
+                SimcParsedFileType.ItemScalingConfigData => GenerateItemScalingConfigData(incomingRawData),
+                SimcParsedFileType.ItemOffsetCurveData => GenerateItemOffsetCurveData(incomingRawData),
+                SimcParsedFileType.ContentTuningData => GenerateContentTuningData(incomingRawData),
                 _ => throw new ArgumentOutOfRangeException($"FileType {fileType} is invalid."),
             };
             sw.Stop();
@@ -1275,6 +1278,77 @@ namespace SimcProfileParser.DataSync
             }
 
             return traitEntries;
+        }
+
+        // Matches a line of a simc data array made up only of integers, e.g. "  {   1, 12, 70, 70, 0 },"
+        private static readonly Regex _integerArrayLineRegex = new(@"^\s*\{\s*(-?\d+(?:\s*,\s*-?\d+)*)\s*\}", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Get the integer values for each entry of a simc data array, e.g. __item_scaling_config_data
+        /// </summary>
+        private static IEnumerable<int[]> GetIntegerArrayEntries(string rawData, string key)
+        {
+            foreach (var line in GetArrayLines(rawData, key))
+            {
+                var match = _integerArrayLineRegex.Match(line);
+                if (!match.Success)
+                    continue;
+
+                yield return match.Groups[1].Value.Split(',').Select(n => Convert.ToInt32(n.Trim())).ToArray();
+            }
+        }
+
+        internal List<SimcRawItemScalingConfig> GenerateItemScalingConfigData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "CurveData.raw").FirstOrDefault().Value;
+
+            // From item_scaling_config_data_t: id, item_offset_curve_id, item_level, player_level, squish_era_id
+            return GetIntegerArrayEntries(rawData, "__item_scaling_config_data { {")
+                .Where(d => d.Length == 5)
+                .Select(d => new SimcRawItemScalingConfig()
+                {
+                    Id = d[0],
+                    ItemOffsetCurveId = d[1],
+                    ItemLevel = d[2],
+                    PlayerLevel = d[3],
+                    SquishEraId = d[4]
+                })
+                .ToList();
+        }
+
+        internal List<SimcRawItemOffsetCurve> GenerateItemOffsetCurveData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "CurveData.raw").FirstOrDefault().Value;
+
+            // From item_offset_curve_data_t: id, curve_id, offset
+            return GetIntegerArrayEntries(rawData, "__item_offset_curve_data { {")
+                .Where(d => d.Length == 3)
+                .Select(d => new SimcRawItemOffsetCurve()
+                {
+                    Id = d[0],
+                    CurveId = d[1],
+                    Offset = d[2]
+                })
+                .ToList();
+        }
+
+        internal List<SimcRawContentTuning> GenerateContentTuningData(Dictionary<string, string> incomingRawData)
+        {
+            var rawData = incomingRawData.Where(d => d.Key == "ContentTuning.raw").FirstOrDefault().Value;
+
+            // From content_tuning_data_t: id, flags, id_expansion, min_level_squish, max_level_squish, ilevel
+            return GetIntegerArrayEntries(rawData, "__content_tuning_data { {")
+                .Where(d => d.Length == 6)
+                .Select(d => new SimcRawContentTuning()
+                {
+                    Id = (uint)d[0],
+                    Flags = d[1],
+                    ExpansionId = d[2],
+                    MinLevelSquish = d[3],
+                    MaxLevelSquish = d[4],
+                    ItemLevel = d[5]
+                })
+                .ToList();
         }
 
         /// <summary>

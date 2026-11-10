@@ -16,6 +16,9 @@
         RppmData,
         ItemEffectData,
         GameDataVersion,
-        TraitData
+        TraitData,
+        ItemScalingConfigData,
+        ItemOffsetCurveData,
+        ContentTuningData
     }
 }
